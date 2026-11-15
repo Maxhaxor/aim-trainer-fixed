@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>aim trainer · anti-cheat edition</title>
+<title>3D aim trainer · anti-cheat</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none}
 body{background:#0b0f1c;min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Segoe UI','Inter',system-ui,sans-serif;overflow:hidden}
@@ -266,8 +266,8 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
         <input type="file" id="knife-input" accept=".stl" style="display:none">
         <div class="effect-row">
             <span class="effect-label">KILL EFFECT</span>
-            <button class="effect-btn active" data-effect="default">SPARKS</button>
-            <button class="effect-btn" data-effect="blackhole">BLACK HOLE</button>
+            <button class="effect-btn" data-effect="default">SPARKS</button>
+            <button class="effect-btn active" data-effect="blackhole">BLACK HOLE</button>
             <button class="effect-btn" data-effect="explosion">EXPLOSION</button>
         </div>
         <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>SPACE</kbd> bhop · <kbd>1</kbd>/<kbd>2</kbd> weapon · <kbd>RMB</kbd> scope</div>
@@ -350,7 +350,7 @@ let isScoped=false, thirdPerson=false;
 let currentWeapon='sniper', knifeCooldown=0, knifeSwingTimer=0, reloadTimer=0;
 let playerHealth=PLAYER_MAX_HEALTH, playerDead=false, playerRespawnTimer=0;
 let kills=0, deaths=0, damageFlash=0, timeSinceDamage=0, currentKillstreak=0;
-let currentKillEffect='default';
+let currentKillEffect='blackhole';
 let screenShake=0;
 let yaw=0, pitch=0;
 
@@ -375,12 +375,7 @@ const ac = {
     lastHealth: 100,
     expectedDmg: 0,
     lastPos: new THREE.Vector3(),
-    lastPosTime: 0,
-    selfCheckTimer: 0,
-    integrityHash: 0,
-    tamper: false,
-    detectedCount: 0,
-    lastCheatReport: null
+    lastPosTime: 0
 };
 
 let mpRemote = {
@@ -1024,7 +1019,7 @@ function playExplosion(position){
     screenShake = Math.max(screenShake, 0.7);
 }
 
-// Upgraded cinematic black hole
+// Gargantua / Interstellar Black Hole
 function disposeGroup(group){
     scene.remove(group);
     group.traverse(c=>{
@@ -1034,132 +1029,126 @@ function disposeGroup(group){
 }
 function playBlackHole(position){
     const center = position.clone();
-    center.y += 1;
-    const R = BLACK_HOLE_R;
+    center.y += 1.2;
+    const R = BLACK_HOLE_R * 1.2;
+    
     const group = new THREE.Group();
     group.position.copy(center);
+    group.rotation.z = -0.15;
+    group.rotation.x = 0.15;
     scene.add(group);
+
     const effect = {
-        group, center: center.clone(), age:0, maxAge:2.6,
-        blackSphere:null, photonRing:null, haloRing:null,
-        jetUp:null, jetDown:null, disk:null, diskMat:null,
-        particles:[], waves:[], flash:null, glow:null
+        group, center: center.clone(), age: 0, maxAge: 3.0,
+        blackSphere: null, photonRing: null, disk: null, diskMat: null,
+        lensingHalo: null, stars: null, flash: null
     };
 
+    // 1. Event Horizon
     effect.blackSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(R,48,48),
-        new THREE.MeshBasicMaterial({ color:0x000000 })
+        new THREE.SphereGeometry(R, 64, 64),
+        new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     group.add(effect.blackSphere);
 
+    // 2. Photon Ring
     effect.photonRing = new THREE.Mesh(
-        new THREE.TorusGeometry(R*1.08, R*0.03, 12, 96),
-        new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:1.0, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false })
+        new THREE.TorusGeometry(R * 1.02, R * 0.03, 16, 128),
+        new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:1.0, blending:THREE.AdditiveBlending, depthWrite:false })
     );
-    effect.photonRing.rotation.x = Math.PI/2;
+    effect.photonRing.rotation.x = Math.PI / 2;
     group.add(effect.photonRing);
 
-    effect.haloRing = new THREE.Mesh(
-        new THREE.TorusGeometry(R*1.65, R*0.05, 16, 96),
-        new THREE.MeshBasicMaterial({ color:0xffaa55, transparent:true, opacity:0.75, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false })
-    );
-    group.add(effect.haloRing);
+    // 3. Gravitational Lensing Halo
+    const haloGeo = new THREE.TorusGeometry(R * 1.05, R * 0.15, 16, 64);
+    const haloMat = new THREE.MeshBasicMaterial({ color:0xffaa55, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false });
+    effect.lensingHalo = new THREE.Mesh(haloGeo, haloMat);
+    effect.lensingHalo.scale.set(1, 1.8, 1);
+    group.add(effect.lensingHalo);
 
-    const jetMat = new THREE.MeshBasicMaterial({ color:0xaaccff, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide });
-    effect.jetUp = new THREE.Mesh(new THREE.ConeGeometry(R*0.14, R*5, 16, 1, true), jetMat);
-    effect.jetUp.position.y = R*2.5;
-    group.add(effect.jetUp);
-    effect.jetDown = new THREE.Mesh(new THREE.ConeGeometry(R*0.14, R*5, 16, 1, true), jetMat.clone());
-    effect.jetDown.position.y = -R*2.5; effect.jetDown.rotation.z = Math.PI;
-    group.add(effect.jetDown);
-
-    const diskInner = R*1.2, diskOuter = R*4.2;
-    const diskGeo = new THREE.RingGeometry(diskInner, diskOuter, 128, 4);
+    // 4. Accretion Disk
+    const diskInner = R * 1.1;
+    const diskOuter = R * 4.5;
+    const diskGeo = new THREE.RingGeometry(diskInner, diskOuter, 128, 8);
+    
     effect.diskMat = new THREE.ShaderMaterial({
         uniforms:{ uTime:{value:0}, uInner:{value:diskInner}, uOuter:{value:diskOuter}, uFade:{value:1.0} },
         vertexShader:`varying vec3 vPos;void main(){vPos=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
         fragmentShader:`
             uniform float uTime,uInner,uOuter,uFade;
             varying vec3 vPos;
-            float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
-            float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);
-                float a=hash(i);float b=hash(i+vec2(1.0,0.0));float c=hash(i+vec2(0.0,1.0));float d=hash(i+vec2(1.0,1.0));
-                return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}
-            void main(){
-                float r=length(vPos.xy);
-                float t=clamp((r-uInner)/(uOuter-uInner),0.0,1.0);
-                float angle=atan(vPos.y,vPos.x);
-                float spin=uTime*(2.5-t*1.8);
-                float a1=angle*3.0+spin;
-                float a2=angle*7.0+spin*1.6;
-                float s1=noise(vec2(a1,t*6.0-uTime*1.2));
-                float s2=noise(vec2(a2,t*14.0-uTime*2.0));
-                float swirl=s1*0.65+s2*0.35;
-                vec3 hotC=vec3(1.0,1.0,0.98);
-                vec3 warmC=vec3(1.0,0.7,0.25);
-                vec3 coolC=vec3(0.85,0.15,0.04);
-                float heat=pow(1.0-t,2.5);
-                vec3 col=mix(coolC,warmC,smoothstep(0.0,0.55,heat));
-                col=mix(col,hotC,smoothstep(0.55,1.0,heat));
-                col*=(0.6+swirl*0.9);
-                float doppler=0.7+0.5*sin(angle+uTime*0.8);
-                col*=doppler;
-                float innerFade=smoothstep(0.0,0.05,t);
-                float outerFade=1.0-smoothstep(0.75,1.0,t);
-                float alpha=innerFade*outerFade*(0.8+swirl*0.2)*uFade;
-                gl_FragColor=vec4(col,alpha);
+            float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+            float noise(vec2 p) {
+                vec2 i = floor(p); vec2 f = fract(p);
+                f = f * f * (3.0 - 2.0 * f);
+                float a = hash(i), b = hash(i + vec2(1.0, 0.0));
+                float c = hash(i + vec2(0.0, 1.0)), d = hash(i + vec2(1.0, 1.0));
+                return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+            }
+            void main() {
+                float r = length(vPos.xy);
+                float t = clamp((r - uInner) / (uOuter - uInner), 0.0, 1.0);
+                float angle = atan(vPos.y, vPos.x);
+                float spin = uTime * (3.5 - t * 2.5);
+                float n1 = noise(vec2(angle * 4.0 + spin, t * 10.0 - uTime * 2.0));
+                float n2 = noise(vec2(angle * 12.0 + spin * 1.5, t * 25.0 - uTime * 3.0));
+                float swirl = n1 * 0.6 + n2 * 0.4;
+                vec3 coreColor = vec3(1.0, 1.0, 0.95);
+                vec3 midColor  = vec3(1.0, 0.65, 0.15);
+                vec3 outColor  = vec3(0.7, 0.05, 0.0);
+                float heat = pow(1.0 - t, 3.0);
+                vec3 col = mix(outColor, midColor, smoothstep(0.0, 0.4, heat));
+                col = mix(col, coreColor, smoothstep(0.6, 1.0, heat));
+                col *= (0.5 + swirl * 1.5);
+                float doppler = 0.8 + 0.4 * sin(angle + uTime * 1.5);
+                col *= doppler;
+                float innerFade = smoothstep(0.0, 0.1, t);
+                float outerFade = 1.0 - smoothstep(0.5, 1.0, t);
+                float alpha = innerFade * outerFade * uFade;
+                gl_FragColor = vec4(col, alpha);
             }
         `,
-        transparent:true, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false
+        transparent: true, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
     });
+    
     effect.disk = new THREE.Mesh(diskGeo, effect.diskMat);
-    effect.disk.rotation.x = -Math.PI/2;
+    effect.disk.rotation.x = -Math.PI / 2.4;
     group.add(effect.disk);
 
-    for(let i=0;i<80;i++){
-        const angle = Math.random()*Math.PI*2;
-        const radius = R*(2.0 + Math.random()*3.0);
-        const size = 0.03 + Math.random()*0.03;
-        const color = Math.random()>0.7?0xffdd88:(Math.random()>0.4?0xff8833:0xff3311);
-        const p = new THREE.Mesh(
-            new THREE.SphereGeometry(size,6,6),
-            new THREE.MeshBasicMaterial({ color, transparent:true, opacity:1, blending:THREE.AdditiveBlending, depthWrite:false })
-        );
-        p.position.set(Math.cos(angle)*radius, (Math.random()-0.5)*0.3, Math.sin(angle)*radius);
-        group.add(p);
-        effect.particles.push({ mesh:p, angle, radius, yOffset:p.position.y, angleSpeed:1.0+Math.random()*2.0, fallSpeed:1.5+Math.random()*2.0 });
+    // 5. Starfield
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 400;
+    const positions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const radius = 25 + Math.random() * 10;
+        positions[i] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i+2] = radius * Math.cos(phi);
     }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const starMat = new THREE.PointsMaterial({ color:0xffffff, size:0.15, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false });
+    effect.stars = new THREE.Points(starGeo, starMat);
+    group.add(effect.stars);
 
-    for(let i=0;i<4;i++){
-        const wave = new THREE.Mesh(
-            new THREE.TorusGeometry(R*2, R*0.015, 6, 64),
-            new THREE.MeshBasicMaterial({ color:0xbb88ff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false })
-        );
-        wave.rotation.x = Math.PI/2;
-        group.add(wave);
-        effect.waves.push({ mesh:wave, delay:i*0.28 });
-    }
+    // 6. Flash
+    const flashCanvas = document.createElement('canvas');
+    flashCanvas.width = 256; flashCanvas.height = 256;
+    const fctx = flashCanvas.getContext('2d');
+    const fgrad = fctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    fgrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    fgrad.addColorStop(0.4, 'rgba(255, 200, 150, 0.8)');
+    fgrad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+    fctx.fillStyle = fgrad; fctx.fillRect(0, 0, 256, 256);
+    const ft = new THREE.CanvasTexture(flashCanvas);
 
-    const fc = document.createElement('canvas'); fc.width=256; fc.height=256;
-    const fx = fc.getContext('2d');
-    const fg = fx.createRadialGradient(128,128,0,128,128,128);
-    fg.addColorStop(0,'rgba(255,255,255,1)');
-    fg.addColorStop(0.3,'rgba(255,220,180,0.9)');
-    fg.addColorStop(0.7,'rgba(200,100,255,0.3)');
-    fg.addColorStop(1,'rgba(100,0,200,0)');
-    fx.fillStyle = fg; fx.fillRect(0,0,256,256);
-    const ft = new THREE.CanvasTexture(fc);
-
-    effect.flash = new THREE.Sprite(new THREE.SpriteMaterial({ map:ft, transparent:true, opacity:1, blending:THREE.AdditiveBlending, depthWrite:false }));
-    effect.flash.scale.set(R*8, R*8, 1);
+    effect.flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: ft, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false }));
+    effect.flash.scale.set(R * 12, R * 12, 1);
     group.add(effect.flash);
 
-    effect.glow = new THREE.Sprite(new THREE.SpriteMaterial({ map:ft, transparent:true, opacity:0.4, blending:THREE.AdditiveBlending, depthWrite:false, color:0x9966ff }));
-    effect.glow.scale.set(R*12, R*12, 1);
-    group.add(effect.glow);
-
     blackHoleEffects.push(effect);
-    screenShake = Math.max(screenShake, 1.2);
+    screenShake = Math.max(screenShake, 1.5);
     playBlackHoleSound();
 }
 
@@ -1191,56 +1180,34 @@ function updateKillEffects(dt){
         bh.age += dt;
         const t = Math.min(1, bh.age/bh.maxAge);
 
-        let sphereScale;
-        if(t<0.25) sphereScale = t/0.25;
-        else sphereScale = Math.max(0.01, 1 - (t-0.25)/0.75);
+        if(t < 0.15){
+            bh.flash.scale.setScalar(BLACK_HOLE_R * 1.2 * (1 + (t / 0.15) * 2));
+            bh.flash.material.opacity = 1.0 - (t / 0.15);
+        } else {
+            bh.flash.material.opacity = 0;
+        }
+
+        if(t < 0.2) bh.stars.material.opacity = (t / 0.2) * 0.8;
+        else if(t > 0.8) bh.stars.material.opacity = (1 - (t - 0.8) / 0.2) * 0.8;
+        else bh.stars.material.opacity = 0.8;
+        bh.stars.rotation.y += dt * 0.1;
+
+        let sphereScale = 1.0;
+        if(t < 0.1) sphereScale = t / 0.1;
+        else if(t > 0.85) sphereScale = Math.max(0.01, 1 - (t - 0.85) / 0.15);
         bh.blackSphere.scale.setScalar(sphereScale);
 
-        bh.photonRing.scale.setScalar(1+t*1.2);
-        bh.photonRing.material.opacity = Math.max(0, 1-t*1.1);
+        bh.photonRing.scale.setScalar(1 + (1 - t) * 0.5);
+        bh.photonRing.material.opacity = t > 0.9 ? (1 - t) * 10 : 1.0;
 
-        bh.haloRing.rotation.z += dt*1.5;
-        bh.haloRing.scale.setScalar(1+t*0.6);
-        bh.haloRing.material.opacity = 0.75*(1-t);
-
-        if(bh.jetUp && bh.jetDown){
-            const js = 1+t*1.8;
-            bh.jetUp.scale.set(1,js,1);
-            bh.jetDown.scale.set(1,js,1);
-            bh.jetUp.material.opacity = 0.7*(1-t);
-            bh.jetDown.material.opacity = 0.7*(1-t);
-        }
+        bh.lensingHalo.rotation.z += dt * 2.0;
+        bh.lensingHalo.material.opacity = Math.max(0, 0.8 - t * 1.2);
 
         if(bh.diskMat){
             bh.diskMat.uniforms.uTime.value = bh.age;
-            bh.diskMat.uniforms.uFade.value = Math.max(0, 1-t*0.9);
+            bh.diskMat.uniforms.uFade.value = t > 0.7 ? Math.max(0, 1 - (t - 0.7) / 0.3) : 1.0;
         }
-        bh.disk.scale.setScalar(1-t*0.3);
-
-        for(const p of bh.particles){
-            p.angle += dt*p.angleSpeed;
-            p.radius = Math.max(BLACK_HOLE_R*1.05, p.radius - dt*p.fallSpeed);
-            p.mesh.position.x = Math.cos(p.angle)*p.radius;
-            p.mesh.position.z = Math.sin(p.angle)*p.radius;
-            p.mesh.position.y = p.yOffset*(1-t*0.8);
-            const prox = (p.radius - BLACK_HOLE_R)/(BLACK_HOLE_R*4);
-            p.mesh.material.opacity = Math.max(0, (1-t*0.7))*Math.min(1, prox*3);
-            p.mesh.scale.set(1+(1-prox)*1.5, 1, 1+(1-prox)*1.5);
-        }
-
-        for(const w of bh.waves){
-            const wa = bh.age - w.delay;
-            if(wa<0 || wa>1){ w.mesh.material.opacity = 0; w.mesh.scale.setScalar(0.1); continue; }
-            const wt = wa/1.0;
-            w.mesh.scale.setScalar(1+wt*5);
-            w.mesh.material.opacity = 0.7*(1-wt);
-            w.mesh.rotation.z += dt*2;
-        }
-
-        bh.flash.scale.setScalar(BLACK_HOLE_R*8*(1+t*1.5));
-        bh.flash.material.opacity = Math.max(0, 1-t*4);
-        bh.glow.scale.setScalar(BLACK_HOLE_R*12*(1+t*0.5));
-        bh.glow.material.opacity = 0.4*(1-t);
+        bh.disk.scale.setScalar(1 - t * 0.1);
 
         if(t>=1){
             disposeGroup(bh.group);
@@ -1424,7 +1391,6 @@ function fireShot(){
             mpRemote.hitFlash = 0.2;
             let dmg = (hs||admin.oneshot) ? SNIPER_HEAD_DAMAGE : SNIPER_BODY_DAMAGE;
             if(admin.megaDamage) dmg *= 10;
-            // Always pierce — anti-cheat needs to prove damage was delivered
             mpSendDamage(dmg, true);
             ac.expectedDmg += dmg;
         }
@@ -1885,46 +1851,32 @@ function updateReload(dt){
 }
 
 // ============================================================
-//  ANTI-CHEAT — MUTUAL VERIFICATION
-//  Each client independently detects cheats in the other.
-//  If A's client has god mode on, B's client sees it, blackholes A.
-//  B's anti-cheat-kill message is honored by A's stock code.
-//  If A modifies their client to ignore the kill, B still marks A
-//  as a cheater and refuses to keep playing with them.
+//  ANTI-CHEAT
 // ============================================================
 function acPunish(reason){
     const now = performance.now();
     if(now - ac.lastPunish < ac.cooldown) return;
     ac.lastPunish = now;
-    ac.detectedCount++;
 
     addKillFeed('🛡 ANTI-CHEAT: ' + reason, false, true);
     showKillstreak('🛡 CHEATER DETECTED');
 
-    // Show AC indicator briefly
     acIndicator.classList.add('visible');
     setTimeout(()=>acIndicator.classList.remove('visible'), 3000);
 
-    // Black hole at cheater's location
     if(mpRemote.pos) playBlackHole(mpRemote.pos.clone());
 
-    // Tell them we caught them
     if(mpConn && mpConn.open){
-        try{
-            mpConn.send({ type: 'anti-cheat-kill', reason: reason });
-        } catch(e){}
+        try{ mpConn.send({ type: 'anti-cheat-kill', reason: reason }); } catch(e){}
     }
 
     playKillSound();
     screenShake = Math.max(screenShake, 1.2);
 }
 
-// Called when we receive a state packet from the remote player.
-// Checks MULTIPLE independent detection paths. Any one triggers punishment.
 function acVerifyRemote(data){
     if(!data) return;
 
-    // PATH 1 — Explicit cheat report
     if(data.cheats){
         const active = [];
         if(data.cheats.godmode) active.push('GODMODE');
@@ -1935,11 +1887,10 @@ function acVerifyRemote(data){
         if(data.cheats.speed) active.push('SPEED-HACK');
         if(active.length > 0){
             acPunish(active.join('+'));
-            return; // punish and stop — no double punishment
+            return;
         }
     }
 
-    // PATH 2 — Behavioral damage detection (would-be god mode)
     if(ac.expectedDmg > 0){
         const wasRespawn = data.health > ac.lastHealth + 10;
         const actualDelta = ac.lastHealth - data.health;
@@ -1949,7 +1900,6 @@ function acVerifyRemote(data){
         ac.expectedDmg = 0;
     }
 
-    // PATH 3 — Impossible movement speed detection
     const now = performance.now();
     if(ac.lastPosTime > 0){
         const dtSec = (now - ac.lastPosTime) / 1000;
@@ -1957,7 +1907,6 @@ function acVerifyRemote(data){
             const newPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
             const dist = newPos.distanceTo(ac.lastPos);
             const speed = dist / dtSec;
-            // Legit max is ~15 u/s (bhop + speed hack capped at 2.5x * 6 = 15). Give 3x headroom.
             if(speed > 45){
                 acPunish('SPEED-HACK (movement)');
             }
@@ -1965,7 +1914,6 @@ function acVerifyRemote(data){
     }
     ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
     ac.lastPosTime = now;
-
     ac.lastHealth = data.health;
 }
 
@@ -2121,7 +2069,7 @@ function handleMpData(data){
         mpRemote.health = data.health;
         mpRemote.weapon = data.weapon;
         mpRemote.dead = data.dead;
-        acVerifyRemote(data); // anti-cheat runs on every state packet
+        acVerifyRemote(data);
     } else if(data.type === 'shoot'){
         const from = new THREE.Vector3(data.from.x, data.from.y, data.from.z);
         const to = new THREE.Vector3(data.to.x, data.to.y, data.to.z);
@@ -2139,11 +2087,9 @@ function handleMpData(data){
             }
         }
     } else if(data.type === 'anti-cheat-kill'){
-        // We got caught by the other player's anti-cheat
         addKillFeed('🛡 BLACKHOLED: ' + (data.reason||'CHEATING'), true, true);
         showKillstreak('🛡 CAUGHT CHEATING');
         playBlackHole(camera.position.clone());
-        // Force death THROUGH godmode
         const wasGod = admin.godmode;
         admin.godmode = false;
         playerHealth = 0;
@@ -2226,9 +2172,8 @@ function startMultiplayerGame(){
     updateWeaponVisibility();
     updateHealthHUD();
 
-    // reset anti-cheat state
     ac.lastPunish = 0; ac.lastHealth = 100; ac.expectedDmg = 0;
-    ac.lastPosTime = 0; ac.detectedCount = 0;
+    ac.lastPosTime = 0;
 
     pendingMouseX = 0; pendingMouseY = 0;
     smoothMouseX = 0; smoothMouseY = 0;
