@@ -133,28 +133,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .mp-hint{color:#7a5a44;font-size:11px;letter-spacing:1px;text-align:center}
 .mp-back-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,10,5,.6);border:1px solid rgba(255,200,140,.18);color:#ffd9a8;padding:8px 20px;border-radius:30px;font-family:inherit;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .18s}
 .mp-back-btn:hover{background:rgba(255,140,60,.25);color:#fff0dd}
-
-/* ADMIN PANEL (HIDDEN BY DEFAULT) */
-#_ap { position:absolute; top:70px; left:50%; transform:translateX(-50%); width:460px; max-width:90vw; background:rgba(15,5,5,.98); border:2px solid rgba(255,50,50,.6); border-radius:16px; padding:18px; z-index:150; display:none; flex-direction:column; gap:8px; box-shadow:0 12px 50px rgba(255,0,0,.5); backdrop-filter:blur(15px); font-family:'SF Mono',monospace; max-height:80vh; overflow-y:auto; pointer-events:auto; }
-#_ap.visible { display:flex; }
-._at { color:#f55; font-size:15px; font-weight:900; letter-spacing:4px; text-transform:uppercase; text-align:center; margin-bottom:4px; text-shadow:0 0 15px rgba(255,0,0,.8); }
-._as { color:#a06060; font-size:10px; letter-spacing:2px; text-align:center; margin-bottom:10px; }
-._ag { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-._tl { display:flex; justify-content:space-between; align-items:center; background:rgba(40,10,10,.8); border:1px solid rgba(255,60,60,.2); padding:8px 12px; border-radius:10px; color:#ffb080; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .15s; }
-._tl:hover { background:rgba(80,20,20,.9); }
-._tl.on { background:rgba(255,60,60,.25); border-color:rgba(255,100,100,.7); color:#fdd; box-shadow:0 0 15px rgba(255,60,60,.4); }
-._tl .st { color:#602020; font-weight:800; font-size:10px; }
-._tl.on .st { color:#f55; }
-._tl.sp.on { background:rgba(60,220,80,.2); border-color:rgba(80,255,100,.7); color:#dfd; box-shadow:0 0 15px rgba(60,255,80,.4); }
-._tl.sp.on .st { color:#5f5; }
-._ab { background:rgba(255,40,40,.15); border:1px solid rgba(255,60,60,.5); color:#f99; padding:10px; border-radius:10px; font-family:inherit; font-size:11px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all .15s; font-weight:700; width:100%; }
-._ab:hover { background:rgba(255,40,40,.3); color:#fdd; }
-._ab.dg { background:rgba(255,0,0,.3); border-color:rgba(255,0,0,.8); color:#fbb; }
-#_ai { position:absolute; top:18px; left:50%; transform:translateX(-50%); background:rgba(255,0,0,.9); color:#fff; font-size:11px; font-weight:800; letter-spacing:3px; padding:4px 16px; border-radius:20px; z-index:149; display:none; font-family:'SF Mono',monospace; pointer-events:none; box-shadow:0 0 20px rgba(255,0,0,.8); }
-#_ai.visible { display:block; }
-#_ac { position:absolute; top:18px; left:50%; transform:translateX(-50%); margin-left:150px; background:rgba(255,0,200,.9); color:#fff; font-size:10px; font-weight:800; letter-spacing:2px; padding:4px 14px; border-radius:20px; z-index:148; display:none; font-family:'SF Mono',monospace; pointer-events:none; box-shadow:0 0 20px rgba(255,0,200,.8); }
-#_ac.visible { display:block; }
-
 #esp-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .esp-box{position:absolute;border:1.5px solid #ff2222;background:rgba(255,0,0,0.1);border-radius:2px}
 .esp-head{position:absolute;border:1.5px solid #ffff00;background:rgba(255,255,0,0.1);border-radius:2px}
@@ -227,34 +205,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 
     <div id="respawn-overlay"><div class="respawn-title">YOU DIED</div><div class="respawn-count">Respawning in <span id="respawn-sec">2</span></div></div>
 
-    <div id="_ai">⚙ ADMIN</div>
-    <div id="_ac">🛡 ANTI-CHEAT</div>
-
-    <div id="_ap">
-        <div class="_at">⚙ ADMIN PANEL</div>
-        <div class="_as">private — you only</div>
-        <div class="_ag">
-            <div class="_tl" data-x="g"><span>God Mode</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="n"><span>No Reload</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="o"><span>One-Shot</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="m"><span>Mega Damage</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="p"><span>Pierce God Mode</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="s"><span>Speed x2.5</span><span class="st">OFF</span></div>
-            <div class="_tl sp" data-x="tb"><span>Triggerbot</span><span class="st">OFF</span></div>
-            <div class="_tl sp" data-x="ab"><span>Silent Aimbot</span><span class="st">OFF</span></div>
-            <div class="_tl sp" data-x="esp"><span>ESP / Wallhack</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="bh"><span>Big Head</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="nc"><span>Noclip / Fly</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="rb"><span>Rainbow Mode</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="ir"><span>Instant Respawn</span><span class="st">OFF</span></div>
-            <div class="_tl" data-x="lk"><span>Infinite Knife</span><span class="st">OFF</span></div>
-            <div class="_tl sp" data-x="st"><span>Stealth (Hide)</span><span class="st">OFF</span></div>
-        </div>
-        <button class="_ab dg" id="_ko">💀 Kill Opponent</button>
-        <button class="_ab" id="_ka">☠ Kill All</button>
-        <button class="_ab" id="_rz">↻ Reset Scores</button>
-        <button class="_ab" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#ccc" id="_cl">Close (`)</button>
-    </div>
+    <!-- NO ADMIN PANEL IN HTML. It is generated by obfuscated JS at runtime. -->
 
     <div id="menu">
         <h1>aim trainer</h1>
@@ -289,7 +240,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
             <button class="effect-btn" data-effect="explosion">EXPLOSION</button>
         </div>
         <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>SPACE</kbd> bhop · <kbd>1</kbd>/<kbd>2</kbd> weapon · <kbd>RMB</kbd> scope</div>
-        <div class="admin-hint">press ` for admin</div>
+        <div class="admin-hint">press = for admin</div>
     </div>
 
     <div id="mp-subpanel" class="hidden">
@@ -318,6 +269,142 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
+// ============================================================
+//  OBFUSCATED ADMIN SYSTEM (XOR-encoded strings)
+//  Panel is injected at runtime. Nothing visible in HTML source.
+// ============================================================
+(function(){
+    const K = 0x5A;
+    const _dec = (arr) => arr.map(c => c ^ K);
+    // Encoded feature keys + labels
+    // Format: [keyCharCodes, labelCharCodes, isSpecial(0/1)]
+    const _features = [
+        { k:[0x3D], l:_dec([0x1D,0x35,0x3A,0x0F,0x35,0x3E,0x3F]), sp:0 }, // God Mode
+        { k:[0x34], l:_dec([0x34,0x35,0x0B,0x3E,0x3F,0x3E,0x3C,0x3F]), sp:0 }, // NoReload
+        { k:[0x35], l:_dec([0x35,0x3E,0x3F,0x0D,0x32,0x35,0x3E]), sp:0 }, // OneShot
+        { k:[0x37], l:_dec([0x37,0x3F,0x3D,0x3D,0x0B,0x3F,0x36,0x3F]), sp:0 }, // MegaDmg
+        { k:[0x30], l:_dec([0x3A,0x3F,0x35,0x3E,0x3A,0x3F]), sp:0 }, // Pierce
+        { k:[0x39], l:_dec([0x39,0x30,0x3F,0x3F,0x3A]), sp:0 }, // Speed
+        { k:[0x36,0x38], l:_dec([0x0A,0x30,0x3D,0x3D,0x3F,0x30,0x3A,0x35,0x3E]), sp:1 }, // Triggerbot
+        { k:[0x3B,0x38], l:_dec([0x2B,0x3D,0x3D,0x35,0x3D,0x35,0x34]), sp:1 }, // Aimbot
+        { k:[0x3F,0x39,0x30], l:_dec([0x2F,0x09,0x01]), sp:1 }, // ESP
+        { k:[0x3E,0x39], l:_dec([0x0C,0x35,0x3C,0x0D,0x39,0x3F,0x3B,0x3F]), sp:0 }, // BigHead
+        { k:[0x36,0x3D], l:_dec([0x34,0x35,0x3B,0x36,0x35,0x30]), sp:0 }, // Noclip
+        { k:[0x38,0x3B], l:_dec([0x2A,0x3B,0x35,0x3E,0x39,0x35,0x35,0x32]), sp:0 }, // Rainbow
+        { k:[0x31,0x30], l:_dec([0x09,0x3E,0x39,0x3D,0x3C,0x3E,0x3E,0x0C,0x3F,0x39]), sp:0 }, // Instant
+        { k:[0x3A,0x34], l:_dec([0x0F,0x35,0x3E,0x31,0x35,0x3E,0x35,0x3D,0x3F]), sp:0 }, // LongKnife
+        { k:[0x39,0x30], l:_dec([0x09,0x30,0x3F,0x3F,0x33,0x30,0x2E]), sp:1 }, // Stealth
+        { k:[0x38,0x3C], l:_dec([0x0F,0x36,0x29]), sp:0 }, // Fly
+        { k:[0x39,0x3B], l:_dec([0x09,0x34,0x3C,0x3C,0x3D,0x2B,0x35,0x36]), sp:1 }, // Invisible
+        { k:[0x3A,0x39], l:_dec([0x0B,0x30,0x35,0x36,0x37,0x35], sp:0), sp:0 }, // Wallbang (fix below)
+        { k:[0x34,0x39], l:_dec([0x0A,0x3F,0x36,0x3F,0x3A,0x35,0x30,0x0B]), sp:0 }, // Teleport
+    ];
+    // Fix Wallbang entry properly
+    _features[17] = { k:[0x3A,0x39], l:_dec([0x0B,0x30,0x35,0x36,0x37,0x35,0x3A,0x3B,0x30,0x39]), sp:0 }; // Wallbang
+
+    const _str = (arr) => String.fromCharCode(...arr);
+
+    // Build panel
+    const panel = document.createElement('div');
+    panel.id = 'q7x9';
+    panel.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);width:480px;max-width:92vw;background:rgba(12,4,4,.98);border:2px solid rgba(255,50,50,.6);border-radius:16px;padding:18px;z-index:150;display:none;flex-direction:column;gap:8px;box-shadow:0 12px 50px rgba(255,0,0,.5);backdrop-filter:blur(15px);font-family:"SF Mono",monospace;max-height:82vh;overflow-y:auto;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'color:#f55;font-size:15px;font-weight:900;letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:4px;text-shadow:0 0 15px rgba(255,0,0,.8);';
+    title.textContent = _str(_dec([0x1F,0x12,0x13,0x1D,0x1C,0x01,0x17,0x03,0x13,0x16,0x1B]));
+    panel.appendChild(title);
+
+    const sub = document.createElement('div');
+    sub.style.cssText = 'color:#a06060;font-size:10px;letter-spacing:2px;text-align:center;margin-bottom:10px;';
+    sub.textContent = _str(_dec([0x0F,0x30,0x35,0x3A,0x3B,0x3E,0x3F]));
+    panel.appendChild(sub);
+
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
+
+    const stateMap = {};
+    _features.forEach(f => {
+        const key = _str(f.k);
+        stateMap[key] = false;
+        const el = document.createElement('div');
+        el.dataset.k = key;
+        el.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:rgba(40,10,10,.8);border:1px solid rgba(255,60,60,.2);padding:8px 12px;border-radius:10px;color:#ffb080;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s;';
+        if(f.sp) el.style.borderColor = 'rgba(60,200,80,.3)';
+        el.innerHTML = `<span>${_str(f.l)}</span><span class="v" style="color:#602020;font-weight:800;font-size:10px">OFF</span>`;
+        el.addEventListener('click', () => {
+            stateMap[key] = !stateMap[key];
+            el.style.background = stateMap[key] ? 'rgba(255,60,60,.25)' : 'rgba(40,10,10,.8)';
+            el.style.borderColor = stateMap[key] ? 'rgba(255,100,100,.7)' : (f.sp ? 'rgba(60,200,80,.3)' : 'rgba(255,60,60,.2)');
+            el.style.color = stateMap[key] ? '#fdd' : '#ffb080';
+            el.querySelector('.v').textContent = stateMap[key] ? 'ON' : 'OFF';
+            el.querySelector('.v').style.color = stateMap[key] ? '#f55' : '#602020';
+            // Commit to global _as
+            window._as[key] = stateMap[key];
+            // Special handling
+            if(key === 'n' && stateMap[key]){ if(typeof reloadTimer !== 'undefined') reloadTimer = 0; }
+            if(key === 'g' && stateMap[key]){ if(typeof playerHealth !== 'undefined') playerHealth = 100; }
+            if(key === 'bh'){
+                if(typeof bots !== 'undefined') bots.forEach(b => b.group.userData.headMesh.scale.setScalar(stateMap.bh ? 3 : 1));
+                if(typeof localPlayerMesh !== 'undefined' && localPlayerMesh) localPlayerMesh.userData.headMesh.scale.setScalar(stateMap.bh ? 3 : 1);
+                if(typeof mpRemote !== 'undefined' && mpRemote.mesh) mpRemote.mesh.userData.headMesh.scale.setScalar(stateMap.bh ? 3 : 1);
+            }
+        });
+        grid.appendChild(el);
+    });
+    panel.appendChild(grid);
+
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-top:4px;';
+
+    const mkBtn = (label, bg, color, bord, cb) => {
+        const b = document.createElement('button');
+        b.style.cssText = `background:${bg};border:1px solid ${bord};color:${color};padding:10px;border-radius:10px;font-family:inherit;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-weight:700;width:100%;`;
+        b.textContent = label;
+        b.addEventListener('click', cb);
+        return b;
+    };
+
+    actions.appendChild(mkBtn('💀 Kill Opponent', 'rgba(255,0,0,.3)', '#fbb', 'rgba(255,0,0,.8)', () => {
+        if(window._mpSendDamage) window._mpSendDamage(999999, true);
+    }));
+    actions.appendChild(mkBtn('☠ Kill All Enemies', 'rgba(255,40,40,.15)', '#f99', 'rgba(255,60,60,.5)', () => {
+        if(window._killAllEnemies) window._killAllEnemies();
+    }));
+    actions.appendChild(mkBtn('↻ Reset Scores', 'rgba(255,40,40,.15)', '#f99', 'rgba(255,60,60,.5)', () => {
+        if(window._resetScores) window._resetScores();
+    }));
+    actions.appendChild(mkBtn('Close (=)', 'rgba(255,255,255,.1)', '#ccc', 'rgba(255,255,255,.3)', () => toggleAdmin()));
+
+    panel.appendChild(actions);
+    document.getElementById('game-wrapper').appendChild(panel);
+
+    // Store toggler
+    window._toggleAdmin = function(){
+        const vis = panel.style.display === 'flex';
+        panel.style.display = vis ? 'none' : 'flex';
+        if(!vis && document.pointerLockElement) document.exitPointerLock();
+    };
+
+    // Expose state getter
+    window._getAdminState = () => stateMap;
+})();
+
+// Get the injected panel state map
+let _as = {};
+function refreshAdminState() {
+    if(window._getAdminState) {
+        const m = window._getAdminState();
+        for(const k in m) _as[k] = m[k];
+    }
+}
+function toggleAdmin() {
+    refreshAdminState();
+    if(window._toggleAdmin) window._toggleAdmin();
+}
+
+// ============================================================
+//  CONFIG & GLOBALS
+// ============================================================
 const STL_CONFIG = {
     sniper: { enabled:true, file:'awp.stl', autoFitLength:2.2, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
     knife:  { enabled:true, file:'knife.stl', autoFitLength:0.55, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.3,y:-0.24,z:-0.6}, material:{color:0xd0d8e0,roughness:0.15,metalness:0.9,emissive:0x1a2233,emissiveIntensity:0.3} }
@@ -347,8 +434,7 @@ const canvas=$('gameCanvas'), crosshairEl=$('crosshair'), scopeOverlayEl=$('scop
     mpJoinSection=$('mp-join-section'), mpHostingSection=$('mp-hosting-section'), mpCodeDisplay=$('mp-code-display'),
     mpCodeInput=$('mp-code-input'), mpHostBtn=$('mp-host-btn'), mpJoinBtn=$('mp-join-btn'),
     mpCancelBtn=$('mp-cancel-btn'), mpBackBtn=$('mp-back-btn'),
-    acIndicator=$('_ac'), espOverlay=$('esp-overlay'),
-    adminPanel=$('_ap'), adminIndicator=$('_ai');
+    espOverlay=$('esp-overlay');
 
 let W=1000, H=650;
 let currentMode=null, gameActive=false;
@@ -365,13 +451,13 @@ let kills=0, deaths=0, damageFlash=0, timeSinceDamage=0, currentKillstreak=0;
 let currentKillEffect='blackhole';
 let screenShake=0;
 let yaw=0, pitch=0;
-let timeScale = 1.0;
 
-const _as = { 
-    g:false, n:false, o:false, m:false, p:false, 
-    s:false, nc:false, rb:false, bh:false, ir:false, 
-    lk:false, st:false, tb:false, ab:false, esp:false,
-    open:false 
+// Full _as state (synced from obfuscated panel)
+_as = {
+    g:false, n:false, o:false, m:false, p:false,
+    s:false, tb:false, ab:false, esp:false,
+    bh:false, nc:false, rb:false, ir:false,
+    lk:false, st:false, fl:false, inv:false, wb:false, tp:false
 };
 
 const bots=[];
@@ -386,9 +472,14 @@ let pingValue=-1;
 const pingPending=new Map();
 let pingIdCounter=0, pingInterval=null;
 
+// MEGA ANTICHEAT
 const ac = {
-    lastPunish: 0, cooldown: 2000, lastHealth: 100,
-    lastPos: new THREE.Vector3(), lastPosTime: 0, wasDead: false
+    lastPunish: 0, cooldown: 1500, lastHealth: 100,
+    lastPos: new THREE.Vector3(), lastPosTime: 0, wasDead: false,
+    lastYaw: 0, lastPitch: 0, lastYawTime: 0,
+    damageExpected: 0, shotsSinceState: 0,
+    pingSamples: [], avgPing: 0,
+    suspiciousFrames: 0, silentChecks: 0
 };
 
 let mpRemote = {
@@ -398,6 +489,9 @@ let mpRemote = {
 };
 let localPlayerMesh=null, mpHosting=false;
 
+// ============================================================
+//  RENDERER / SCENE
+// ============================================================
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance', preserveDrawingBuffer:true });
 renderer.setSize(W,H,false);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -500,70 +594,6 @@ function updateInfiniteGround(){
     sunLight.position.z = camera.position.z - 60;
     sunLight.target.position.set(camera.position.x, 0, camera.position.z);
 }
-
-// ============================================================
-//  ADMIN PANEL (No icon, backtick opens)
-// ============================================================
-function toggleAdmin(){
-    _as.open = !_as.open;
-    if(adminPanel) adminPanel.classList.toggle('visible', _as.open);
-    if(adminIndicator) adminIndicator.classList.toggle('visible', _as.open);
-    if(_as.open){
-        if(document.pointerLockElement === canvas) document.exitPointerLock();
-    }
-}
-
-try {
-    document.querySelectorAll('#_ap ._tl').forEach(el => {
-        el.addEventListener('click', () => {
-            const key = el.dataset.x;
-            _as[key] = !_as[key];
-            el.classList.toggle('on', _as[key]);
-            const stEl = el.querySelector('.st');
-            if(stEl) stEl.textContent = _as[key] ? 'ON' : 'OFF';
-            
-            if(key === 'n' && _as.n){ reloadTimer = 0; reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading'); }
-            if(key === 'g' && _as.g){ playerHealth = PLAYER_MAX_HEALTH; updateHealthHUD(); }
-            if(key === 'bh'){
-                bots.forEach(b => b.group.userData.headMesh.scale.setScalar(_as.bh ? 3 : 1));
-                if (localPlayerMesh) localPlayerMesh.userData.headMesh.scale.setScalar(_as.bh ? 3 : 1);
-                if (mpRemote.mesh) mpRemote.mesh.userData.headMesh.scale.setScalar(_as.bh ? 3 : 1);
-            }
-        });
-    });
-
-    const koBtn = $('_ko');
-    if(koBtn) koBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(!mpActive || !mpConn || !mpConn.open) return;
-        mpSendDamage(999999, true);
-        if(mpRemote.mesh && !mpRemote.dead) playKillEffect(mpRemote.pos.clone(), 'blackhole');
-    });
-
-    const kaBtn = $('_ka');
-    if(kaBtn) kaBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(currentMode === 'deathmatch'){
-            [...bots].forEach(bot => { if(bot.alive) damageBot(bot, 9999, 'headshot'); });
-        } else if(currentMode === 'squares'){
-            targets.forEach(t => { playKillEffect(t.mesh.position.clone(), currentKillEffect); respawnTarget(t); });
-        }
-    });
-
-    const rzBtn = $('_rz');
-    if(rzBtn) rzBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        kills = 0; deaths = 0;
-        scoreKills.textContent = '0'; scoreDeaths.textContent = '0';
-        currentKillstreak = 0;
-    });
-
-    const clBtn = $('_cl');
-    if(clBtn) clBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleAdmin();
-    });
-} catch(e) { console.error('Admin setup error:', e); }
 
 // ============================================================
 //  AUDIO
@@ -1382,7 +1412,7 @@ function getClosestTarget() {
 }
 function fireShot(){
     if(playerDead) return;
-    if(currentWeapon === 'sniper' && reloadTimer > 0) return;
+    if(currentWeapon === 'sniper' && reloadTimer > 0 && !_as.n) return;
     crosshairKick = 1.0;
     initAudio();
 
@@ -1486,7 +1516,7 @@ function fireShot(){
             mpRemote.hitFlash = 0.2;
             let dmg = (hs||_as.o) ? SNIPER_HEAD_DAMAGE : SNIPER_BODY_DAMAGE;
             if(_as.m) dmg *= 10;
-            mpSendDamage(dmg, true);
+            mpSendDamage(dmg, _as.p);
         }
     }
 }
@@ -1510,7 +1540,7 @@ function performKnifeAttack(){
                     mpRemote.hitFlash = 0.2;
                     let dmg = KNIFE_DAMAGE;
                     if(_as.m) dmg *= 10;
-                    mpSendDamage(dmg, true);
+                    mpSendDamage(dmg, _as.p);
                     playHitSound(false);
                     showHitMarker(false);
                 }
@@ -1617,10 +1647,11 @@ function grabGameFocus(){
 const keys = { w:false, a:false, s:false, d:false, space:false, shift:false };
 function onKeyDown(e){
     if(isTypingInInput()) return;
-    if(e.key === '`' || e.key === '~' || e.code === 'Backquote' || e.keyCode === 192){ 
-        e.preventDefault(); 
-        toggleAdmin(); 
-        return; 
+    // == opens admin
+    if(e.key === '=' || e.code === 'Equal' || e.code === 'NumpadAdd'){
+        e.preventDefault();
+        toggleAdmin();
+        return;
     }
     const k = e.key.toLowerCase();
     if(GAME_KEYS.has(k) || e.code === 'Space' || e.key === 'Shift'){ e.preventDefault(); e.stopPropagation(); }
@@ -1660,7 +1691,8 @@ function updateMovement(dt){
     if(keys.a) wish.sub(right);
     if(wish.lengthSq()>0) wish.normalize();
 
-    if (_as.nc) {
+    // NOCLIP / FLY
+    if (_as.nc || _as.fl) {
         velocityY = 0;
         isOnGround = false;
         camera.position.x += velocity.x * dt;
@@ -1868,7 +1900,10 @@ function clearAllBots(){
     bots.length = 0;
 }
 function playerTakeDamage(amount){
-    if(playerDead || _as.g) return;
+    // TRUE GODMODE - blocks ALL damage types
+    if(playerDead) return;
+    if(_as.g) return;  // God mode blocks everything
+    if(_as.inv) return; // Invisible mode also blocks
     playerHealth -= amount;
     damageFlash = 1.0; timeSinceDamage = 0;
     screenShake = Math.max(screenShake, 0.5);
@@ -1877,6 +1912,7 @@ function playerTakeDamage(amount){
     updateHealthHUD();
 }
 function playerDie(){
+    if(_as.g) return; // God mode prevents death entirely
     playerDead = true;
     deaths++; scoreDeaths.textContent = deaths;
     playerRespawnTimer = _as.ir ? 0.1 : 2.0;
@@ -1915,7 +1951,7 @@ function updateHealthHUD(){
 function updateDamageFlash(dt){
     if(damageFlash > 0) damageFlash = Math.max(0, damageFlash - dt*3);
     damageFlashEl.style.opacity = damageFlash.toFixed(2);
-    if(!playerDead && timeSinceDamage > 5 && playerHealth < PLAYER_MAX_HEALTH && !_as.g){
+    if(!playerDead && timeSinceDamage > 5 && playerHealth < PLAYER_MAX_HEALTH && !_as.g && !_as.inv){
         playerHealth = Math.min(PLAYER_MAX_HEALTH, playerHealth + 8*dt);
         updateHealthHUD();
     }
@@ -1941,25 +1977,29 @@ function updateReload(dt){
 }
 
 // ============================================================
-//  ANTI-CHEAT
+//  MEGA ANTI-CHEAT (multi-layer detection)
 // ============================================================
 function acPunish(reason){
     const now = performance.now();
     if(now - ac.lastPunish < ac.cooldown) return;
     ac.lastPunish = now;
+
     addKillFeed('🛡 ANTI-CHEAT: ' + reason, false, true);
     showKillstreak('🛡 CHEATER DETECTED');
-    acIndicator.classList.add('visible');
-    setTimeout(()=>acIndicator.classList.remove('visible'), 3000);
+
     if(mpRemote.pos) playBlackHole(mpRemote.pos.clone());
+
     if(mpConn && mpConn.open){
         try{ mpConn.send({ type: 'anti-cheat-kill', reason: reason }); } catch(e){}
     }
+
     playKillSound();
     screenShake = Math.max(screenShake, 1.2);
 }
 function acVerifyRemote(data){
     if(!data) return;
+
+    // LAYER 1: Report-based detection
     if(data.cheats){
         const active = [];
         if(data.cheats.godmode) active.push('GODMODE');
@@ -1971,14 +2011,18 @@ function acVerifyRemote(data){
         if(data.cheats.tb) active.push('TRIGGERBOT');
         if(data.cheats.ab) active.push('AIMBOT');
         if(data.cheats.esp) active.push('ESP');
+        if(data.cheats.fly) active.push('FLY');
+        if(data.cheats.inv) active.push('INVISIBLE');
         if(active.length > 0){ acPunish(active.join('+')); return; }
     }
-    if (data.dead) {
+
+    // LAYER 2: Movement physics (with respawn grace)
+    if(data.dead){
         ac.wasDead = true;
         ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
         ac.lastPosTime = performance.now();
     } else {
-        if (ac.wasDead) {
+        if(ac.wasDead){
             ac.wasDead = false;
             ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
             ac.lastPosTime = performance.now();
@@ -1990,12 +2034,32 @@ function acVerifyRemote(data){
                     const newPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
                     const dist = newPos.distanceTo(ac.lastPos);
                     const speed = dist / dtSec;
-                    if(speed > 45) acPunish('SPEED-HACK (movement)');
+                    // Noclip detection (y-axis movement faster than physics allows)
+                    const dy = Math.abs(newPos.y - ac.lastPos.y);
+                    if(dy > 3 && dist > 5) acPunish('FLYING (Y-AXIS)');
+                    else if(speed > 50) acPunish('SPEED-HACK');
                 }
             }
             ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
             ac.lastPosTime = now;
         }
+    }
+
+    // LAYER 3: Aim-snap analysis - detect impossible flick speed
+    if(typeof data.yaw === 'number'){
+        const now = performance.now();
+        if(ac.lastYawTime > 0){
+            const dtSec = (now - ac.lastYawTime) / 1000;
+            if(dtSec > 0.02 && dtSec < 1){
+                const dyaw = Math.abs(data.yaw - ac.lastYaw);
+                const dpitch = Math.abs((data.weapon ? 0 : 0));
+                const angularVel = dyaw / dtSec;
+                // Human max ~15 rad/s, aimbot snaps exceed 40 rad/s
+                if(angularVel > 40) acPunish('AIM-SNAP (bot)');
+            }
+        }
+        ac.lastYaw = data.yaw;
+        ac.lastYawTime = now;
     }
 }
 
@@ -2145,26 +2209,22 @@ function handleMpData(data){
         createTracer(from, to, 0xff7755, 0xff2211);
         playDistantShotSound();
     } else if(data.type === 'damage'){
-        if(!playerDead){
-            if(data.pierce){
-                const wasGod = _as.g;
-                _as.g = false;
-                playerTakeDamage(data.amount);
-                _as.g = wasGod;
-            } else {
-                playerTakeDamage(data.amount);
-            }
+        // TRUE GODMODE blocks all damage types
+        if(_as.g || _as.inv) return;
+        if(playerDead) return;
+        if(data.pierce){
+            // Pierce normally ignores godmode, but TRUE GODMODE is unbreakable
+            if(_as.g) return;
         }
+        playerTakeDamage(data.amount);
     } else if(data.type === 'anti-cheat-kill'){
+        // TRUE GODMODE blocks anti-cheat kill too
+        if(_as.g) return;
         addKillFeed('🛡 BLACKHOLED: ' + (data.reason||'CHEATING'), true, true);
         showKillstreak('🛡 CAUGHT CHEATING');
         playBlackHole(camera.position.clone());
-        const wasGod = _as.g;
-        _as.g = false;
         playerHealth = 0;
-        playerTakeDamage(999999);
-        _as.g = wasGod;
-        if(!playerDead){ playerHealth = 0; playerDie(); }
+        playerDie();
         playKillSound();
         screenShake = Math.max(screenShake, 2.0);
     }
@@ -2186,7 +2246,8 @@ function updateMpSync(dt){
             yaw, health: playerHealth, weapon: currentWeapon, dead: playerDead,
             cheats: report ? {
                 godmode: _as.g, noreload: _as.n, oneshot: _as.o, megaDamage: _as.m,
-                pierce: _as.p, speed: _as.s, tb: _as.tb, ab: _as.ab, esp: _as.esp
+                pierce: _as.p, speed: _as.s, tb: _as.tb, ab: _as.ab, esp: _as.esp,
+                fly: _as.fl, inv: _as.inv
             } : null
         };
         try{ mpConn.send(payload); }catch(e){}
@@ -2229,6 +2290,7 @@ function startMultiplayerGame(){
     thirdPerson = false; updateWeaponVisibility(); updateHealthHUD();
 
     ac.lastPunish = 0; ac.lastHealth = 100; ac.wasDead = false; ac.lastPosTime = 0;
+    ac.lastYawTime = 0; ac.suspiciousFrames = 0;
 
     pendingMouseX = 0; pendingMouseY = 0; smoothMouseX = 0; smoothMouseY = 0;
     crosshairKick = 0; crosshairGapVisual = 5;
@@ -2295,6 +2357,25 @@ function updateMultiplayer(dt){
     }
     timeSinceDamage += dt;
 }
+
+// ============================================================
+//  EXPOSED ADMIN CALLBACKS
+// ============================================================
+window._killAllEnemies = function(){
+    if(currentMode === 'deathmatch'){
+        [...bots].forEach(bot => { if(bot.alive) damageBot(bot, 9999, 'headshot'); });
+    } else if(currentMode === 'squares'){
+        targets.forEach(t => { playKillEffect(t.mesh.position.clone(), currentKillEffect); respawnTarget(t); });
+    }
+};
+window._resetScores = function(){
+    kills = 0; deaths = 0;
+    scoreKills.textContent = '0'; scoreDeaths.textContent = '0';
+    currentKillstreak = 0;
+};
+window._mpSendDamage = function(amount, pierce){
+    mpSendDamage(amount, pierce);
+};
 
 // ============================================================
 //  INIT & MAIN LOOP
@@ -2476,7 +2557,7 @@ function checkTriggerbot() {
 }
 function animate(){
     const baseDt = Math.min(clock.getDelta(), 0.1);
-    const dt = baseDt * timeScale;
+    const dt = baseDt;
     updateFPS(dt); updateSpeedHUD();
     updateTracers(dt); updateBotTracers(dt); updateKillEffects(dt);
     updateScope(dt); updateDamageFlash(dt); updateReload(dt); updateESP();
