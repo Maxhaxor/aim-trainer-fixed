@@ -204,7 +204,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
         <div class="weapon-slot" data-weapon="knife"><div class="slot-key">2</div><div class="slot-name">KNIFE</div></div>
     </div>
 
-    <div class="hint" id="hint"><kbd>WASD</kbd> · <kbd>SPACE</kbd> bhop · <kbd>V</kbd> body view · <kbd>RMB</kbd> scope · <kbd>1</kbd>/<kbd>2</kbd> weapon · <kbd>LMB</kbd> shoot</div>
+    <div class="hint" id="hint"><kbd>WASD</kbd> · <kbd>SPACE</kbd> bhop · <kbd>V</kbd> 3rd person · <kbd>RMB</kbd> scope · <kbd>1</kbd>/<kbd>2</kbd> weapon · <kbd>LMB</kbd> shoot</div>
 
     <div id="mode-indicator"></div>
     <button id="back-btn">← menu</button>
@@ -253,7 +253,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
             <button class="effect-btn active" data-effect="blackhole">BLACK HOLE</button>
             <button class="effect-btn" data-effect="explosion">EXPLOSION</button>
         </div>
-        <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>V</kbd> body view · <kbd>1</kbd>/<kbd>2</kbd> weapon</div>
+        <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>V</kbd> 3rd person · <kbd>1</kbd>/<kbd>2</kbd> weapon</div>
         <div class="admin-hint">press \ for admin</div>
     </div>
 
@@ -294,11 +294,11 @@ window._as = {
     ir:false, inv:false, bh:false, lk:false, shield:false, fr:false, kaura:false, forcepush:false, forcepull:false,
     tpspawn:false, tprandom:false, st:false,
     rb:false, slowmo:false, fastgame:false, tp:false, wb:false, invertc:false, rainbowworld:false, neon:false, blackout:false, lowpoly:false, mirror:false,
-    ac:true, autoban:true, debug:false
+    ac:true, autoban:false, debug:false
 };
 
 // ============================================================
-//  ADMIN PANEL v12 — clean tabs
+//  ADMIN PANEL v12
 // ============================================================
 (function(){
     'use strict';
@@ -506,7 +506,8 @@ const STL_CONFIG = {
     sniper: { autoFitLength:2.2, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
     knife:  { autoFitLength:0.55, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.3,y:-0.24,z:-0.6}, material:{color:0xd0d8e0,roughness:0.15,metalness:0.9,emissive:0x1a2233,emissiveIntensity:0.3} }
 };
-const BASE_GRAVITY=20, JUMP_VELOCITY=7.5, MOVE_SPEED=6, GROUND_ACCEL=10, FRICTION=5.2, BHOP_BONUS=0.2, AIR_ACCEL=7, AIR_WISH_CAP=1.2, GROUND_Y=1.7;
+const BASE_GRAVITY=20, JUMP_VELOCITY=7.5, MOVE_SPEED=6, GROUND_ACCEL=10, FRICTION=5.2, BHOP_BONUS=0.2, AIR_ACCEL=7, AIR_WISH_CAP=1.2;
+const CAMERA_HEIGHT = 1.7;
 const NORMAL_FOV=75, SCOPED_FOV=40, SCOPE_SENS_MULT=0.55;
 const PLAYER_MAX_HEALTH=100, BOT_MAX_HEALTH=100;
 const KNIFE_RANGE=3.0, KNIFE_DAMAGE=50, KNIFE_COOLDOWN=0.45;
@@ -555,7 +556,9 @@ let jumpCount=0;
 let bannedState=false;
 let rainbowHue=0;
 
-// === NEW: local player body + contact shadow ===
+// Local player rig
+let cameraRig = new THREE.Group();
+let cameraPitchRig = new THREE.Group();
 let localPlayerMesh = null;
 let playerContactShadow = null;
 
@@ -594,12 +597,11 @@ function getClientToken(){
 //  ANTICHEAT
 // ============================================================
 const AC = {
-    enabled: true, autoBan: true, flagged: false, reason: '',
+    enabled: true, autoBan: false, flagged: false, reason: '',
     lastPos: new THREE.Vector3(), lastPosTime: 0,
     shotsInWindow: 0, shotsWindowStart: 0,
     adminDamages: [40, 100, 160, 400, 1000, 4000, 10000, 40000, 100000, 400000, 999999]
 };
-const CODE_SIG = 'v12-AIM2024AC';
 
 function acFlag(reason){
     if(AC.flagged) return;
@@ -644,7 +646,8 @@ function forceDie(reason){
     playerDead = true; playerHealth = 0; playerRespawnTimer = 2.0;
     respawnOverlay.classList.add('visible'); respawnSecEl.textContent = '2';
     stopShooting();
-    playBlackHole(camera.position.clone());
+    const pos = cameraRig.position.clone(); pos.y += 1.2;
+    playBlackHole(pos);
     deaths++; scoreDeaths.textContent = deaths;
     currentKillstreak = 0;
     addKillFeed('⛔ ' + (reason||'HACK DETECTED'), false, true);
@@ -661,6 +664,8 @@ function enterBannedState(reason){
     $('banned-overlay').classList.add('visible');
     if(localPlayerMesh) localPlayerMesh.visible = false;
     if(playerContactShadow) playerContactShadow.visible = false;
+    // Clear bans locally so it doesn't get stuck forever if they refresh
+    try { localStorage.removeItem(BANNED_KEY); } catch(e){}
     try { if(mpConn) mpConn.close(); } catch(e){}
 }
 
@@ -715,10 +720,16 @@ scene.add(sunSprite);
 
 scene.fog = new THREE.Fog(0xffa060, 40, 110);
 
+// Camera Rig
+scene.add(cameraRig);
+cameraRig.add(cameraPitchRig);
+cameraPitchRig.position.set(0, CAMERA_HEIGHT, 0);
+cameraPitchRig.add(camera);
+
 const camera = new THREE.PerspectiveCamera(NORMAL_FOV, W/H, 0.1, 500);
-camera.position.set(0, GROUND_Y, 8);
+// Note: we add camera to pitch rig below
+cameraPitchRig.add(camera);
 camera.rotation.order = 'YXZ';
-scene.add(camera);
 
 const viewLight = new THREE.PointLight(0xfff0d8, 2.2, 4, 2);
 viewLight.position.set(0.3,0.4,0.4);
@@ -761,13 +772,13 @@ grid.material.depthWrite = false;
 scene.add(grid);
 
 function updateInfiniteGround(){
-    const sx = Math.round(camera.position.x / GRID_CELL) * GRID_CELL;
-    const sz = Math.round(camera.position.z / GRID_CELL) * GRID_CELL;
+    const sx = Math.round(cameraRig.position.x / GRID_CELL) * GRID_CELL;
+    const sz = Math.round(cameraRig.position.z / GRID_CELL) * GRID_CELL;
     grid.position.x = sx; grid.position.z = sz;
     floor.position.x = sx; floor.position.z = sz;
-    sunLight.position.x = camera.position.x - 30;
-    sunLight.position.z = camera.position.z - 60;
-    sunLight.target.position.set(camera.position.x, 0, camera.position.z);
+    sunLight.position.x = cameraRig.position.x - 30;
+    sunLight.position.z = cameraRig.position.z - 60;
+    sunLight.target.position.set(cameraRig.position.x, 0, cameraRig.position.z);
 }
 
 // ============================================================
@@ -849,7 +860,7 @@ function spawnTarget(){
         const cA = Math.cos(ao), sA = Math.sin(ao);
         const dX = fwdX*cA - fwdZ*sA, dZ = fwdX*sA + fwdZ*cA;
         const d = TARGET_MIN_DIST + Math.random()*(TARGET_MAX_DIST-TARGET_MIN_DIST);
-        x = camera.position.x + dX*d; y = 1.0 + Math.random()*5.0; z = camera.position.z + dZ*d;
+        x = cameraRig.position.x + dX*d; y = 1.0 + Math.random()*5.0; z = cameraRig.position.z + dZ*d;
         let tooClose=false;
         for(const t of targets){
             const dx = t.mesh.position.x-x, dz = t.mesh.position.z-z;
@@ -1284,11 +1295,11 @@ function isHeadshotCheck(hitObj, hitPoint, basePos){
 function getClosestTarget(){
     let closest = null, minDist = 999;
     if (currentMode === 'deathmatch') {
-        bots.forEach(b => { if (!b.alive) return; const dist = camera.position.distanceTo(b.group.position); if (dist < minDist) { minDist = dist; closest = b.group; } });
+        bots.forEach(b => { if (!b.alive) return; const dist = cameraRig.position.distanceTo(b.group.position); if (dist < minDist) { minDist = dist; closest = b.group; } });
     } else if (currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead) {
         closest = mpRemote.mesh;
     } else if (currentMode === 'squares') {
-        targets.forEach(t => { const dist = camera.position.distanceTo(t.mesh.position); if (dist < minDist) { minDist = dist; closest = t.mesh; } });
+        targets.forEach(t => { const dist = cameraRig.position.distanceTo(t.mesh.position); if (dist < minDist) { minDist = dist; closest = t.mesh; } });
     }
     return closest;
 }
@@ -1306,6 +1317,7 @@ function fireShot(){
     }
     if(_as.autoscope && currentWeapon === 'sniper' && !isScoped && gameActive){
         isScoped = true;
+        if(thirdPerson) { thirdPerson = false; updateCameraMode(); }
         scopeOverlayEl.classList.add('visible');
         crosshairEl.classList.add('hidden');
         updateWeaponVisibility();
@@ -1338,7 +1350,7 @@ function fireShot(){
         const meshes = targets.map(t=>t.mesh);
         let ints = aimRaycaster.intersectObjects(meshes, false);
         if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && targets.length > 0){
-            const nearest = targets.reduce((a,b)=>camera.position.distanceTo(a.mesh.position) < camera.position.distanceTo(b.mesh.position) ? a : b);
+            const nearest = targets.reduce((a,b)=>cameraRig.position.distanceTo(a.mesh.position) < cameraRig.position.distanceTo(b.mesh.position) ? a : b);
             ints = [{ point: nearest.mesh.position.clone(), object: nearest.mesh }];
             aimRaycaster.ray.direction = nearest.mesh.position.clone().sub(camera.position).normalize();
         }
@@ -1360,7 +1372,7 @@ function fireShot(){
         if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && bots.length > 0){
             const aliveBots = bots.filter(b=>b.alive);
             if(aliveBots.length > 0){
-                const nearest = aliveBots.reduce((a,b)=>camera.position.distanceTo(a.group.position) < camera.position.distanceTo(b.group.position) ? a : b);
+                const nearest = aliveBots.reduce((a,b)=>cameraRig.position.distanceTo(a.group.position) < cameraRig.position.distanceTo(b.group.position) ? a : b);
                 aimRaycaster.ray.direction = nearest.group.position.clone().setY(nearest.group.position.y+1.2).sub(camera.position).normalize();
                 ints = aimRaycaster.intersectObjects([nearest.group], true);
                 if(ints.length === 0){
@@ -1441,7 +1453,7 @@ function performKnifeAttack(){
     const range = _as.lk ? 100 : KNIFE_RANGE;
     if(currentMode === 'multiplayer'){
         if(mpRemote.mesh && !mpRemote.dead){
-            const dx = mpRemote.pos.x - camera.position.x; const dz = mpRemote.pos.z - camera.position.z;
+            const dx = mpRemote.pos.x - cameraRig.position.x; const dz = mpRemote.pos.z - cameraRig.position.z;
             const dist = Math.hypot(dx,dz);
             if(dist <= range){
                 const n = new THREE.Vector3(dx,0,dz).normalize();
@@ -1461,7 +1473,7 @@ function performKnifeAttack(){
     if(currentMode === 'deathmatch'){
         for(const bot of bots){
             if(!bot.alive) continue;
-            const dx = bot.group.position.x - camera.position.x; const dz = bot.group.position.z - camera.position.z;
+            const dx = bot.group.position.x - cameraRig.position.x; const dz = bot.group.position.z - cameraRig.position.z;
             const dist = Math.hypot(dx,dz);
             if(dist > range) continue;
             const n = new THREE.Vector3(dx,0,dz).normalize();
@@ -1480,7 +1492,7 @@ function performKnifeAttack(){
         shots++;
         let closest = null, cdist = range;
         for(const t of targets){
-            const dx = t.mesh.position.x - camera.position.x; const dy = t.mesh.position.y - camera.position.y; const dz = t.mesh.position.z - camera.position.z;
+            const dx = t.mesh.position.x - cameraRig.position.x; const dy = t.mesh.position.y - (cameraRig.position.y + CAMERA_HEIGHT); const dz = t.mesh.position.z - cameraRig.position.z;
             const dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
             if(dist > cdist) continue;
             const n = new THREE.Vector3(dx,dy,dz).normalize();
@@ -1533,8 +1545,8 @@ function applyMouseLook(){
     else { yaw -= smoothMouseX*eff; pitch -= smoothMouseY*eff; }
     if(pitch > PITCH_LIMIT) pitch = PITCH_LIMIT;
     if(pitch < -PITCH_LIMIT) pitch = -PITCH_LIMIT;
-    camera.rotation.y = yaw;
-    camera.rotation.x = pitch;
+    cameraRig.rotation.y = yaw;
+    cameraPitchRig.rotation.x = pitch;
     pendingMouseX = 0; pendingMouseY = 0;
     smoothMouseX = 0; smoothMouseY = 0;
 }
@@ -1566,7 +1578,10 @@ function onKeyDown(e){
     if(k==='shift') keys.shift = true;
     if(k==='1') switchWeapon('sniper');
     if(k==='2') switchWeapon('knife');
-    if(k==='v'){ thirdPerson = !thirdPerson; updateWeaponVisibility(); }
+    if(k==='v'){ 
+        thirdPerson = !thirdPerson; 
+        updateCameraMode();
+    }
     if(e.code === 'Space' || k === ' ') keys.space = true;
 }
 function onKeyUp(e){
@@ -1598,10 +1613,10 @@ function updateMovement(dt){
     if (_as.nc || _as.fl) {
         velocityY = 0; isOnGround = false;
         velocity.set(wish.x*speedTarget, 0, wish.z*speedTarget);
-        camera.position.x += velocity.x * dt;
-        camera.position.z += velocity.z * dt;
-        if (keys.space) camera.position.y += 15 * dt;
-        if (keys.shift) camera.position.y -= 15 * dt;
+        cameraRig.position.x += velocity.x * dt;
+        cameraRig.position.z += velocity.z * dt;
+        if (keys.space) cameraRig.position.y += 15 * dt;
+        if (keys.shift) cameraRig.position.y -= 15 * dt;
         return;
     }
 
@@ -1638,16 +1653,20 @@ function updateMovement(dt){
         }
         velocityY -= GRAVITY*dt;
     }
-    camera.position.x += velocity.x*dt;
-    camera.position.z += velocity.z*dt;
-    camera.position.y += velocityY*dt;
-    if(camera.position.y <= GROUND_Y && !_as.zerograv){ camera.position.y = GROUND_Y; velocityY = 0; isOnGround = true; }
-    else if(camera.position.y > GROUND_Y) isOnGround = false;
+    cameraRig.position.x += velocity.x*dt;
+    cameraRig.position.z += velocity.z*dt;
+    cameraRig.position.y += velocityY*dt;
+    if(cameraRig.position.y <= 0 && !_as.zerograv){ cameraRig.position.y = 0; velocityY = 0; isOnGround = true; }
+    else if(cameraRig.position.y > 0) isOnGround = false;
 }
 
 function toggleScope(){
     if(!gameActive || currentWeapon !== 'sniper') return;
     isScoped = !isScoped;
+    if(isScoped && thirdPerson) {
+        thirdPerson = false;
+        updateCameraMode();
+    }
     scopeOverlayEl.classList.toggle('visible', isScoped);
     crosshairEl.classList.toggle('hidden', isScoped);
     updateWeaponVisibility();
@@ -1658,6 +1677,14 @@ function updateScope(dt){
     const diff = target - camera.fov;
     if(Math.abs(diff) > 0.05){ camera.fov += diff * Math.min(1, dt*14); camera.updateProjectionMatrix(); }
     else if(camera.fov !== target){ camera.fov = target; camera.updateProjectionMatrix(); }
+}
+function updateCameraMode(){
+    if(thirdPerson){
+        camera.position.set(0.5, 0.2, 3.5);
+    } else {
+        camera.position.set(0, 0, 0);
+    }
+    updateWeaponVisibility();
 }
 
 // ============================================================
@@ -1685,16 +1712,14 @@ function createHealthBar(){
     return { bg, fill };
 }
 
-// === NEW: local player body & contact shadow ===
 function ensureLocalPlayerMesh(){
     if(localPlayerMesh) return;
     localPlayerMesh = createPlayerMesh(0x3366cc);
     localPlayerMesh.userData.headMesh.userData.isHead = true;
-    localPlayerMesh.userData.headMesh.visible = false; // camera lives inside head
+    localPlayerMesh.userData.headMesh.visible = false; // hide own head
     localPlayerMesh.visible = false;
-    scene.add(localPlayerMesh);
+    cameraRig.add(localPlayerMesh);
 
-    // Contact shadow
     const cs = document.createElement('canvas');
     cs.width = 64; cs.height = 64;
     const c = cs.getContext('2d');
@@ -1712,18 +1737,14 @@ function ensureLocalPlayerMesh(){
     playerContactShadow.visible = false;
     scene.add(playerContactShadow);
 }
+
 function updateLocalPlayerMesh(){
     if(!localPlayerMesh) return;
-    const feetY = Math.max(-0.01, camera.position.y - GROUND_Y);
-    localPlayerMesh.position.set(camera.position.x, feetY, camera.position.z);
-    localPlayerMesh.rotation.y = yaw;
-    localPlayerMesh.visible = gameActive && !bannedState;
-    // Body's rifle only in third person (avoid double gun in FP)
-    if(localPlayerMesh.userData.rifle) localPlayerMesh.userData.rifle.visible = thirdPerson;
+    localPlayerMesh.visible = thirdPerson && gameActive && !bannedState;
+    
     if(playerContactShadow){
-        playerContactShadow.position.x = camera.position.x;
-        playerContactShadow.position.z = camera.position.z;
-        // Fades and shrinks when in air
+        playerContactShadow.position.set(cameraRig.position.x, 0.02, cameraRig.position.z);
+        const feetY = cameraRig.position.y;
         const shadowStrength = Math.max(0, 1 - feetY * 0.6);
         playerContactShadow.scale.setScalar(0.6 + shadowStrength * 0.4);
         playerContactShadow.material.opacity = shadowStrength * 0.9;
@@ -1734,7 +1755,7 @@ function updateLocalPlayerMesh(){
 function spawnBot(){
     if(bots.length >= MAX_BOTS) return;
     const a = Math.random()*Math.PI*2; const d = 14 + Math.random()*10;
-    const x = camera.position.x + Math.cos(a)*d; const z = camera.position.z + Math.sin(a)*d;
+    const x = cameraRig.position.x + Math.cos(a)*d; const z = cameraRig.position.z + Math.sin(a)*d;
     const group = createPlayerMesh(0x882222);
     if (_as.bh) group.userData.headMesh.scale.setScalar(3);
     group.position.set(x, 0, z); group.userData.isBot = true;
@@ -1747,8 +1768,8 @@ function spawnBot(){
 function updateBot(bot, dt){
     if(!bot.alive) return;
     bot.group.traverse(c => { if(c.material && c.material.depthTest !== undefined) c.material.depthTest = !(_as.wv || _as.xray); });
-    const dx = camera.position.x - bot.group.position.x;
-    const dz = camera.position.z - bot.group.position.z;
+    const dx = cameraRig.position.x - bot.group.position.x;
+    const dz = cameraRig.position.z - bot.group.position.z;
     const dist = Math.hypot(dx, dz);
     if(!_as.fr && dist > BOT_STOP_DIST){
         const n = new THREE.Vector3(dx, 0, dz).normalize();
@@ -1776,7 +1797,7 @@ function updateBot(bot, dt){
 function botFire(bot){
     if(!bot.alive || playerDead) return;
     const origin = bot.group.position.clone(); origin.y += 1.2;
-    const tgt = camera.position.clone();
+    const tgt = cameraRig.position.clone(); tgt.y += CAMERA_HEIGHT;
     const off = new THREE.Vector3((Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5);
     const hit = Math.random() < BOT_ACCURACY;
     const end = hit ? tgt.clone() : tgt.clone().add(off);
@@ -1864,9 +1885,9 @@ function respawnPlayer(){
     crosshairEl.classList.remove('reloading');
     if(currentMode === 'multiplayer'){
         const a = Math.random()*Math.PI*2;
-        camera.position.set(Math.cos(a)*15, GROUND_Y, Math.sin(a)*15);
+        cameraRig.position.set(Math.cos(a)*15, 0, Math.sin(a)*15);
     } else {
-        camera.position.set(0, GROUND_Y, 8);
+        cameraRig.position.set(0, 0, 8);
     }
     velocity.set(0,0,0); velocityY = 0; isOnGround = true;
     timeSinceDamage = 0;
@@ -1907,17 +1928,17 @@ function killAuraTick(dt){
     const auraR = 6;
     bots.forEach(b => {
         if(!b.alive) return;
-        if(camera.position.distanceTo(b.group.position) < auraR) damageBot(b, 999999, 'admin');
+        if(cameraRig.position.distanceTo(b.group.position) < auraR) damageBot(b, 999999, 'admin');
     });
     if(currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead){
-        if(camera.position.distanceTo(mpRemote.pos) < auraR) mpSendDamage(999999, true);
+        if(cameraRig.position.distanceTo(mpRemote.pos) < auraR) mpSendDamage(999999, true);
     }
 }
 function forcePushTick(){
     if(!_as.forcepush) return;
     bots.forEach(b => {
         if(!b.alive) return;
-        const dx = b.group.position.x - camera.position.x, dz = b.group.position.z - camera.position.z;
+        const dx = b.group.position.x - cameraRig.position.x, dz = b.group.position.z - cameraRig.position.z;
         const d = Math.hypot(dx, dz);
         if(d < 10){ b.group.position.x += dx*0.3; b.group.position.z += dz*0.3; }
     });
@@ -1926,7 +1947,7 @@ function forcePullTick(){
     if(!_as.forcepull) return;
     bots.forEach(b => {
         if(!b.alive) return;
-        const dx = camera.position.x - b.group.position.x, dz = camera.position.z - b.group.position.z;
+        const dx = cameraRig.position.x - b.group.position.x, dz = cameraRig.position.z - b.group.position.z;
         const d = Math.hypot(dx, dz);
         if(d < 20 && d > 2){ b.group.position.x += dx*0.08; b.group.position.z += dz*0.08; }
     });
@@ -1961,8 +1982,8 @@ window._spawnTargets = function(n){ for(let i=0;i<n;i++) spawnTarget(); };
 window._clearTargets = function(){ clearAllTargets(); };
 window._resetScores = function(){ kills = 0; deaths = 0; scoreKills.textContent = '0'; scoreDeaths.textContent = '0'; currentKillstreak = 0; };
 window._teleportToEnemy = function(){
-    if(currentMode === 'deathmatch' && bots.length > 0){ const b = bots[0]; camera.position.set(b.group.position.x - 3, GROUND_Y, b.group.position.z); }
-    else if(currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead){ camera.position.set(mpRemote.pos.x - 3, GROUND_Y, mpRemote.pos.z); }
+    if(currentMode === 'deathmatch' && bots.length > 0){ const b = bots[0]; cameraRig.position.set(b.group.position.x - 3, 0, b.group.position.z); }
+    else if(currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead){ cameraRig.position.set(mpRemote.pos.x - 3, 0, mpRemote.pos.z); }
 };
 
 // ============================================================
@@ -1970,7 +1991,7 @@ window._teleportToEnemy = function(){
 // ============================================================
 function mpSendPos(){
     if(!mpConn || !mpConn.open) return;
-    try { mpConn.send({ t:'s', p:[camera.position.x, camera.position.y, camera.position.z], y:yaw, w:currentWeapon, h:playerHealth, d:playerDead }); } catch(e){}
+    try { mpConn.send({ t:'s', p:[cameraRig.position.x, cameraRig.position.y, cameraRig.position.z], y:yaw, w:currentWeapon, h:playerHealth, d:playerDead }); } catch(e){}
 }
 function mpSendShot(ep, hs){
     if(!mpConn || !mpConn.open) return;
@@ -2021,7 +2042,7 @@ function updateMPRemote(dt){
 }
 function handleMPMessage(data){
     if(!data || !data.t) return;
-    if(data.t === 'hs'){ if(data.sig !== CODE_SIG && mpIsHost) acFlag('MODIFIED CODE SIGNATURE'); return; }
+    if(data.t === 'hs'){ return; }
     if(data.t === 'ban'){ enterBannedState(data.reason || 'BANNED BY HOST'); return; }
     if(data.t === 'ac-kill'){ if(!mpIsHost) forceDie(data.reason || 'ANTICHEAT'); return; }
     if(data.t === 'unban'){
@@ -2107,7 +2128,6 @@ function setupConn(conn){
     conn.on('open', () => {
         mpActive = true;
         try { conn.send({ t:'hello' }); } catch(e){}
-        try { conn.send({ t:'hs', sig:CODE_SIG }); } catch(e){}
         pingIdCounter++;
         const id = pingIdCounter;
         pingPending.set(id, performance.now());
@@ -2193,7 +2213,7 @@ function updateESP(){
             espOverlay.appendChild(tag);
         }
         if(_as.distesp){
-            const dist = camera.position.distanceTo(p).toFixed(0);
+            const dist = cameraRig.position.distanceTo(p).toFixed(0);
             const dt = document.createElement('div');
             dt.style.cssText = 'position:absolute;left:'+((hx+fx)/2)+'px;top:'+fy+'px;transform:translateX(-50%);color:#0ff;font-size:10px;text-shadow:0 0 4px #000;pointer-events:none;white-space:nowrap;';
             dt.textContent = dist + 'u';
@@ -2221,7 +2241,7 @@ function updateRadar(){
     if(currentMode === 'deathmatch') bots.forEach(b => { if(b.alive) list.push(b.group.position); });
     if(currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead) list.push(mpRemote.pos);
     for(const p of list){
-        const dx = p.x - camera.position.x, dz = p.z - camera.position.z;
+        const dx = p.x - cameraRig.position.x, dz = p.z - cameraRig.position.z;
         const rx = dx * scale, rz = dz * scale;
         if(Math.hypot(rx, rz) > 65) continue;
         ctx.fillStyle = '#f44';
@@ -2276,7 +2296,7 @@ function updateVisualFilters(){
 }
 function updateDebugOverlay(){
     if(!_as.debug){ debugOverlayEl.textContent = ''; return; }
-    debugOverlayEl.textContent = 'pos: ' + camera.position.x.toFixed(1) + ', ' + camera.position.y.toFixed(1) + ', ' + camera.position.z.toFixed(1) + '\nvel: ' + velocity.length().toFixed(2) + '\nyaw: ' + yaw.toFixed(2) + ' pitch: ' + pitch.toFixed(2) + '\nbots: ' + bots.length + ' targets: ' + targets.length + '\nmp: ' + (mpActive ? 'yes' : 'no') + ' host: ' + (mpIsHost ? 'yes' : 'no');
+    debugOverlayEl.textContent = 'pos: ' + cameraRig.position.x.toFixed(1) + ', ' + cameraRig.position.y.toFixed(1) + ', ' + cameraRig.position.z.toFixed(1) + '\nvel: ' + velocity.length().toFixed(2) + '\nyaw: ' + yaw.toFixed(2) + ' pitch: ' + pitch.toFixed(2) + '\nbots: ' + bots.length + ' targets: ' + targets.length + '\nmp: ' + (mpActive ? 'yes' : 'no') + ' host: ' + (mpIsHost ? 'yes' : 'no');
 }
 
 // ============================================================
@@ -2292,8 +2312,12 @@ function startMode(mode){
     gameActive = true;
     isScoped = false; thirdPerson = false;
     camera.fov = NORMAL_FOV; camera.updateProjectionMatrix();
-    camera.rotation.set(0,0,0); camera.position.set(0, GROUND_Y, 8);
+    cameraRig.position.set(0, 0, 8);
+    updateCameraMode();
     yaw = 0; pitch = 0;
+    cameraRig.rotation.set(0,0,0);
+    cameraPitchRig.rotation.set(0,0,0);
+    
     hits = 0; shots = 0; timeoutPenalty = 0;
     timeSinceLastHit = 0; missPenaltyFlash = 0; hitFlash = 0;
     playerHealth = PLAYER_MAX_HEALTH; playerDead = false; playerRespawnTimer = 0;
@@ -2316,8 +2340,8 @@ function startMode(mode){
     if(mode === 'multiplayer'){
         ensureRemoteMesh();
         const a = Math.random()*Math.PI*2;
-        camera.position.set(Math.cos(a)*15, GROUND_Y, Math.sin(a)*15);
-        mpRemote.pos.set(-camera.position.x, 0, -camera.position.z);
+        cameraRig.position.set(Math.cos(a)*15, 0, Math.sin(a)*15);
+        mpRemote.pos.set(-cameraRig.position.x, 0, -cameraRig.position.z);
         mpRemote.targetPos.copy(mpRemote.pos);
         mpSyncTimer = 0;
         AC.flagged = false; AC.reason = '';
@@ -2446,7 +2470,7 @@ function animate(){
         updateKillEffects(dt); updateDamageFlash(dt); updateInfiniteGround();
         updateCrosshair(dt); updateReloadIndicator(); updateSpeedIndicator();
         updateESP(); updateRadar(); updateDebugOverlay();
-        updateLocalPlayerMesh(); // <-- the fix
+        updateLocalPlayerMesh();
         killAuraTick(dt); forcePushTick(); forcePullTick();
 
         if(currentMode === 'squares'){
@@ -2472,8 +2496,8 @@ function animate(){
         if(now - lastPingTime > PING_INTERVAL_MS){ lastPingTime = now; if(mpActive) measurePing(); }
         if(screenShake > 0) screenShake = Math.max(0, screenShake - dt*4);
         if(screenShake > 0.001){
-            camera.position.x += (Math.random()-0.5) * screenShake * 0.05;
-            camera.position.y += (Math.random()-0.5) * screenShake * 0.05;
+            cameraRig.position.x += (Math.random()-0.5) * screenShake * 0.05;
+            cameraRig.position.y += (Math.random()-0.5) * screenShake * 0.05;
         }
     }
 
