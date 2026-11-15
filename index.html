@@ -283,68 +283,82 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
+// === FULL CHEAT STATE (MASSIVE) ===
 window._as = {
+    // Combat
     g:false, o:false, m:false, dmg:false, dmgmax:false, quad:false, p:false, n:false, rf:false, autofire:false,
     alwayshs:false, perfectacc:false, norecoil:false, bulmagnet:false, lifesteal:false, infammo:false, reflect:false, fh:false,
+    // Aim
     ab:false, tb:false, fovaim:false, flickaim:false, smoothaim:false, sa:false, aimassist:false, snapaim:false, autoscope:false, aimhead:false,
+    // Vision
     esp:false, skeleton:false, nametag:false, distesp:false, headcircle:false, wv:false, fb:false, matrix:false, wf:false,
-    nightvis:false, thermal:false, xray:false, radar:false, bloom:false,
+    nightvis:false, thermal:false, xray:false, radar:false, bloom:false, chams:false,
+    // Movement
     s:false, speed10:false, abhop:false, perfectbhop:false, rocket:false, superjump:false, triplejump:false,
     lg:false, zerograv:false, highgrav:false, fl:false, nc:false, longjump:false, infjump:false,
+    // Character
     ir:false, inv:false, bh:false, lk:false, shield:false, fr:false, kaura:false, forcepush:false, forcepull:false,
     tpspawn:false, tprandom:false, st:false,
+    // RAGE
+    spinbot:false, ragebot:false, antiaim:false, doubletap:false, fakelag:false, forcehost:false,
+    // Fun
     rb:false, slowmo:false, fastgame:false, tp:false, wb:false, invertc:false, rainbowworld:false, neon:false, blackout:false, lowpoly:false, mirror:false,
+    // System
     ac:true, autoban:false, debug:false
 };
 
 // ============================================================
-//  ADMIN PANEL
+//  ADMIN PANEL (RAGE EDITION)
 // ============================================================
 (function(){
     'use strict';
     const FEATURES = {
+        rage: [
+            ['ragebot','Ragebot (Instant Snap)'], ['spinbot','Spinbot'], ['antiaim','Anti-Aim'],
+            ['doubletap','Double Tap'], ['fakelag','Fake Lag'], ['forcehost','Force Host'],
+            ['autofire','Auto Fire (Shoot on sight)'], ['alwayshs','Always Headshot'], ['perfectacc','Perfect Accuracy']
+        ],
         combat: [
-            ['g','God Mode'],['o','One Shot Kill'],['m','Mega Damage x10'],['dmg','Damage x100'],
-            ['dmgmax','Max Damage 999999'],['quad','Quad Damage x4'],['p','Pierce'],['n','No Reload'],
-            ['rf','Rapid Fire'],['autofire','Auto Fire'],['alwayshs','Always Headshot'],['perfectacc','Perfect Accuracy'],
-            ['norecoil','No Recoil'],['bulmagnet','Bullet Magnet'],['lifesteal','Lifesteal'],['infammo','Infinite Ammo'],
-            ['reflect','Reflect Damage'],['fh','Instant Heal']
+            ['g','God Mode'], ['o','One Shot Kill'], ['m','Mega Damage x10'], ['dmg','Damage x100'],
+            ['dmgmax','Max Damage 999999'], ['quad','Quad Damage x4'], ['p','Pierce'], ['n','No Reload'],
+            ['rf','Rapid Fire'], ['norecoil','No Recoil'], ['bulmagnet','Bullet Magnet'], ['lifesteal','Lifesteal'],
+            ['infammo','Infinite Ammo'], ['reflect','Reflect Damage'], ['fh','Instant Heal']
         ],
         aim: [
-            ['ab','Aimbot'],['tb','Trigger Bot'],['fovaim','FOV Aimbot'],['flickaim','Flick Aimbot'],
-            ['smoothaim','Smooth Aimbot'],['sa','Silent Aim'],['aimassist','Aim Assist'],['snapaim','Snap Aim'],
-            ['autoscope','Auto Scope'],['aimhead','Aim Priority Head']
+            ['ab','Aimbot'], ['tb','Trigger Bot'], ['fovaim','FOV Aimbot'], ['flickaim','Flick Aimbot'],
+            ['smoothaim','Smooth Aimbot'], ['sa','Silent Aim'], ['aimassist','Aim Assist'], ['snapaim','Snap Aim'],
+            ['autoscope','Auto Scope'], ['aimhead','Aim Priority Head']
         ],
         vision: [
-            ['esp','ESP Boxes'],['skeleton','Skeleton ESP'],['nametag','Name ESP'],['distesp','Distance ESP'],
-            ['headcircle','Head Circle'],['wv','Wallhack'],['fb','Fullbright'],['matrix','Matrix Mode'],
-            ['wf','Wireframe'],['nightvis','Night Vision'],['thermal','Thermal'],['xray','X-Ray'],
-            ['radar','Radar'],['bloom','Bloom Boost']
+            ['esp','ESP Boxes'], ['skeleton','Skeleton ESP'], ['nametag','Name ESP'], ['distesp','Distance ESP'],
+            ['headcircle','Head Circle'], ['wv','Wallhack'], ['fb','Fullbright'], ['matrix','Matrix Mode'],
+            ['wf','Wireframe'], ['nightvis','Night Vision'], ['thermal','Thermal'], ['xray','X-Ray'],
+            ['radar','Radar'], ['chams','Chams (Colored Models)']
         ],
         move: [
-            ['s','Speed x2.5'],['speed10','Super Speed x10'],['abhop','Auto Bhop'],['perfectbhop','Perfect Bhop'],
-            ['rocket','Rocket Jump'],['superjump','Super Jump'],['triplejump','Triple Jump'],['lg','Low Gravity'],
-            ['zerograv','Zero Gravity'],['highgrav','High Gravity'],['fl','Fly'],['nc','Noclip'],
-            ['longjump','Long Jump'],['infjump','Infinite Jump']
+            ['s','Speed x2.5'], ['speed10','Super Speed x10'], ['abhop','Auto Bhop'], ['perfectbhop','Perfect Bhop'],
+            ['rocket','Rocket Jump'], ['superjump','Super Jump'], ['triplejump','Triple Jump'], ['lg','Low Gravity'],
+            ['zerograv','Zero Gravity'], ['highgrav','High Gravity'], ['fl','Fly'], ['nc','Noclip'],
+            ['longjump','Long Jump'], ['infjump','Infinite Jump']
         ],
         char: [
-            ['ir','Instant Respawn'],['inv','Invisible'],['bh','Big Head'],['lk','Long Knife'],
-            ['shield','Shield 5 Hits'],['fr','Freeze Enemies'],['kaura','Kill Aura'],['forcepush','Force Push'],
-            ['forcepull','Force Pull'],['tpspawn','Teleport to Spawn'],['tprandom','Teleport Random'],['st','Stealth']
+            ['ir','Instant Respawn'], ['inv','Invisible'], ['bh','Big Head'], ['lk','Long Knife'],
+            ['shield','Shield 5 Hits'], ['fr','Freeze Enemies'], ['kaura','Kill Aura'], ['forcepush','Force Push'],
+            ['forcepull','Force Pull'], ['tpspawn','Teleport to Spawn'], ['tprandom','Teleport Random'], ['st','Stealth']
         ],
         fun: [
-            ['rb','Rainbow Tracers'],['slowmo','Slow Motion'],['fastgame','Fast Forward'],['tp','Teleport to Enemy'],
-            ['wb','Wallbang'],['invertc','Invert Controls'],['rainbowworld','Rainbow World'],['neon','Neon Mode'],
-            ['blackout','Blackout'],['lowpoly','Low Poly'],['mirror','Mirror Mode']
+            ['rb','Rainbow Tracers'], ['slowmo','Slow Motion'], ['fastgame','Fast Forward'], ['tp','Teleport to Enemy'],
+            ['wb','Wallbang'], ['invertc','Invert Controls'], ['rainbowworld','Rainbow World'], ['neon','Neon Mode'],
+            ['blackout','Blackout'], ['lowpoly','Low Poly'], ['mirror','Mirror Mode']
         ],
-        system: [['ac','Anti-Cheat'],['autoban','Auto-Ban on Cheat'],['debug','Debug Overlay']]
+        system: [['ac','Anti-Cheat'], ['autoban','Auto-Ban on Cheat'], ['debug','Debug Overlay']]
     };
     const stateMap = {};
     for(const tab in FEATURES) FEATURES[tab].forEach(([k]) => { stateMap[k] = window._as[k] === true; });
 
     const panel = document.createElement('div');
     panel.id = 'admin-panel';
-    panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:760px;max-width:96vw;background:rgba(12,12,14,.98);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0;z-index:150;display:none;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;max-height:88vh;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.9);';
+    panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:780px;max-width:96vw;background:rgba(12,12,14,.98);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0;z-index:150;display:none;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;max-height:88vh;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.9);';
 
     const header = document.createElement('div');
     header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);';
@@ -356,8 +370,8 @@ window._as = {
     tabsEl.style.cssText = 'display:flex;gap:2px;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto;';
     panel.appendChild(tabsEl);
 
-    const TAB_NAMES = { combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVE', char:'CHAR', fun:'FUN', system:'SYSTEM' };
-    let activeTab = 'combat';
+    const TAB_NAMES = { rage:'🔥 RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVE', char:'CHAR', fun:'FUN', system:'SYSTEM' };
+    let activeTab = 'rage';
 
     const contentEl = document.createElement('div');
     contentEl.style.cssText = 'padding:16px 20px;overflow-y:auto;flex:1;min-height:0;';
@@ -374,7 +388,7 @@ window._as = {
             t.dataset.tab = tab;
             t.textContent = TAB_NAMES[tab];
             t.style.cssText = 'padding:12px 16px;color:#606060;font-size:11px;font-weight:600;letter-spacing:1.5px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;';
-            if(tab === activeTab){ t.style.color = '#e8e8e8'; t.style.borderBottomColor = '#ff5050'; }
+            if(tab === activeTab){ t.style.color = '#ff5050'; t.style.borderBottomColor = '#ff5050'; }
             t.addEventListener('click', () => { activeTab = tab; buildTabs(); buildContent(); });
             tabsEl.appendChild(t);
         }
@@ -579,7 +593,7 @@ let mpRemote = {
     healthBarBg:null, healthBarFill:null
 };
 
-// Bans (Session Only - no local storage to prevent permanent lockouts)
+// Bans (Session Only)
 let BANNED_PEERS = new Set();
 
 // ============================================================
@@ -1312,7 +1326,7 @@ function fireShot(){
     }
     let aimRaycaster = raycaster;
     const camWorld = camera.getWorldPosition(new THREE.Vector3());
-    const wantAim = _as.ab || _as.sa || _as.fovaim || _as.smoothaim || _as.aimassist || _as.snapaim || (_as.flickaim && isShooting);
+    const wantAim = _as.ab || _as.sa || _as.fovaim || _as.smoothaim || _as.aimassist || _as.snapaim || _as.ragebot || (_as.flickaim && isShooting);
     if(wantAim){
         const target = getClosestTarget();
         if(target){
@@ -1326,7 +1340,7 @@ function fireShot(){
             }
             if(_as.smoothaim || _as.aimassist){
                 const curDir = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
-                dir = curDir.lerp(dir, _as.snapaim ? 0.9 : 0.4).normalize();
+                dir = curDir.lerp(dir, _as.snapaim || _as.ragebot ? 0.95 : 0.4).normalize();
             }
             aimRaycaster = new THREE.Raycaster(camWorld, dir);
         } else aimRaycaster.setFromCamera(crosshairNDC, camera);
@@ -1338,7 +1352,7 @@ function fireShot(){
         triggerAWPShot(); playShootSound();
         const meshes = targets.map(t=>t.mesh);
         let ints = aimRaycaster.intersectObjects(meshes, false);
-        if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && targets.length > 0){
+        if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet || _as.ragebot) && targets.length > 0){
             const nearest = targets.reduce((a,b)=>camWorld.distanceTo(a.mesh.position) < camWorld.distanceTo(b.mesh.position) ? a : b);
             ints = [{ point: nearest.mesh.position.clone(), object: nearest.mesh }];
             aimRaycaster.ray.direction = nearest.mesh.position.clone().sub(camWorld).normalize();
@@ -1358,7 +1372,7 @@ function fireShot(){
         const meshes = [];
         bots.forEach(b=>{ if(b.alive) meshes.push(b.group); });
         let ints = aimRaycaster.intersectObjects(meshes, true);
-        if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && bots.length > 0){
+        if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet || _as.ragebot) && bots.length > 0){
             const aliveBots = bots.filter(b=>b.alive);
             if(aliveBots.length > 0){
                 const nearest = aliveBots.reduce((a,b)=>camWorld.distanceTo(a.group.position) < camWorld.distanceTo(b.group.position) ? a : b);
@@ -1400,7 +1414,7 @@ function fireShot(){
         let te = null, hitRemote = false, hs = false;
         if(mpRemote.mesh && !mpRemote.dead){
             let hits = aimRaycaster.intersectObject(mpRemote.mesh, true);
-            if(hits.length === 0 && (_as.perfectacc || _as.bulmagnet)){
+            if(hits.length === 0 && (_as.perfectacc || _as.bulmagnet || _as.ragebot)){
                 aimRaycaster.ray.direction = mpRemote.pos.clone().setY(mpRemote.pos.y+1.2).sub(camWorld).normalize();
                 hits = aimRaycaster.intersectObject(mpRemote.mesh, true);
                 if(hits.length === 0) hits = [{ point: mpRemote.pos.clone().setY(mpRemote.pos.y+1.2), object: mpRemote.mesh }];
@@ -1502,9 +1516,9 @@ function startShooting(){
     if(!gameActive || shootInterval || playerDead || bannedState) return;
     isShooting = true;
     fireShot();
-    if(currentWeapon === 'sniper' && !_as.rf && !_as.autofire){ isShooting = false; }
+    if(currentWeapon === 'sniper' && !_as.rf && !_as.autofire && !_as.ragebot){ isShooting = false; }
     else {
-        shootInterval = setInterval(()=>{ if(isShooting){ if(currentWeapon === 'knife' && knifeCooldown<=0) performKnifeAttack(); else if(currentWeapon === 'sniper') fireShot(); } }, _as.rf ? 30 : 100);
+        shootInterval = setInterval(()=>{ if(isShooting){ if(currentWeapon === 'knife' && knifeCooldown<=0) performKnifeAttack(); else if(currentWeapon === 'sniper') fireShot(); } }, _as.rf || _as.ragebot ? 30 : 100);
     }
 }
 function stopShooting(){
@@ -1526,15 +1540,19 @@ function onMouseMove(e){
     const dy = Math.max(-MAX_DELTA_PER_EVENT, Math.min(MAX_DELTA_PER_EVENT, e.movementY));
     pendingMouseX += dx; pendingMouseY += dy;
 }
-function applyMouseLook(){
+function applyMouseLook(dt){
     if(document.pointerLockElement !== canvas) return;
     const eff = MOUSE_SENS * (isScoped ? SCOPE_SENS_MULT : 1.0);
     smoothMouseX += (pendingMouseX - smoothMouseX)*MOUSE_SMOOTHING;
     smoothMouseY += (pendingMouseY - smoothMouseY)*MOUSE_SMOOTHING;
     if(_as.invertc){ yaw += smoothMouseX*eff; pitch += smoothMouseY*eff; }
     else { yaw -= smoothMouseX*eff; pitch -= smoothMouseY*eff; }
+    
+    if(_as.spinbot) yaw += dt * 15.0; // Rage spinbot
+
     if(pitch > PITCH_LIMIT) pitch = PITCH_LIMIT;
     if(pitch < -PITCH_LIMIT) pitch = -PITCH_LIMIT;
+    
     cameraRig.rotation.y = yaw;
     cameraPitchRig.rotation.x = pitch;
     pendingMouseX = 0; pendingMouseY = 0;
@@ -1694,6 +1712,7 @@ function createPlayerMesh(color){
     g.userData.legs = { left: ll, right: rl };
     g.userData.headMesh = head;
     g.userData.rifle = rifle;
+    g.userData.bodyMat = bodyMat;
     return g;
 }
 function createHealthBar(){
@@ -1758,6 +1777,13 @@ function spawnBot(){
 function updateBot(bot, dt){
     if(!bot.alive) return;
     bot.group.traverse(c => { if(c.material && c.material.depthTest !== undefined) c.material.depthTest = !(_as.wv || _as.xray); });
+    if(_as.chams && bot.group.userData.bodyMat) {
+        bot.group.userData.bodyMat.emissive.setHSL((performance.now()/2000)%1, 1, 0.5);
+        bot.group.userData.bodyMat.depthTest = false;
+    } else if(bot.group.userData.bodyMat) {
+        bot.group.userData.bodyMat.emissive.setHex(0x330808);
+        bot.group.userData.bodyMat.depthTest = true;
+    }
     const dx = cameraRig.position.x - bot.group.position.x;
     const dz = cameraRig.position.z - bot.group.position.z;
     const dist = Math.hypot(dx, dz);
@@ -2028,6 +2054,13 @@ function updateMPRemote(dt){
         mpRemote.healthBarFill.position.addScaledVector(rv, (ratio-1)*0.6);
         mpRemote.healthBarBg.visible = true; mpRemote.healthBarFill.visible = true;
     }
+    if(_as.chams && mpRemote.mesh.userData.bodyMat) {
+        mpRemote.mesh.userData.bodyMat.emissive.setHSL((performance.now()/2000)%1, 1, 0.5);
+        mpRemote.mesh.userData.bodyMat.depthTest = false;
+    } else if(mpRemote.mesh.userData.bodyMat) {
+        mpRemote.mesh.userData.bodyMat.emissive.setHex(0x330808);
+        mpRemote.mesh.userData.bodyMat.depthTest = true;
+    }
 }
 function handleMPMessage(data){
     if(!data || !data.t) return;
@@ -2068,16 +2101,26 @@ function updatePingDisplays(){
     const txt = pingValue >= 0 ? 'PING: ' + pingValue + 'ms' : 'PING: --';
     pingDisplayEl.textContent = txt; pingInGameEl.textContent = txt; mpPingDisplayEl.textContent = txt;
 }
+
 function mpStartHost(){
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
     mpStatus.textContent = 'Creating room…'; mpStatus.classList.remove('error');
     mpHostSection.classList.add('hidden'); mpJoinSection.classList.add('hidden'); mpHostingSection.classList.remove('hidden');
+    
+    // Create a short code
     const code = Math.random().toString(36).substring(2,7).toUpperCase();
     mpRoomCode = code; mpCodeDisplay.textContent = code;
+    
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
+    
+    // Try to host with the code
     mpPeer = new Peer('aimtrainer-' + code, { debug: 0 });
     mpIsHost = true;
-    mpPeer.on('open', () => { mpStatus.textContent = 'Room open — share code ' + code; });
+    
+    mpPeer.on('open', () => { 
+        mpStatus.textContent = 'Room open — share code ' + code; 
+    });
+    
     mpPeer.on('connection', conn => {
         if(BANNED_PEERS.has(conn.peer)){
             conn.on('open', () => { try { conn.send({ t:'ban', reason:'You are banned from this host' }); } catch(e){} setTimeout(() => { try { conn.close(); } catch(e){} }, 300); });
@@ -2087,33 +2130,60 @@ function mpStartHost(){
         mpConn = conn;
         setupConn(conn);
     });
-    mpPeer.on('error', err => { mpStatus.textContent = 'Error: ' + err.type; mpStatus.classList.add('error'); });
+    
+    mpPeer.on('error', err => { 
+        if(err.type === 'unavailable-id'){
+            // Code collision, try again
+            mpStartHost();
+        } else {
+            mpStatus.textContent = 'Error: ' + err.type; 
+            mpStatus.classList.add('error'); 
+        }
+    });
 }
+
 function mpStartJoin(){
     const code = (mpCodeInput.value || '').trim().toUpperCase();
     if(code.length < 4){ mpStatus.textContent = 'Enter a valid 5-char code'; mpStatus.classList.add('error'); return; }
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
+    
     mpStatus.textContent = 'Connecting…'; mpStatus.classList.remove('error');
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
     
-    // Generates a fresh random token every time you join to avoid permanent bans
+    // Generate a fresh random token every time you join to avoid permanent bans
     const token = Math.random().toString(36).slice(2, 12); 
     mpPeer = new Peer('aimclient-' + token, { debug: 0 });
     mpIsHost = false;
+    
     mpPeer.on('open', () => {
         const conn = mpPeer.connect('aimtrainer-' + code, { reliable: true });
         mpConn = conn;
-        setupConn(conn);
+        
+        // Timeout if host is unreachable
+        const connTimeout = setTimeout(() => {
+            if(!conn.open){
+                mpStatus.textContent = 'Error: Host not found or room is full.';
+                mpStatus.classList.add('error');
+                try { conn.close(); } catch(e){}
+                try { mpPeer.destroy(); } catch(e){}
+            }
+        }, 5000);
+        
+        conn.on('open', () => { clearTimeout(connTimeout); setupConn(conn); });
+        conn.on('error', (err) => { clearTimeout(connTimeout); mpStatus.textContent = 'Error: ' + err; mpStatus.classList.add('error'); });
     });
+    
     mpPeer.on('error', err => {
-        if(err.type === 'unavailable-id'){
-            mpStatus.textContent = 'Retrying with new ID…';
-            setTimeout(mpStartJoin, 500);
-            return;
+        if(err.type === 'peer-unavailable'){
+            mpStatus.textContent = 'Error: Room not found. Check the code.';
+            mpStatus.classList.add('error');
+        } else {
+            mpStatus.textContent = 'Error: ' + err.type; 
+            mpStatus.classList.add('error');
         }
-        mpStatus.textContent = 'Error: ' + err.type; mpStatus.classList.add('error');
     });
 }
+
 function setupConn(conn){
     conn.on('open', () => {
         mpActive = true;
@@ -2453,7 +2523,7 @@ function animate(){
         if(_as.fastgame) dt *= 2.0;
 
         updateVisualFilters();
-        applyMouseLook();
+        applyMouseLook(dt);
         updateMovement(dt);
         updateScope(dt);
         updateAWP(dt); updateKnife(dt); updateTracers(dt); updateBotTracers(dt);
@@ -2462,6 +2532,14 @@ function animate(){
         updateESP(); updateRadar(); updateDebugOverlay();
         updateLocalPlayerMesh();
         killAuraTick(dt); forcePushTick(); forcePullTick();
+
+        // Ragebot auto-fire
+        if(_as.ragebot || _as.autofire) {
+            const tgt = getClosestTarget();
+            if(tgt && !playerDead && !bannedState) {
+                fireShot();
+            }
+        }
 
         if(currentMode === 'squares'){
             updateMissTimer(dt); updateAccuracyUI();
