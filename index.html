@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D aim trainer · anti-cheat</title>
+<title>3D aim trainer</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none}
 body{background:#0b0f1c;min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Segoe UI','Inter',system-ui,sans-serif;overflow:hidden}
@@ -85,7 +85,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 #menu{position:absolute;inset:0;background:rgba(30,14,8,.92);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:100;gap:10px;transition:opacity .25s;overflow-y:auto;padding:20px 0}
 #menu.hidden{opacity:0;pointer-events:none}
 #menu h1{font-size:44px;font-weight:800;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(90deg,#ff9a4a,#ffd88a,#ff7a3a,#ffb05a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-#menu .subtitle{color:#c08a5a;font-size:13px;letter-spacing:2px;text-transform:uppercase}
+#menu .subtitle{color:#c08a5a;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 #ping-display{color:#7a90a0;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding:4px 14px;background:rgba(74,168,255,.06);border:1px solid rgba(74,168,255,.15);border-radius:20px;font-family:'SF Mono',monospace;font-weight:600}
 .mode-list{display:flex;flex-direction:column;gap:10px;width:520px;max-width:85vw}
 .mode-card{background:rgba(255,200,140,.04);border:1px solid rgba(255,180,100,.12);border-radius:14px;padding:14px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .18s;position:relative;overflow:hidden}
@@ -133,7 +133,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .mp-hint{color:#7a5a44;font-size:11px;letter-spacing:1px;text-align:center}
 .mp-back-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,10,5,.6);border:1px solid rgba(255,200,140,.18);color:#ffd9a8;padding:8px 20px;border-radius:30px;font-family:inherit;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .18s}
 .mp-back-btn:hover{background:rgba(255,140,60,.25);color:#fff0dd}
-#admin-panel{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:420px;max-width:90vw;background:rgba(20,8,8,.96);border:2px solid rgba(255,60,60,.5);border-radius:16px;padding:18px;z-index:150;display:none;flex-direction:column;gap:8px;box-shadow:0 12px 40px rgba(255,30,30,.4);backdrop-filter:blur(12px);font-family:'SF Mono',monospace;max-height:80vh;overflow-y:auto}
+#admin-panel{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:420px;max-width:90vw;background:rgba(20,8,8,.96);border:2px solid rgba(255,60,60,.5);border-radius:16px;padding:18px;z-index:150;display:none;flex-direction:column;gap:8px;box-shadow:0 12px 40px rgba(255,30,30,.4);backdrop-filter:blur(12px);font-family:'SF Mono',monospace;max-height:85vh;overflow-y:auto}
 #admin-panel.visible{display:flex}
 .admin-title{color:#f55;font-size:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:4px;text-shadow:0 0 10px rgba(255,60,60,.6)}
 .admin-subtitle{color:#a06060;font-size:10px;letter-spacing:1.5px;text-align:center;margin-bottom:8px}
@@ -231,6 +231,11 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
         <div class="admin-toggle" data-admin="megaDamage"><span>⚡ Mega Damage (10x)</span><span class="status">OFF</span></div>
         <div class="admin-toggle" data-admin="pierce"><span>💀 Pierce God Mode</span><span class="status">OFF</span></div>
         <div class="admin-toggle" data-admin="speed"><span>Speed x2.5</span><span class="status">OFF</span></div>
+        <div class="admin-toggle" data-admin="noclip"><span>🕊️ Noclip / Fly</span><span class="status">OFF</span></div>
+        <div class="admin-toggle" data-admin="rainbow"><span>🌈 Rainbow Mode</span><span class="status">OFF</span></div>
+        <div class="admin-toggle" data-admin="bighead"><span>🤯 Big Head Mode</span><span class="status">OFF</span></div>
+        <div class="admin-toggle" data-admin="instantRespawn"><span>⚡ Instant Respawn</span><span class="status">OFF</span></div>
+        <div class="admin-toggle" data-admin="longknife"><span>🔪 Infinite Knife Range</span><span class="status">OFF</span></div>
         <div class="admin-toggle special" data-admin="stealth"><span>🥷 Stealth (Hide My Cheats)</span><span class="status">OFF</span></div>
         <button class="admin-btn danger" id="admin-killopponent">💀 Kill Opponent</button>
         <button class="admin-btn" id="admin-killall">☠ Kill All Enemies</button>
@@ -240,7 +245,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 
     <div id="menu">
         <h1>aim trainer</h1>
-        <div class="subtitle">anti-cheat edition</div>
+        <div class="subtitle">arena</div>
         <div id="ping-display">PING: --</div>
         <div class="mode-list">
             <div class="mode-card" data-mode="squares">
@@ -354,7 +359,11 @@ let currentKillEffect='blackhole';
 let screenShake=0;
 let yaw=0, pitch=0;
 
-const admin = { godmode:false, noreload:false, oneshot:false, megaDamage:false, pierce:false, speed:false, stealth:false, open:false };
+const admin = { 
+    godmode:false, noreload:false, oneshot:false, megaDamage:false, pierce:false, 
+    speed:false, noclip:false, rainbow:false, bighead:false, instantRespawn:false, 
+    longknife:false, stealth:false, open:false 
+};
 
 const bots=[];
 let botSpawnTimer=3.0;
@@ -373,9 +382,9 @@ const ac = {
     lastPunish: 0,
     cooldown: 2000,
     lastHealth: 100,
-    expectedDmg: 0,
     lastPos: new THREE.Vector3(),
-    lastPosTime: 0
+    lastPosTime: 0,
+    wasDead: false
 };
 
 let mpRemote = {
@@ -890,8 +899,14 @@ function updateKnife(dt){
 const TRACER_LIFETIME = 0.7;
 const tracers = [];
 function createTracer(sp, ep, cc, gc){
-    cc = cc===undefined?0xfff8dd:cc;
-    gc = gc===undefined?0xffaa44:gc;
+    if (admin.rainbow) {
+        const hue = (performance.now() / 5) % 360;
+        cc = new THREE.Color(`hsl(${hue}, 100%, 70%)`).getHex();
+        gc = new THREE.Color(`hsl(${hue}, 100%, 50%)`).getHex();
+    } else {
+        cc = cc===undefined?0xfff8dd:cc;
+        gc = gc===undefined?0xffaa44:gc;
+    }
     const dir = new THREE.Vector3().subVectors(ep, sp);
     const len = dir.length();
     if(len < 0.05) return;
@@ -1392,7 +1407,6 @@ function fireShot(){
             let dmg = (hs||admin.oneshot) ? SNIPER_HEAD_DAMAGE : SNIPER_BODY_DAMAGE;
             if(admin.megaDamage) dmg *= 10;
             mpSendDamage(dmg, true);
-            ac.expectedDmg += dmg;
         }
     }
 }
@@ -1404,20 +1418,20 @@ function performKnifeAttack(){
     crosshairKick = 0.8;
     initAudio();
     const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+    const range = admin.longknife ? 100 : KNIFE_RANGE;
 
     if(currentMode === 'multiplayer'){
         if(mpRemote.mesh && !mpRemote.dead){
             const dx = mpRemote.pos.x - camera.position.x;
             const dz = mpRemote.pos.z - camera.position.z;
             const dist = Math.hypot(dx,dz);
-            if(dist <= KNIFE_RANGE){
+            if(dist <= range){
                 const n = new THREE.Vector3(dx,0,dz).normalize();
-                if(forward.dot(n) > 0.4){
+                if(forward.dot(n) > 0.4 || admin.longknife){
                     mpRemote.hitFlash = 0.2;
                     let dmg = KNIFE_DAMAGE;
                     if(admin.megaDamage) dmg *= 10;
                     mpSendDamage(dmg, true);
-                    ac.expectedDmg += dmg;
                     playHitSound(false);
                     showHitMarker(false);
                 }
@@ -1431,9 +1445,9 @@ function performKnifeAttack(){
             const dx = bot.group.position.x - camera.position.x;
             const dz = bot.group.position.z - camera.position.z;
             const dist = Math.hypot(dx,dz);
-            if(dist > KNIFE_RANGE) continue;
+            if(dist > range) continue;
             const n = new THREE.Vector3(dx,0,dz).normalize();
-            if(forward.dot(n) < 0.5) continue;
+            if(forward.dot(n) < 0.5 && !admin.longknife) continue;
             showHitMarker(false);
             playHitSound(false);
             let dmg = KNIFE_DAMAGE;
@@ -1445,7 +1459,7 @@ function performKnifeAttack(){
     }
     if(currentMode === 'squares'){
         shots++;
-        let closest = null, cdist = KNIFE_RANGE;
+        let closest = null, cdist = range;
         for(const t of targets){
             const dx = t.mesh.position.x - camera.position.x;
             const dy = t.mesh.position.y - camera.position.y;
@@ -1453,7 +1467,7 @@ function performKnifeAttack(){
             const dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
             if(dist > cdist) continue;
             const n = new THREE.Vector3(dx,dy,dz).normalize();
-            if(forward.dot(n) < 0.3) continue;
+            if(forward.dot(n) < 0.3 && !admin.longknife) continue;
             closest = t; cdist = dist;
         }
         if(closest){
@@ -1513,7 +1527,7 @@ function applyMouseLook(){
 // ============================================================
 //  INPUT
 // ============================================================
-const GAME_KEYS = new Set(['w','a','s','d','v','1','2',' ','r']);
+const GAME_KEYS = new Set(['w','a','s','d','v','1','2',' ','r','shift']);
 function isTypingInInput(){
     const el = document.activeElement;
     if(!el) return false;
@@ -1524,16 +1538,17 @@ function grabGameFocus(){
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     try{ canvas.focus({preventScroll:true}); }catch(e){ try{ canvas.focus(); }catch(_){} }
 }
-const keys = { w:false, a:false, s:false, d:false, space:false };
+const keys = { w:false, a:false, s:false, d:false, space:false, shift:false };
 function onKeyDown(e){
     if(isTypingInInput()) return;
     if(e.key === '`' || e.key === '~'){ e.preventDefault(); toggleAdminPanel(); return; }
     const k = e.key.toLowerCase();
-    if(GAME_KEYS.has(k) || e.code === 'Space'){ e.preventDefault(); e.stopPropagation(); }
+    if(GAME_KEYS.has(k) || e.code === 'Space' || e.key === 'Shift'){ e.preventDefault(); e.stopPropagation(); }
     if(k==='w') keys.w = true;
     if(k==='a') keys.a = true;
     if(k==='s') keys.s = true;
     if(k==='d') keys.d = true;
+    if(k==='shift') keys.shift = true;
     if(k==='1') switchWeapon('sniper');
     if(k==='2') switchWeapon('knife');
     if(k==='v'){ thirdPerson = !thirdPerson; updateWeaponVisibility(); }
@@ -1542,11 +1557,12 @@ function onKeyDown(e){
 function onKeyUp(e){
     if(isTypingInInput()) return;
     const k = e.key.toLowerCase();
-    if(GAME_KEYS.has(k) || e.code === 'Space') e.preventDefault();
+    if(GAME_KEYS.has(k) || e.code === 'Space' || e.key === 'Shift') e.preventDefault();
     if(k==='w') keys.w = false;
     if(k==='a') keys.a = false;
     if(k==='s') keys.s = false;
     if(k==='d') keys.d = false;
+    if(k==='shift') keys.shift = false;
     if(e.code === 'Space' || k === ' ') keys.space = false;
 }
 
@@ -1566,6 +1582,17 @@ function updateMovement(dt){
     if(keys.d) wish.add(right);
     if(keys.a) wish.sub(right);
     if(wish.lengthSq()>0) wish.normalize();
+
+    if (admin.noclip) {
+        // Noclip movement
+        velocityY = 0;
+        isOnGround = false; // prevent bhop
+        camera.position.x += velocity.x * dt;
+        camera.position.z += velocity.z * dt;
+        if (keys.space) camera.position.y += 15 * dt;
+        if (keys.shift) camera.position.y -= 15 * dt;
+        return; // Skip normal movement
+    }
 
     if(isOnGround){
         if(keys.space){
@@ -1647,6 +1674,7 @@ function createPlayerMesh(color){
     rb.rotation.x = Math.PI/2; rb.position.set(0.32,1.25,-0.55); g.add(rb);
 
     g.userData.legs = { left: ll, right: rl };
+    g.userData.headMesh = head;
     return g;
 }
 function createHealthBar(){
@@ -1674,6 +1702,7 @@ function spawnBot(){
     const x = camera.position.x + Math.cos(a)*d;
     const z = camera.position.z + Math.sin(a)*d;
     const group = createPlayerMesh(0x882222);
+    if (admin.bighead) group.userData.headMesh.scale.setScalar(3);
     group.position.set(x, 0, z);
     group.userData.isBot = true;
     scene.add(group);
@@ -1789,10 +1818,10 @@ function playerTakeDamage(amount){
 function playerDie(){
     playerDead = true;
     deaths++; scoreDeaths.textContent = deaths;
-    playerRespawnTimer = 2.0;
+    playerRespawnTimer = admin.instantRespawn ? 0.1 : 2.0;
     stopShooting();
     respawnOverlay.classList.add('visible');
-    respawnSecEl.textContent = '2';
+    respawnSecEl.textContent = Math.ceil(playerRespawnTimer);
     if(localPlayerMesh) localPlayerMesh.visible = false;
     currentKillstreak = 0;
 }
@@ -1877,6 +1906,7 @@ function acPunish(reason){
 function acVerifyRemote(data){
     if(!data) return;
 
+    // 1. Check explicit cheat reports (if Stealth is OFF)
     if(data.cheats){
         const active = [];
         if(data.cheats.godmode) active.push('GODMODE');
@@ -1887,34 +1917,41 @@ function acVerifyRemote(data){
         if(data.cheats.speed) active.push('SPEED-HACK');
         if(active.length > 0){
             acPunish(active.join('+'));
-            return;
+            return; // Stop checking if we already punished
         }
     }
 
-    if(ac.expectedDmg > 0){
-        const wasRespawn = data.health > ac.lastHealth + 10;
-        const actualDelta = ac.lastHealth - data.health;
-        if(!wasRespawn && actualDelta < ac.expectedDmg * 0.5 && !mpRemote.dead){
-            acPunish('GODMODE (behavioral)');
-        }
-        ac.expectedDmg = 0;
-    }
-
-    const now = performance.now();
-    if(ac.lastPosTime > 0){
-        const dtSec = (now - ac.lastPosTime) / 1000;
-        if(dtSec > 0.02 && dtSec < 1){
-            const newPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
-            const dist = newPos.distanceTo(ac.lastPos);
-            const speed = dist / dtSec;
-            if(speed > 45){
-                acPunish('SPEED-HACK (movement)');
+    // 2. Check impossible movement speed
+    // We MUST ignore speed checks during death and respawn to prevent false positives
+    if (data.dead) {
+        ac.wasDead = true;
+        ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
+        ac.lastPosTime = performance.now();
+    } else {
+        if (ac.wasDead) {
+            // Just respawned
+            ac.wasDead = false;
+            ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
+            ac.lastPosTime = performance.now();
+        } else {
+            // Normal movement check
+            const now = performance.now();
+            if(ac.lastPosTime > 0){
+                const dtSec = (now - ac.lastPosTime) / 1000;
+                if(dtSec > 0.02 && dtSec < 1){
+                    const newPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
+                    const dist = newPos.distanceTo(ac.lastPos);
+                    const speed = dist / dtSec;
+                    // 45 is the absolute max legit speed (15 * 3 headroom). 
+                    if(speed > 45){
+                        acPunish('SPEED-HACK (movement)');
+                    }
+                }
             }
+            ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
+            ac.lastPosTime = now;
         }
     }
-    ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
-    ac.lastPosTime = now;
-    ac.lastHealth = data.health;
 }
 
 // ============================================================
@@ -2148,11 +2185,13 @@ function startMultiplayerGame(){
 
     if(localPlayerMesh){ scene.remove(localPlayerMesh); localPlayerMesh.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); }); }
     localPlayerMesh = createPlayerMesh(0x4488ff);
+    if (admin.bighead) localPlayerMesh.userData.headMesh.scale.setScalar(3);
     localPlayerMesh.visible = false;
     scene.add(localPlayerMesh);
 
     if(mpRemote.mesh){ scene.remove(mpRemote.mesh); mpRemote.mesh.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); }); }
     mpRemote.mesh = createPlayerMesh(0xff4444);
+    if (admin.bighead) mpRemote.mesh.userData.headMesh.scale.setScalar(3);
     scene.add(mpRemote.mesh);
 
     if(mpRemote.healthBarBg) scene.remove(mpRemote.healthBarBg);
@@ -2172,7 +2211,7 @@ function startMultiplayerGame(){
     updateWeaponVisibility();
     updateHealthHUD();
 
-    ac.lastPunish = 0; ac.lastHealth = 100; ac.expectedDmg = 0;
+    ac.lastPunish = 0; ac.lastHealth = 100; ac.wasDead = false;
     ac.lastPosTime = 0;
 
     pendingMouseX = 0; pendingMouseY = 0;
@@ -2276,6 +2315,11 @@ document.querySelectorAll('.admin-toggle').forEach(el=>{
         updateAdminToggleUI();
         if(k === 'noreload' && admin.noreload){ reloadTimer = 0; reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading'); }
         if(k === 'godmode' && admin.godmode){ playerHealth = PLAYER_MAX_HEALTH; updateHealthHUD(); }
+        if(k === 'bighead'){
+            bots.forEach(b => b.group.userData.headMesh.scale.setScalar(admin.bighead ? 3 : 1));
+            if (localPlayerMesh) localPlayerMesh.userData.headMesh.scale.setScalar(admin.bighead ? 3 : 1);
+            if (mpRemote.mesh) mpRemote.mesh.userData.headMesh.scale.setScalar(admin.bighead ? 3 : 1);
+        }
     });
 });
 adminCloseBtn.addEventListener('click', ()=>{
@@ -2342,7 +2386,7 @@ document.addEventListener('pointerlockchange', ()=>{
         smoothMouseX = 0; smoothMouseY = 0;
     }
 });
-window.addEventListener('blur', ()=>{ stopShooting(); keys.space = false; });
+window.addEventListener('blur', ()=>{ stopShooting(); keys.space = false; keys.shift = false; });
 canvas.addEventListener('contextmenu', (e)=>e.preventDefault());
 window.addEventListener('keydown', onKeyDown);
 window.addEventListener('keyup', onKeyUp);
@@ -2394,6 +2438,14 @@ wrapper.addEventListener('drop', (e)=>{
 //  CROSSHAIR / MISS / CULL
 // ============================================================
 function updateCrosshairShape(dt){
+    if (admin.rainbow) {
+        const hue = (performance.now() / 5) % 360;
+        crosshairEl.style.setProperty('--c', `hsl(${hue}, 100%, 60%)`);
+        crosshairEl.style.setProperty('--glow', `hsla(${hue}, 100%, 60%, 0.55)`);
+    } else {
+        crosshairEl.style.setProperty('--c', '#00ff88');
+        crosshairEl.style.setProperty('--glow', 'rgba(0,255,136,.55)');
+    }
     const spd = Math.hypot(velocity.x, velocity.z);
     const air = isOnGround ? 0 : 2.0;
     crosshairKick = Math.max(0, crosshairKick - dt*6.5);
@@ -2494,7 +2546,7 @@ function startMode(mode){
     pendingMouseX = 0; pendingMouseY = 0;
     smoothMouseX = 0; smoothMouseY = 0;
     resetPhysics();
-    keys.w = keys.a = keys.s = keys.d = keys.space = false;
+    keys.w = keys.a = keys.s = keys.d = keys.space = keys.shift = false;
     crosshairKick = 0; crosshairGapVisual = 5;
     grabGameFocus();
     if(document.pointerLockElement !== canvas) canvas.requestPointerLock().catch(()=>{});
@@ -2517,7 +2569,7 @@ function showMenu(){
     crosshairEl.classList.remove('reloading');
     missTimerEl.classList.remove('visible');
     resetPhysics();
-    keys.w = keys.a = keys.s = keys.d = keys.space = false;
+    keys.w = keys.a = keys.s = keys.d = keys.space = keys.shift = false;
     if(document.pointerLockElement === canvas) document.exitPointerLock();
     if(mpActive || mpPeer){
         cleanupPeer();
