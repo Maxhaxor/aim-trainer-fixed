@@ -134,26 +134,26 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .mp-back-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,10,5,.6);border:1px solid rgba(255,200,140,.18);color:#ffd9a8;padding:8px 20px;border-radius:30px;font-family:inherit;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .18s}
 .mp-back-btn:hover{background:rgba(255,140,60,.25);color:#fff0dd}
 
-/* ADMIN PANEL */
-#_ap{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:450px;max-width:90vw;background:rgba(15,5,5,.98);border:2px solid rgba(255,50,50,.6);border-radius:16px;padding:18px;z-index:150;display:none;flex-direction:column;gap:8px;box-shadow:0 12px 50px rgba(255,0,0,.5);backdrop-filter:blur(15px);font-family:'SF Mono',monospace;max-height:85vh;overflow-y:auto}
-#_ap.visible{display:flex}
-._at{color:#f55;font-size:15px;font-weight:900;letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:4px;text-shadow:0 0 15px rgba(255,0,0,.8)}
-._as{color:#a06060;font-size:10px;letter-spacing:2px;text-align:center;margin-bottom:10px}
-._ag{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-._tl{display:flex;justify-content:space-between;align-items:center;background:rgba(40,10,10,.8);border:1px solid rgba(255,60,60,.2);padding:8px 12px;border-radius:10px;color:#ffb080;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s}
-._tl:hover{background:rgba(80,20,20,.9)}
-._tl.on{background:rgba(255,60,60,.25);border-color:rgba(255,100,100,.7);color:#fdd;box-shadow:0 0 15px rgba(255,60,60,.4)}
-._tl .st{color:#602020;font-weight:800;font-size:10px}
-._tl.on .st{color:#f55}
-._tl.sp.on{background:rgba(60,220,80,.2);border-color:rgba(80,255,100,.7);color:#dfd;box-shadow:0 0 15px rgba(60,255,80,.4)}
-._tl.sp.on .st{color:#5f5}
-._ab{background:rgba(255,40,40,.15);border:1px solid rgba(255,60,60,.5);color:#f99;padding:10px;border-radius:10px;font-family:inherit;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;font-weight:700;width:100%}
-._ab:hover{background:rgba(255,40,40,.3);color:#fdd}
-._ab.dg{background:rgba(255,0,0,.3);border-color:rgba(255,0,0,.8);color:#fbb;grid-column:span 2}
-#_ai{position:absolute;top:18px;left:50%;transform:translateX(-50%);background:rgba(255,0,0,.9);color:#fff;font-size:11px;font-weight:800;letter-spacing:3px;padding:4px 16px;border-radius:20px;z-index:149;display:none;font-family:'SF Mono',monospace;pointer-events:none;box-shadow:0 0 20px rgba(255,0,0,.8)}
-#_ai.visible{display:block}
-#_ac{position:absolute;top:18px;left:50%;transform:translateX(-50%);margin-left:150px;background:rgba(255,0,200,.9);color:#fff;font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:20px;z-index:148;display:none;font-family:'SF Mono',monospace;pointer-events:none;box-shadow:0 0 20px rgba(255,0,200,.8)}
-#_ac.visible{display:block}
+/* ADMIN PANEL (HIDDEN BY DEFAULT) */
+#_ap { position:absolute; top:70px; left:50%; transform:translateX(-50%); width:460px; max-width:90vw; background:rgba(15,5,5,.98); border:2px solid rgba(255,50,50,.6); border-radius:16px; padding:18px; z-index:150; display:none; flex-direction:column; gap:8px; box-shadow:0 12px 50px rgba(255,0,0,.5); backdrop-filter:blur(15px); font-family:'SF Mono',monospace; max-height:80vh; overflow-y:auto; pointer-events:auto; }
+#_ap.visible { display:flex; }
+._at { color:#f55; font-size:15px; font-weight:900; letter-spacing:4px; text-transform:uppercase; text-align:center; margin-bottom:4px; text-shadow:0 0 15px rgba(255,0,0,.8); }
+._as { color:#a06060; font-size:10px; letter-spacing:2px; text-align:center; margin-bottom:10px; }
+._ag { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+._tl { display:flex; justify-content:space-between; align-items:center; background:rgba(40,10,10,.8); border:1px solid rgba(255,60,60,.2); padding:8px 12px; border-radius:10px; color:#ffb080; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .15s; }
+._tl:hover { background:rgba(80,20,20,.9); }
+._tl.on { background:rgba(255,60,60,.25); border-color:rgba(255,100,100,.7); color:#fdd; box-shadow:0 0 15px rgba(255,60,60,.4); }
+._tl .st { color:#602020; font-weight:800; font-size:10px; }
+._tl.on .st { color:#f55; }
+._tl.sp.on { background:rgba(60,220,80,.2); border-color:rgba(80,255,100,.7); color:#dfd; box-shadow:0 0 15px rgba(60,255,80,.4); }
+._tl.sp.on .st { color:#5f5; }
+._ab { background:rgba(255,40,40,.15); border:1px solid rgba(255,60,60,.5); color:#f99; padding:10px; border-radius:10px; font-family:inherit; font-size:11px; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all .15s; font-weight:700; width:100%; }
+._ab:hover { background:rgba(255,40,40,.3); color:#fdd; }
+._ab.dg { background:rgba(255,0,0,.3); border-color:rgba(255,0,0,.8); color:#fbb; }
+#_ai { position:absolute; top:18px; left:50%; transform:translateX(-50%); background:rgba(255,0,0,.9); color:#fff; font-size:11px; font-weight:800; letter-spacing:3px; padding:4px 16px; border-radius:20px; z-index:149; display:none; font-family:'SF Mono',monospace; pointer-events:none; box-shadow:0 0 20px rgba(255,0,0,.8); }
+#_ai.visible { display:block; }
+#_ac { position:absolute; top:18px; left:50%; transform:translateX(-50%); margin-left:150px; background:rgba(255,0,200,.9); color:#fff; font-size:10px; font-weight:800; letter-spacing:2px; padding:4px 14px; border-radius:20px; z-index:148; display:none; font-family:'SF Mono',monospace; pointer-events:none; box-shadow:0 0 20px rgba(255,0,200,.8); }
+#_ac.visible { display:block; }
 
 #esp-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .esp-box{position:absolute;border:1.5px solid #ff2222;background:rgba(255,0,0,0.1);border-radius:2px}
@@ -230,6 +230,32 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
     <div id="_ai">⚙ ADMIN</div>
     <div id="_ac">🛡 ANTI-CHEAT</div>
 
+    <div id="_ap">
+        <div class="_at">⚙ ADMIN PANEL</div>
+        <div class="_as">private — you only</div>
+        <div class="_ag">
+            <div class="_tl" data-x="g"><span>God Mode</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="n"><span>No Reload</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="o"><span>One-Shot</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="m"><span>Mega Damage</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="p"><span>Pierce God Mode</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="s"><span>Speed x2.5</span><span class="st">OFF</span></div>
+            <div class="_tl sp" data-x="tb"><span>Triggerbot</span><span class="st">OFF</span></div>
+            <div class="_tl sp" data-x="ab"><span>Silent Aimbot</span><span class="st">OFF</span></div>
+            <div class="_tl sp" data-x="esp"><span>ESP / Wallhack</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="bh"><span>Big Head</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="nc"><span>Noclip / Fly</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="rb"><span>Rainbow Mode</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="ir"><span>Instant Respawn</span><span class="st">OFF</span></div>
+            <div class="_tl" data-x="lk"><span>Infinite Knife</span><span class="st">OFF</span></div>
+            <div class="_tl sp" data-x="st"><span>Stealth (Hide)</span><span class="st">OFF</span></div>
+        </div>
+        <button class="_ab dg" id="_ko">💀 Kill Opponent</button>
+        <button class="_ab" id="_ka">☠ Kill All</button>
+        <button class="_ab" id="_rz">↻ Reset Scores</button>
+        <button class="_ab" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#ccc" id="_cl">Close (`)</button>
+    </div>
+
     <div id="menu">
         <h1>aim trainer</h1>
         <div class="subtitle">arena</div>
@@ -292,9 +318,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
-// ============================================================
-//  CONSTANTS & CONFIG
-// ============================================================
 const STL_CONFIG = {
     sniper: { enabled:true, file:'awp.stl', autoFitLength:2.2, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
     knife:  { enabled:true, file:'knife.stl', autoFitLength:0.55, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.3,y:-0.24,z:-0.6}, material:{color:0xd0d8e0,roughness:0.15,metalness:0.9,emissive:0x1a2233,emissiveIntensity:0.3} }
@@ -307,9 +330,6 @@ const SNIPER_BODY_DAMAGE=40, SNIPER_HEAD_DAMAGE=100, SNIPER_RELOAD_TIME=1.6;
 const BOT_DAMAGE=12, BOT_FIRE_MIN=2.2, BOT_FIRE_MAX=3.4, BOT_ACCURACY=0.5, BOT_MOVE_SPEED=2.8, BOT_STOP_DIST=7, BOT_SHOOT_RANGE=22, MAX_BOTS=4;
 const BLACK_HOLE_R = 0.55;
 
-// ============================================================
-//  DOM
-// ============================================================
 const $ = id => document.getElementById(id);
 const canvas=$('gameCanvas'), crosshairEl=$('crosshair'), scopeOverlayEl=$('scope-overlay'),
     accuracyText=$('accuracy-text'), missTimerEl=$('miss-timer'), menuEl=$('menu'),
@@ -327,11 +347,9 @@ const canvas=$('gameCanvas'), crosshairEl=$('crosshair'), scopeOverlayEl=$('scop
     mpJoinSection=$('mp-join-section'), mpHostingSection=$('mp-hosting-section'), mpCodeDisplay=$('mp-code-display'),
     mpCodeInput=$('mp-code-input'), mpHostBtn=$('mp-host-btn'), mpJoinBtn=$('mp-join-btn'),
     mpCancelBtn=$('mp-cancel-btn'), mpBackBtn=$('mp-back-btn'),
-    acIndicator=$('_ac'), espOverlay=$('esp-overlay');
+    acIndicator=$('_ac'), espOverlay=$('esp-overlay'),
+    adminPanel=$('_ap'), adminIndicator=$('_ai');
 
-// ============================================================
-//  STATE
-// ============================================================
 let W=1000, H=650;
 let currentMode=null, gameActive=false;
 let hits=0, shots=0, timeoutPenalty=0;
@@ -349,7 +367,6 @@ let screenShake=0;
 let yaw=0, pitch=0;
 let timeScale = 1.0;
 
-// OBSCURED ADMIN STATE
 const _as = { 
     g:false, n:false, o:false, m:false, p:false, 
     s:false, nc:false, rb:false, bh:false, ir:false, 
@@ -357,7 +374,6 @@ const _as = {
     open:false 
 };
 
-// Game Objects
 const bots=[];
 let botSpawnTimer=3.0;
 const botTracers=[];
@@ -382,9 +398,6 @@ let mpRemote = {
 };
 let localPlayerMesh=null, mpHosting=false;
 
-// ============================================================
-//  RENDERER / SCENE
-// ============================================================
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance', preserveDrawingBuffer:true });
 renderer.setSize(W,H,false);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -489,50 +502,25 @@ function updateInfiniteGround(){
 }
 
 // ============================================================
-//  ADMIN PANEL INJECTION
+//  ADMIN PANEL (No icon, backtick opens)
 // ============================================================
-(function(){
-    const features = [
-        { k: 'g', l: 'God Mode', sp: false },
-        { k: 'n', l: 'No Reload', sp: false },
-        { k: 'o', l: 'One-Shot', sp: false },
-        { k: 'm', l: 'Mega Damage', sp: false },
-        { k: 'p', l: 'Pierce God Mode', sp: false },
-        { k: 's', l: 'Speed x2.5', sp: false },
-        { k: 'tb', l: 'Triggerbot', sp: true },
-        { k: 'ab', l: 'Silent Aimbot', sp: true },
-        { k: 'esp', l: 'ESP / Wallhack', sp: true },
-        { k: 'bh', l: 'Big Head', sp: false },
-        { k: 'nc', l: 'Noclip / Fly', sp: false },
-        { k: 'rb', l: 'Rainbow Mode', sp: false },
-        { k: 'ir', l: 'Instant Respawn', sp: false },
-        { k: 'lk', l: 'Infinite Knife', sp: false },
-        { k: 'st', l: 'Stealth (Hide)', sp: true }
-    ];
+function toggleAdmin(){
+    _as.open = !_as.open;
+    if(adminPanel) adminPanel.classList.toggle('visible', _as.open);
+    if(adminIndicator) adminIndicator.classList.toggle('visible', _as.open);
+    if(_as.open){
+        if(document.pointerLockElement === canvas) document.exitPointerLock();
+    }
+}
 
-    let html = `<div class="_at">⚙ ADMIN PANEL</div><div class="_as">private — you only</div><div class="_ag">`;
-    
-    features.forEach(f => {
-        html += `<div class="_tl ${f.sp?'sp':''}" data-x="${f.k}"><span>${f.l}</span><span class="st">OFF</span></div>`;
-    });
-
-    html += `</div>
-    <button class="_ab dg" id="_ko">💀 Kill Opponent</button>
-    <button class="_ab" id="_ka">☠ Kill All</button>
-    <button class="_ab" id="_rz">↻ Reset Scores</button>
-    <button class="_ab" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#ccc" id="_cl">Close (\`)</button>`;
-
-    const panel = document.createElement('div');
-    panel.id = '_ap';
-    panel.innerHTML = html;
-    document.getElementById('game-wrapper').appendChild(panel);
-
-    panel.querySelectorAll('._tl').forEach(el => {
+try {
+    document.querySelectorAll('#_ap ._tl').forEach(el => {
         el.addEventListener('click', () => {
             const key = el.dataset.x;
             _as[key] = !_as[key];
             el.classList.toggle('on', _as[key]);
-            el.querySelector('.st').textContent = _as[key] ? 'ON' : 'OFF';
+            const stEl = el.querySelector('.st');
+            if(stEl) stEl.textContent = _as[key] ? 'ON' : 'OFF';
             
             if(key === 'n' && _as.n){ reloadTimer = 0; reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading'); }
             if(key === 'g' && _as.g){ playerHealth = PLAYER_MAX_HEALTH; updateHealthHUD(); }
@@ -544,13 +532,17 @@ function updateInfiniteGround(){
         });
     });
 
-    document.getElementById('_ko').addEventListener('click', () => {
-        if(!mpActive) return;
+    const koBtn = $('_ko');
+    if(koBtn) koBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(!mpActive || !mpConn || !mpConn.open) return;
         mpSendDamage(999999, true);
         if(mpRemote.mesh && !mpRemote.dead) playKillEffect(mpRemote.pos.clone(), 'blackhole');
     });
-    
-    document.getElementById('_ka').addEventListener('click', () => {
+
+    const kaBtn = $('_ka');
+    if(kaBtn) kaBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         if(currentMode === 'deathmatch'){
             [...bots].forEach(bot => { if(bot.alive) damageBot(bot, 9999, 'headshot'); });
         } else if(currentMode === 'squares'){
@@ -558,24 +550,20 @@ function updateInfiniteGround(){
         }
     });
 
-    document.getElementById('_rz').addEventListener('click', () => {
+    const rzBtn = $('_rz');
+    if(rzBtn) rzBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         kills = 0; deaths = 0;
         scoreKills.textContent = '0'; scoreDeaths.textContent = '0';
         currentKillstreak = 0;
     });
 
-    document.getElementById('_cl').addEventListener('click', () => toggleAdmin());
-})();
-
-function toggleAdmin(){
-    _as.open = !_as.open;
-    document.getElementById('_ap').classList.toggle('visible', _as.open);
-    document.getElementById('_ai').classList.toggle('visible', _as.open);
-    if(_as.open && document.pointerLockElement === canvas) document.exitPointerLock();
-    else if(!_as.open && gameActive){
-        setTimeout(()=>{ if(gameActive && !_as.open){ grabGameFocus(); canvas.requestPointerLock().catch(()=>{}); } }, 100);
-    }
-}
+    const clBtn = $('_cl');
+    if(clBtn) clBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleAdmin();
+    });
+} catch(e) { console.error('Admin setup error:', e); }
 
 // ============================================================
 //  AUDIO
@@ -654,7 +642,7 @@ function playBlackHoleSound(){
 }
 
 // ============================================================
-//  TARGETS & GAME OBJECTS
+//  TARGETS
 // ============================================================
 const TARGET_SIZE=1.4;
 const targetMat = new THREE.MeshStandardMaterial({ color:0x2a0a3a, emissive:0x6a1ac0, emissiveIntensity:0.9, roughness:0.35, metalness:0.5 });
@@ -713,7 +701,7 @@ function clearAllTargets(){
 }
 
 // ============================================================
-//  AWP & KNIFE MODELS
+//  AWP & KNIFE
 // ============================================================
 let awpGroup=null, awpMuzzleFlash=null, awpFlashTimer=0, bobPhase=0;
 function createAWP(){
@@ -891,7 +879,7 @@ async function loadSTLFromFile(file, weapon){
 }
 
 // ============================================================
-//  WEAPON SWITCHING & UPDATE
+//  WEAPON SWITCHING
 // ============================================================
 function switchWeapon(weapon){
     if(currentWeapon === weapon) return;
@@ -970,7 +958,7 @@ function updateKnife(dt){
 }
 
 // ============================================================
-//  TRACERS & EFFECTS
+//  TRACERS
 // ============================================================
 const TRACER_LIFETIME = 0.7;
 const tracers = [];
@@ -1068,11 +1056,8 @@ function clearBotTracers(){
 }
 
 // ============================================================
-//  KILL EFFECTS (BLACK HOLE, ETC)
+//  KILL EFFECTS
 // ============================================================
-const killEffectParticles=[];
-const blackHoleEffects=[];
-
 function playKillEffect(position, type){
     type = type || currentKillEffect;
     if(type === 'blackhole') playBlackHole(position);
@@ -1312,7 +1297,7 @@ function clearKillEffects(){
 }
 
 // ============================================================
-//  HIT MARKER / ACCURACY / SHOOTING
+//  HIT MARKER / ACCURACY
 // ============================================================
 let hitMarkerTimeout = null;
 function showHitMarker(isHS){
@@ -1336,7 +1321,6 @@ function spawnDamageNumber(worldPos, damage, isHS){
     requestAnimationFrame(()=>el.classList.add('animate'));
     setTimeout(()=>el.remove(), 1000);
 }
-
 function getDisplayedAccuracy(){
     if(currentMode === 'squares'){
         if(shots===0 && timeoutPenalty===0) return null;
@@ -1377,11 +1361,9 @@ function isHeadshotCheck(hitObj, hitPoint, basePos){
     if(basePos) return hitPoint.y - basePos.y > 1.55;
     return false;
 }
-
 function getClosestTarget() {
     let closest = null;
     let minDist = 999;
-    
     if (currentMode === 'deathmatch') {
         bots.forEach(b => {
             if (!b.alive) return;
@@ -1398,7 +1380,6 @@ function getClosestTarget() {
     }
     return closest;
 }
-
 function fireShot(){
     if(playerDead) return;
     if(currentWeapon === 'sniper' && reloadTimer > 0) return;
@@ -1414,13 +1395,12 @@ function fireShot(){
         playReloadSound();
     }
 
-    // SILENT AIMBOT OVERRIDE
     let aimRaycaster = raycaster;
     if (_as.ab) {
         const target = getClosestTarget();
         if (target) {
             const targetPos = target.position.clone();
-            targetPos.y += 1.2; // Aim center mass
+            targetPos.y += 1.2;
             const dir = targetPos.clone().sub(camera.position).normalize();
             aimRaycaster = new THREE.Raycaster(camera.position, dir);
         } else {
@@ -1510,7 +1490,6 @@ function fireShot(){
         }
     }
 }
-
 function performKnifeAttack(){
     if(knifeCooldown > 0) return;
     if(currentMode !== 'squares' && currentMode !== 'deathmatch' && currentMode !== 'multiplayer') return;
@@ -1520,7 +1499,6 @@ function performKnifeAttack(){
     initAudio();
     const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
     const range = _as.lk ? 100 : KNIFE_RANGE;
-
     if(currentMode === 'multiplayer'){
         if(mpRemote.mesh && !mpRemote.dead){
             const dx = mpRemote.pos.x - camera.position.x;
@@ -1582,7 +1560,6 @@ function performKnifeAttack(){
         updateAccuracyUI();
     }
 }
-
 function startShooting(){
     if(!gameActive || shootInterval || playerDead) return;
     isShooting = true;
@@ -1640,8 +1617,7 @@ function grabGameFocus(){
 const keys = { w:false, a:false, s:false, d:false, space:false, shift:false };
 function onKeyDown(e){
     if(isTypingInInput()) return;
-    // ROBUST BACKTICK LISTENER
-    if(e.key === '`' || e.key === '~' || e.code === 'Backquote'){ 
+    if(e.key === '`' || e.key === '~' || e.code === 'Backquote' || e.keyCode === 192){ 
         e.preventDefault(); 
         toggleAdmin(); 
         return; 
@@ -1759,7 +1735,6 @@ function createPlayerMesh(color){
     const bodyMat = new THREE.MeshStandardMaterial({ color: color||0x882222, roughness:0.6, metalness:0.3, emissive:0x330808, emissiveIntensity:0.4 });
     const headMat = new THREE.MeshStandardMaterial({ color:0xaa4444, roughness:0.7, metalness:0.2 });
     const wMat = new THREE.MeshStandardMaterial({ color:0x1a1a1a, roughness:0.4, metalness:0.7 });
-
     const ll = new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.75,8), bodyMat);
     ll.position.set(-0.16,0.375,0); ll.castShadow=true; g.add(ll);
     const rl = new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.75,8), bodyMat);
@@ -1772,7 +1747,6 @@ function createPlayerMesh(color){
     rifle.position.set(0.32,1.25,-0.15); g.add(rifle);
     const rb = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.35,8), wMat);
     rb.rotation.x = Math.PI/2; rb.position.set(0.32,1.25,-0.55); g.add(rb);
-
     g.userData.legs = { left: ll, right: rl };
     g.userData.headMesh = head;
     return g;
@@ -1782,17 +1756,14 @@ function createHealthBar(){
         new THREE.PlaneGeometry(1.2,0.15),
         new THREE.MeshBasicMaterial({ color:0x220000, transparent:true, opacity:0.85, depthTest:false })
     );
-    bg.renderOrder = 998;
-    scene.add(bg);
+    bg.renderOrder = 998; scene.add(bg);
     const fill = new THREE.Mesh(
         new THREE.PlaneGeometry(1.2,0.11),
         new THREE.MeshBasicMaterial({ color:0xff3333, depthTest:false })
     );
-    fill.renderOrder = 999;
-    scene.add(fill);
+    fill.renderOrder = 999; scene.add(fill);
     return { bg, fill };
 }
-
 function spawnBot(){
     const a = Math.random()*Math.PI*2;
     const d = 14 + Math.random()*10;
@@ -1839,7 +1810,6 @@ function updateBot(bot, dt){
     bot.barFill.scale.x = ratio;
     const rv = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
     bot.barFill.position.addScaledVector(rv, (ratio-1)*0.6);
-
     bot.fireCooldown -= dt;
     if(dist < BOT_SHOOT_RANGE && bot.fireCooldown <= 0){
         bot.fireCooldown = BOT_FIRE_MIN + Math.random()*(BOT_FIRE_MAX-BOT_FIRE_MIN);
@@ -1875,7 +1845,6 @@ function killBot(bot, source){
     else if(currentKillstreak === 8) showKillstreak('DOMINATING');
     else if(currentKillstreak === 12) showKillstreak('UNSTOPPABLE');
     else if(currentKillstreak >= 15 && currentKillstreak%5 === 0) showKillstreak('GODLIKE');
-
     scene.remove(bot.group); scene.remove(bot.barBg); scene.remove(bot.barFill);
     bot.group.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); });
     bot.barBg.geometry.dispose(); bot.barBg.material.dispose();
@@ -1898,12 +1867,10 @@ function clearAllBots(){
     }
     bots.length = 0;
 }
-
 function playerTakeDamage(amount){
     if(playerDead || _as.g) return;
     playerHealth -= amount;
-    damageFlash = 1.0;
-    timeSinceDamage = 0;
+    damageFlash = 1.0; timeSinceDamage = 0;
     screenShake = Math.max(screenShake, 0.5);
     currentKillstreak = 0;
     if(playerHealth <= 0){ playerHealth = 0; playerDie(); }
@@ -1980,26 +1947,19 @@ function acPunish(reason){
     const now = performance.now();
     if(now - ac.lastPunish < ac.cooldown) return;
     ac.lastPunish = now;
-
     addKillFeed('🛡 ANTI-CHEAT: ' + reason, false, true);
     showKillstreak('🛡 CHEATER DETECTED');
-
     acIndicator.classList.add('visible');
     setTimeout(()=>acIndicator.classList.remove('visible'), 3000);
-
     if(mpRemote.pos) playBlackHole(mpRemote.pos.clone());
-
     if(mpConn && mpConn.open){
         try{ mpConn.send({ type: 'anti-cheat-kill', reason: reason }); } catch(e){}
     }
-
     playKillSound();
     screenShake = Math.max(screenShake, 1.2);
 }
-
 function acVerifyRemote(data){
     if(!data) return;
-
     if(data.cheats){
         const active = [];
         if(data.cheats.godmode) active.push('GODMODE');
@@ -2011,12 +1971,8 @@ function acVerifyRemote(data){
         if(data.cheats.tb) active.push('TRIGGERBOT');
         if(data.cheats.ab) active.push('AIMBOT');
         if(data.cheats.esp) active.push('ESP');
-        if(active.length > 0){
-            acPunish(active.join('+'));
-            return;
-        }
+        if(active.length > 0){ acPunish(active.join('+')); return; }
     }
-
     if (data.dead) {
         ac.wasDead = true;
         ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
@@ -2034,9 +1990,7 @@ function acVerifyRemote(data){
                     const newPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
                     const dist = newPos.distanceTo(ac.lastPos);
                     const speed = dist / dtSec;
-                    if(speed > 45){
-                        acPunish('SPEED-HACK (movement)');
-                    }
+                    if(speed > 45) acPunish('SPEED-HACK (movement)');
                 }
             }
             ac.lastPos.set(data.pos.x, data.pos.y, data.pos.z);
@@ -2060,9 +2014,7 @@ function startPingSystem(){
 }
 function stopPingSystem(){
     if(pingInterval){ clearInterval(pingInterval); pingInterval = null; }
-    pingPending.clear();
-    pingValue = -1;
-    updatePingDisplay();
+    pingPending.clear(); pingValue = -1; updatePingDisplay();
 }
 function updatePingDisplay(){
     const txt = pingValue < 0 ? 'PING: --' : 'PING: ' + Math.round(pingValue) + 'ms';
@@ -2076,7 +2028,6 @@ function updatePingDisplay(){
         else pingInGameEl.style.color = '#a0b0c0';
     }
 }
-
 function generateRoomCode(){
     const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let r = '';
@@ -2119,18 +2070,14 @@ function hostGame(){
     });
     mpPeer.on('connection', (conn)=>{
         if(mpConn){ try{ conn.close(); }catch(e){} return; }
-        mpConn = conn;
-        setupMpConnection();
+        mpConn = conn; setupMpConnection();
     });
     mpPeer.on('error', (err)=>{
         if(err.type === 'unavailable-id'){
             try{ mpPeer.destroy(); }catch(e){}
-            mpHostBtn.disabled = false;
-            hostGame();
-            return;
+            mpHostBtn.disabled = false; hostGame(); return;
         }
-        setMpStatus('Error: ' + err.type, true);
-        mpHostBtn.disabled = false;
+        setMpStatus('Error: ' + err.type, true); mpHostBtn.disabled = false;
     });
 }
 function joinGame(){
@@ -2138,8 +2085,7 @@ function joinGame(){
     const code = mpCodeInput.value.trim().toUpperCase();
     if(code.length !== 5){ setMpStatus('Enter a 5-letter code', true); return; }
     cleanupPeer();
-    mpRoomCode = code;
-    mpIsHost = false;
+    mpRoomCode = code; mpIsHost = false;
     mpJoinBtn.disabled = true;
     setMpStatus('Connecting...');
     try{ mpPeer = new Peer({ debug:0 }); }
@@ -2162,9 +2108,7 @@ function setupMpConnection(){
     mpConn.on('data', handleMpData);
     mpConn.on('close', ()=>{ if(mpActive){ setMpStatus('Opponent disconnected', true); endMultiplayer(); } });
     mpConn.on('error', ()=>{});
-    startPingSystem();
-    hideMpPanel();
-    startMultiplayerGame();
+    startPingSystem(); hideMpPanel(); startMultiplayerGame();
 }
 function mpSendShot(endPos, hs){
     if(!mpConn || !mpConn.open) return;
@@ -2253,28 +2197,18 @@ function startMultiplayerGame(){
     clearKillEffects(); clearAllBots(); clearKillFeed();
     isScoped = false; scopeOverlayEl.classList.remove('visible'); crosshairEl.classList.remove('hidden');
     camera.fov = NORMAL_FOV; camera.updateProjectionMatrix();
-    currentMode = 'multiplayer';
-    mpActive = true;
-    gameActive = true;
+    currentMode = 'multiplayer'; mpActive = true; gameActive = true;
     resetStats(); resetCombatState();
-    menuEl.classList.add('hidden');
-    mpSubpanel.classList.add('hidden');
-    modeIndicator.classList.add('visible');
-    modeIndicator.textContent = 'multiplayer 1v1';
-    backBtn.classList.add('visible');
-    hintEl.style.opacity = '1';
-    healthHud.classList.add('visible');
-    weaponHud.classList.add('visible');
-    scoreHud.classList.add('visible');
-    currentWeapon = 'sniper';
-    reloadTimer = 0;
-    updateWeaponHUD();
+    menuEl.classList.add('hidden'); mpSubpanel.classList.add('hidden');
+    modeIndicator.classList.add('visible'); modeIndicator.textContent = 'multiplayer 1v1';
+    backBtn.classList.add('visible'); hintEl.style.opacity = '1';
+    healthHud.classList.add('visible'); weaponHud.classList.add('visible'); scoreHud.classList.add('visible');
+    currentWeapon = 'sniper'; reloadTimer = 0; updateWeaponHUD();
 
     if(localPlayerMesh){ scene.remove(localPlayerMesh); localPlayerMesh.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); }); }
     localPlayerMesh = createPlayerMesh(0x4488ff);
     if (_as.bh) localPlayerMesh.userData.headMesh.scale.setScalar(3);
-    localPlayerMesh.visible = false;
-    scene.add(localPlayerMesh);
+    localPlayerMesh.visible = false; scene.add(localPlayerMesh);
 
     if(mpRemote.mesh){ scene.remove(mpRemote.mesh); mpRemote.mesh.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); }); }
     mpRemote.mesh = createPlayerMesh(0xff4444);
@@ -2284,29 +2218,23 @@ function startMultiplayerGame(){
     if(mpRemote.healthBarBg) scene.remove(mpRemote.healthBarBg);
     if(mpRemote.healthBarFill) scene.remove(mpRemote.healthBarFill);
     const hb = createHealthBar();
-    mpRemote.healthBarBg = hb.bg;
-    mpRemote.healthBarFill = hb.fill;
+    mpRemote.healthBarBg = hb.bg; mpRemote.healthBarFill = hb.fill;
 
     if(mpIsHost){ camera.position.set(0, GROUND_Y, 8); yaw = 0; }
     else { camera.position.set(0, GROUND_Y, -8); yaw = Math.PI; }
-    pitch = 0;
-    camera.rotation.y = yaw; camera.rotation.x = pitch;
+    pitch = 0; camera.rotation.y = yaw; camera.rotation.x = pitch;
     velocity.set(0,0,0); velocityY = 0; isOnGround = true;
     mpRemote.pos.set(0, 0, mpIsHost ? -8 : 8);
     mpRemote.targetPos.copy(mpRemote.pos);
-    thirdPerson = false;
-    updateWeaponVisibility();
-    updateHealthHUD();
+    thirdPerson = false; updateWeaponVisibility(); updateHealthHUD();
 
-    ac.lastPunish = 0; ac.lastHealth = 100; ac.wasDead = false;
-    ac.lastPosTime = 0;
+    ac.lastPunish = 0; ac.lastHealth = 100; ac.wasDead = false; ac.lastPosTime = 0;
 
-    pendingMouseX = 0; pendingMouseY = 0;
-    smoothMouseX = 0; smoothMouseY = 0;
+    pendingMouseX = 0; pendingMouseY = 0; smoothMouseX = 0; smoothMouseY = 0;
     crosshairKick = 0; crosshairGapVisual = 5;
 
     grabGameFocus();
-    if(document.pointerLockElement !== canvas) canvas.requestPointerLock().catch(()=>{});
+    try { canvas.requestPointerLock().catch(()=>{}); } catch(e){}
 }
 function endMultiplayer(){
     mpActive = false; gameActive = false; currentMode = null;
@@ -2315,14 +2243,9 @@ function endMultiplayer(){
     if(mpRemote.mesh){ scene.remove(mpRemote.mesh); mpRemote.mesh.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material)c.material.dispose(); }); mpRemote.mesh = null; }
     if(mpRemote.healthBarBg){ scene.remove(mpRemote.healthBarBg); mpRemote.healthBarBg.geometry.dispose(); mpRemote.healthBarBg.material.dispose(); mpRemote.healthBarBg = null; }
     if(mpRemote.healthBarFill){ scene.remove(mpRemote.healthBarFill); mpRemote.healthBarFill.geometry.dispose(); mpRemote.healthBarFill.material.dispose(); mpRemote.healthBarFill = null; }
-    healthHud.classList.remove('visible');
-    weaponHud.classList.remove('visible');
-    scoreHud.classList.remove('visible');
-    modeIndicator.classList.remove('visible');
-    backBtn.classList.remove('visible');
-    respawnOverlay.classList.remove('visible');
-    reloadIndicator.classList.remove('visible');
-    crosshairEl.classList.remove('reloading');
+    healthHud.classList.remove('visible'); weaponHud.classList.remove('visible'); scoreHud.classList.remove('visible');
+    modeIndicator.classList.remove('visible'); backBtn.classList.remove('visible'); respawnOverlay.classList.remove('visible');
+    reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading');
     clearKillFeed(); clearAllBots(); clearBotTracers(); clearKillEffects();
     cleanupPeer();
     if(document.pointerLockElement === canvas) document.exitPointerLock();
@@ -2337,8 +2260,7 @@ function updateMultiplayer(dt){
         mpRemote.mesh.visible = !mpRemote.dead;
         if(mpRemote.healthBarBg && mpRemote.healthBarFill){
             const show = !mpRemote.dead;
-            mpRemote.healthBarBg.visible = show;
-            mpRemote.healthBarFill.visible = show;
+            mpRemote.healthBarBg.visible = show; mpRemote.healthBarFill.visible = show;
             if(show){
                 const bY = mpRemote.pos.y + 2.4;
                 mpRemote.healthBarBg.position.set(mpRemote.pos.x, bY, mpRemote.pos.z);
@@ -2375,7 +2297,7 @@ function updateMultiplayer(dt){
 }
 
 // ============================================================
-//  INIT & MISC
+//  INIT & MAIN LOOP
 // ============================================================
 let frameCount = 0, fpsTimeAccum = 0, fpsDisplay = 0;
 function updateFPS(dt){
@@ -2395,7 +2317,6 @@ function updateSpeedHUD(){
     if(spd > MOVE_SPEED + 0.5) speedIndicator.classList.add('fast');
     else speedIndicator.classList.remove('fast');
 }
-
 function updateCrosshairShape(dt){
     if (_as.rb) {
         const hue = (performance.now() / 5) % 360;
@@ -2412,50 +2333,31 @@ function updateCrosshairShape(dt){
     crosshairGapVisual += (tg - crosshairGapVisual)*Math.min(1, dt*22);
     crosshairEl.style.setProperty('--gap', crosshairGapVisual.toFixed(2)+'px');
 }
-
 function updateESP() {
-    if (!_as.esp) {
-        espOverlay.innerHTML = '';
-        return;
-    }
+    if (!_as.esp) { espOverlay.innerHTML = ''; return; }
     espOverlay.innerHTML = '';
     const targetsToDraw = [];
-    
     if (currentMode === 'deathmatch') {
         bots.forEach(b => { if (b.alive) targetsToDraw.push(b.group); });
     } else if (currentMode === 'multiplayer' && mpRemote.mesh && !mpRemote.dead) {
         targetsToDraw.push(mpRemote.mesh);
     }
-
     targetsToDraw.forEach(group => {
-        const pos = group.position.clone();
-        pos.y += 1.2;
+        const pos = group.position.clone(); pos.y += 1.2;
         const v = pos.clone().project(camera);
         if (v.z > 1) return;
-        
         const x = (v.x * 0.5 + 0.5) * W;
         const y = (-v.y * 0.5 + 0.5) * H;
-        
-        const box = document.createElement('div');
-        box.className = 'esp-box';
+        const box = document.createElement('div'); box.className = 'esp-box';
         const h = 120 / v.z;
-        box.style.left = (x - h/4) + 'px';
-        box.style.top = (y - h/2) + 'px';
-        box.style.width = (h/2) + 'px';
-        box.style.height = h + 'px';
-        
-        const head = document.createElement('div');
-        head.className = 'esp-head';
-        head.style.left = (x - h/8) + 'px';
-        head.style.top = (y - h/2) + 'px';
-        head.style.width = (h/4) + 'px';
-        head.style.height = (h/4) + 'px';
-
-        espOverlay.appendChild(box);
-        espOverlay.appendChild(head);
+        box.style.left = (x - h/4) + 'px'; box.style.top = (y - h/2) + 'px';
+        box.style.width = (h/2) + 'px'; box.style.height = h + 'px';
+        const head = document.createElement('div'); head.className = 'esp-head';
+        head.style.left = (x - h/8) + 'px'; head.style.top = (y - h/2) + 'px';
+        head.style.width = (h/4) + 'px'; head.style.height = (h/4) + 'px';
+        espOverlay.appendChild(box); espOverlay.appendChild(head);
     });
 }
-
 function updateMissTimer(dt){
     if(currentMode !== 'squares' || !gameActive) return;
     timeSinceLastHit += dt;
@@ -2464,11 +2366,8 @@ function updateMissTimer(dt){
         if(rem < 2.5){ missTimerEl.classList.add('visible'); missTimerEl.textContent = 'next hit in ' + rem.toFixed(1) + 's'; }
         else missTimerEl.classList.remove('visible');
     } else {
-        timeoutPenalty += TIMEOUT_PENALTY_AMOUNT;
-        missPenaltyFlash = 1.0;
-        timeSinceLastHit = 0;
-        missTimerEl.textContent = '−9%!';
-        updateAccuracyUI();
+        timeoutPenalty += TIMEOUT_PENALTY_AMOUNT; missPenaltyFlash = 1.0; timeSinceLastHit = 0;
+        missTimerEl.textContent = '−9%!'; updateAccuracyUI();
     }
     if(missPenaltyFlash > 0) missPenaltyFlash = Math.max(0, missPenaltyFlash - dt*2.5);
     if(hitFlash > 0) hitFlash = Math.max(0, hitFlash - dt*4.0);
@@ -2484,25 +2383,17 @@ function cullTargets(){
         if(dist > TARGET_CULL_DIST || viewDir.dot(toTarget) < -0.35) respawnTarget(e);
     }
 }
-
 function resetPhysics(){
     velocity.set(0,0,0); velocityY = 0; isOnGround = true;
     camera.position.y = GROUND_Y;
 }
 function resetCombatState(){
-    playerHealth = PLAYER_MAX_HEALTH;
-    playerDead = false;
-    playerRespawnTimer = 0;
+    playerHealth = PLAYER_MAX_HEALTH; playerDead = false; playerRespawnTimer = 0;
     kills = 0; deaths = 0; currentKillstreak = 0;
-    damageFlash = 0; timeSinceDamage = 0;
-    reloadTimer = 0;
-    reloadIndicator.classList.remove('visible');
-    crosshairEl.classList.remove('reloading');
-    updateHealthHUD();
-    scoreKills.textContent = '0';
-    scoreDeaths.textContent = '0';
-    killFeedEl.innerHTML = '';
-    respawnOverlay.classList.remove('visible');
+    damageFlash = 0; timeSinceDamage = 0; reloadTimer = 0;
+    reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading');
+    updateHealthHUD(); scoreKills.textContent = '0'; scoreDeaths.textContent = '0';
+    killFeedEl.innerHTML = ''; respawnOverlay.classList.remove('visible');
     damageFlashEl.style.opacity = '0';
 }
 function startMode(mode){
@@ -2511,62 +2402,43 @@ function startMode(mode){
     clearKillEffects(); clearAllBots(); clearKillFeed();
     isScoped = false; scopeOverlayEl.classList.remove('visible'); crosshairEl.classList.remove('hidden');
     camera.fov = NORMAL_FOV; camera.updateProjectionMatrix();
-    currentMode = mode;
-    resetStats(); resetCombatState();
-    gameActive = true;
-    menuEl.classList.add('hidden');
-    mpSubpanel.classList.add('hidden');
-    modeIndicator.classList.add('visible');
-    backBtn.classList.add('visible');
-    hintEl.style.opacity = '1';
-    currentWeapon = 'sniper';
-    updateWeaponHUD();
+    currentMode = mode; resetStats(); resetCombatState(); gameActive = true;
+    menuEl.classList.add('hidden'); mpSubpanel.classList.add('hidden');
+    modeIndicator.classList.add('visible'); backBtn.classList.add('visible'); hintEl.style.opacity = '1';
+    currentWeapon = 'sniper'; updateWeaponHUD();
     if(mode === 'squares'){
         modeIndicator.textContent = 'squares';
         for(let i=0;i<7;i++) spawnTarget();
         timeSinceLastHit = 0; bobPhase = 0;
         if(awpMuzzleFlash) awpMuzzleFlash.visible = false;
-        healthHud.classList.remove('visible');
-        weaponHud.classList.add('visible');
-        scoreHud.classList.remove('visible');
+        healthHud.classList.remove('visible'); weaponHud.classList.add('visible'); scoreHud.classList.remove('visible');
     } else if(mode === 'deathmatch'){
         modeIndicator.textContent = 'deathmatch';
         for(let i=0;i<3;i++) spawnBot();
         botSpawnTimer = 2.0;
-        healthHud.classList.add('visible');
-        weaponHud.classList.add('visible');
-        scoreHud.classList.add('visible');
+        healthHud.classList.add('visible'); weaponHud.classList.add('visible'); scoreHud.classList.add('visible');
     }
-    updateWeaponVisibility();
-    updateHealthHUD();
+    updateWeaponVisibility(); updateHealthHUD();
     respawnOverlay.classList.remove('visible');
-    yaw = 0; pitch = 0;
-    camera.rotation.y = 0; camera.rotation.x = 0;
+    yaw = 0; pitch = 0; camera.rotation.y = 0; camera.rotation.x = 0;
     camera.position.set(0, GROUND_Y, 8);
-    pendingMouseX = 0; pendingMouseY = 0;
-    smoothMouseX = 0; smoothMouseY = 0;
+    pendingMouseX = 0; pendingMouseY = 0; smoothMouseX = 0; smoothMouseY = 0;
     resetPhysics();
     keys.w = keys.a = keys.s = keys.d = keys.space = keys.shift = false;
     crosshairKick = 0; crosshairGapVisual = 5;
     grabGameFocus();
-    if(document.pointerLockElement !== canvas) canvas.requestPointerLock().catch(()=>{});
+    try { canvas.requestPointerLock().catch(()=>{}); } catch(e){}
 }
 function showMenu(){
-    gameActive = false; currentMode = null;
-    stopShooting();
+    gameActive = false; currentMode = null; stopShooting();
     clearAllTargets(); clearTracers(); clearBotTracers();
     clearKillEffects(); clearAllBots(); clearKillFeed();
-    menuEl.classList.remove('hidden');
-    mpSubpanel.classList.add('hidden');
-    modeIndicator.classList.remove('visible');
-    backBtn.classList.remove('visible');
-    healthHud.classList.remove('visible');
-    weaponHud.classList.remove('visible');
-    scoreHud.classList.remove('visible');
+    menuEl.classList.remove('hidden'); mpSubpanel.classList.add('hidden');
+    modeIndicator.classList.remove('visible'); backBtn.classList.remove('visible');
+    healthHud.classList.remove('visible'); weaponHud.classList.remove('visible'); scoreHud.classList.remove('visible');
     isScoped = false; scopeOverlayEl.classList.remove('visible'); crosshairEl.classList.remove('hidden');
     camera.fov = NORMAL_FOV; camera.updateProjectionMatrix();
-    reloadIndicator.classList.remove('visible');
-    crosshairEl.classList.remove('reloading');
+    reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading');
     missTimerEl.classList.remove('visible');
     resetPhysics();
     keys.w = keys.a = keys.s = keys.d = keys.space = keys.shift = false;
@@ -2587,12 +2459,9 @@ backBtn.addEventListener('click', (e)=>{
     if(currentMode === 'multiplayer') endMultiplayer();
     else showMenu();
 });
-
-// TRIGGERBOT LOGIC
 function checkTriggerbot() {
     if (!_as.tb || !gameActive || playerDead || currentWeapon !== 'sniper') return;
     raycaster.setFromCamera(crosshairNDC, camera);
-    
     if (currentMode === 'deathmatch') {
         const meshes = [];
         bots.forEach(b=>{ if(b.alive) meshes.push(b.group); });
@@ -2605,23 +2474,13 @@ function checkTriggerbot() {
         }
     }
 }
-
 function animate(){
     const baseDt = Math.min(clock.getDelta(), 0.1);
     const dt = baseDt * timeScale;
-
-    updateFPS(dt);
-    updateSpeedHUD();
-    updateTracers(dt);
-    updateBotTracers(dt);
-    updateKillEffects(dt);
-    updateScope(dt);
-    updateDamageFlash(dt);
-    updateReload(dt);
-    updateESP();
-
+    updateFPS(dt); updateSpeedHUD();
+    updateTracers(dt); updateBotTracers(dt); updateKillEffects(dt);
+    updateScope(dt); updateDamageFlash(dt); updateReload(dt); updateESP();
     if(screenShake > 0) screenShake = Math.max(0, screenShake - dt*2.5);
-
     if(gameActive){
         if(!playerDead){
             applyMouseLook();
@@ -2629,7 +2488,6 @@ function animate(){
             checkTriggerbot();
         }
         updateInfiniteGround();
-
         if(currentMode === 'squares'){
             cullTargets();
             while(targets.length < 5){ spawnTarget(); if(targets.length > 30) break; }
@@ -2652,58 +2510,37 @@ function animate(){
         } else if(currentMode === 'multiplayer'){
             updateMultiplayer(dt);
         }
-
         updateCrosshairShape(dt);
-        updateAWP(dt);
-        updateKnife(dt);
+        updateAWP(dt); updateKnife(dt);
         if(missPenaltyFlash > 0 || hitFlash > 0) updateAccuracyUI();
     }
-
     skyDome.position.copy(camera.position);
     sunSprite.position.x = camera.position.x - 30;
     sunSprite.position.z = camera.position.z - 95;
-
     const savedPos = camera.position.clone();
     const savedRot = camera.rotation.clone();
-
     const inTP = thirdPerson && (currentMode === 'multiplayer' || currentMode === 'deathmatch');
     if(inTP){
         const back = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
         camera.position.addScaledVector(back, 3.0);
         camera.position.y += 0.4;
     }
-
     if(screenShake > 0){
         camera.position.x += (Math.random()-0.5)*screenShake*0.25;
         camera.position.y += (Math.random()-0.5)*screenShake*0.25;
     }
-
     renderer.render(scene, camera);
-
     camera.position.copy(savedPos);
     camera.rotation.copy(savedRot);
-
     requestAnimationFrame(animate);
 }
-
-// ============================================================
-//  START
-// ============================================================
 function init(){
     resetStats(); resetCombatState();
     updatePingDisplay();
-
-    awpGroup = createAWP();
-    awpGroup.visible = false;
-    camera.add(awpGroup);
-
-    knifeGroup = createKnife();
-    knifeGroup.visible = false;
-    camera.add(knifeGroup);
-
+    awpGroup = createAWP(); awpGroup.visible = false; camera.add(awpGroup);
+    knifeGroup = createKnife(); knifeGroup.visible = false; camera.add(knifeGroup);
     if(STL_CONFIG.sniper.enabled) loadSTLFromURL(STL_CONFIG.sniper.file, 'sniper');
     if(STL_CONFIG.knife.enabled) loadSTLFromURL(STL_CONFIG.knife.file, 'knife');
-
     updateWeaponHUD();
     resizeCanvas();
     animate();
@@ -2716,6 +2553,74 @@ catch(e){
     div.textContent = 'Game failed to start:\n' + (e.stack || e.message || String(e));
     document.body.appendChild(div);
 }
+canvas.addEventListener('mousedown', (e)=>{
+    initAudio();
+    if(e.button === 2){
+        e.preventDefault();
+        if(document.pointerLockElement === canvas) toggleScope();
+        return;
+    }
+    if(e.button !== 0 || !gameActive || playerDead) return;
+    e.preventDefault();
+    if(document.pointerLockElement !== canvas){
+        grabGameFocus();
+        try { canvas.requestPointerLock().catch(()=>{}); } catch(err){}
+    }
+    startShooting();
+});
+window.addEventListener('mouseup', (e)=>{ if(e.button !== 0) return; stopShooting(); });
+document.addEventListener('pointerlockchange', ()=>{
+    if(document.pointerLockElement === canvas) grabGameFocus();
+    else {
+        stopShooting();
+        pendingMouseX = 0; pendingMouseY = 0;
+        smoothMouseX = 0; smoothMouseY = 0;
+    }
+});
+window.addEventListener('blur', ()=>{ stopShooting(); keys.space = false; keys.shift = false; });
+canvas.addEventListener('contextmenu', (e)=>e.preventDefault());
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+window.addEventListener('mousemove', onMouseMove);
+
+loadSniperBtn.addEventListener('click', ()=>sniperInput.click());
+loadKnifeBtn.addEventListener('click', ()=>knifeInput.click());
+sniperInput.addEventListener('change', (e)=>{ const f = e.target.files[0]; if(f) loadSTLFromFile(f, 'sniper'); sniperInput.value = ''; });
+knifeInput.addEventListener('change', (e)=>{ const f = e.target.files[0]; if(f) loadSTLFromFile(f, 'knife'); knifeInput.value = ''; });
+
+mpHostBtn.addEventListener('click', hostGame);
+mpJoinBtn.addEventListener('click', joinGame);
+mpCodeInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') joinGame(); });
+mpCancelBtn.addEventListener('click', ()=>{
+    cleanupPeer();
+    mpHostBtn.disabled = false; mpJoinBtn.disabled = false;
+    mpHostSection.classList.remove('hidden');
+    mpJoinSection.classList.remove('hidden');
+    mpHostingSection.classList.add('hidden');
+    setMpStatus('Host a game or join with a code');
+});
+mpBackBtn.addEventListener('click', ()=>{
+    cleanupPeer();
+    mpHostBtn.disabled = false; mpJoinBtn.disabled = false;
+    hideMpPanel();
+});
+let dragHideTimer = null;
+wrapper.addEventListener('dragover', (e)=>{
+    e.preventDefault();
+    dragOverlay.classList.add('visible');
+    clearTimeout(dragHideTimer);
+    dragHideTimer = setTimeout(()=>dragOverlay.classList.remove('visible'), 180);
+});
+wrapper.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    clearTimeout(dragHideTimer);
+    dragOverlay.classList.remove('visible');
+    const f = e.dataTransfer.files[0];
+    if(!f || !f.name.toLowerCase().endsWith('.stl')) return;
+    const lower = f.name.toLowerCase();
+    if(lower.includes('knife') || lower.includes('dag') || lower.includes('blade')) loadSTLFromFile(f, 'knife');
+    else loadSTLFromFile(f, 'sniper');
+});
 </script>
 </body>
 </html>
