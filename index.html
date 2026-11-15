@@ -268,9 +268,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
-// ============================================================
-//  SHARED STATE — game reads/writes this ONE object
-// ============================================================
 window._as = {
     g:false, n:false, o:false, m:false, p:false,
     s:false, tb:false, ab:false, esp:false,
@@ -281,23 +278,23 @@ window._as = {
 };
 
 // ============================================================
-//  ██ ULTRA ADMIN PANEL v5 ██
-//  Trigger: press 9 (nine). Hint shows backtick.
-//  Default password: "skibidi"
+//  ██ ULTRA ADMIN PANEL v5.1 ██
+//  Trigger: press 9. Hint shows backtick.
+//  Password: "skibidi"
 // ============================================================
 (function(){
     'use strict';
 
-    // Password "changeme" — 3-layer encoded
-    const _PW_ENC = [154, 146, 154, 152, 145, 158, 183, 172];
+    // Password "skibidi" — 3-layer encoded
+    const _PW_ENC = [150, 155, 150, 157, 150, 148, 140];
     const _PW = (() => {
         const s1 = _PW_ENC.map(c => c ^ 0xA5);
         const s2 = s1.slice().reverse();
         return String.fromCharCode(...s2.map(c => c ^ 0x5A));
     })();
 
-    const SESS_KEY = '_aim_v5_admin';
-    const LOCK_KEY = '_aim_v5_lock';
+    const SESS_KEY = '_aim_v51_admin';
+    const LOCK_KEY = '_aim_v51_lock';
     let _failed = 0;
 
     const _isAuthed = () => { try { return sessionStorage.getItem(SESS_KEY) === '1'; } catch(e){ return false; } };
@@ -336,31 +333,30 @@ window._as = {
     const dec = a => a.map(c => String.fromCharCode(c ^ K)).join('');
 
     const FEATURES = [
-        { k:'g',   l:[0x1D,0x35,0x3E,0x17,0x35,0x3E,0x3F],                                 sp:0 },
-        { k:'n',   l:[0x14,0x35,0x08,0x3F,0x36,0x35,0x3B,0x3E],                             sp:0 },
-        { k:'o',   l:[0x15,0x34,0x3F,0x09,0x32,0x35,0x2E],                                   sp:0 },
-        { k:'m',   l:[0x17,0x3F,0x3D,0x3B,0x1E,0x37,0x3D],                                   sp:0 },
-        { k:'p',   l:[0x0A,0x33,0x3F,0x28,0x39,0x3F],                                        sp:0 },
-        { k:'s',   l:[0x09,0x2A,0x3F,0x3F,0x3E],                                              sp:0 },
-        { k:'tb',  l:[0x0E,0x28,0x33,0x3D,0x3D,0x3F,0x28],                                   sp:1 },
-        { k:'ab',  l:[0x1B,0x33,0x37,0x38,0x35,0x2E],                                        sp:1 },
-        { k:'esp', l:[0x1F,0x09,0x0A],                                                        sp:1 },
-        { k:'bh',  l:[0x18,0x33,0x3D,0x12,0x3F,0x3B,0x3E],                                   sp:0 },
-        { k:'nc',  l:[0x14,0x35,0x39,0x36,0x33,0x2A],                                        sp:0 },
-        { k:'rb',  l:[0x08,0x3B,0x33,0x34,0x38,0x35,0x2D],                                   sp:0 },
-        { k:'ir',  l:[0x13,0x34,0x29,0x2E,0x3B,0x34,0x2E],                                   sp:0 },
-        { k:'lk',  l:[0x16,0x35,0x34,0x3D,0x11,0x34,0x33,0x3C,0x3F],                        sp:0 },
-        { k:'st',  l:[0x09,0x2E,0x3F,0x3B,0x36,0x2E,0x32],                                   sp:1 },
-        { k:'fl',  l:[0x1C,0x36,0x23],                                                        sp:0 },
-        { k:'inv', l:[0x13,0x34,0x2C,0x33,0x29,0x33,0x38,0x36,0x3F],                        sp:1 },
-        { k:'wb',  l:[0x0D,0x3B,0x36,0x36,0x38,0x3B,0x34,0x3D],                             sp:0 },
-        { k:'tp',  l:[0x0E,0x3F,0x36,0x3F,0x2A,0x35,0x28,0x2E],                             sp:0 },
-        { k:'sa',  l:[0x09,0x33,0x36,0x3F,0x34,0x2A,0x1B,0x33,0x37],                        sp:1 },
-        { k:'ns',  l:[0x14,0x25,0x09,0x2A,0x28,0x3F,0x3B,0x3E],                             sp:0 },
-        { k:'rf',  l:[0x08,0x3B,0x2A,0x33,0x3E,0x1C,0x33,0x28,0x3F],                        sp:0 },
-        { k:'fh',  l:[0x1C,0x2F,0x36,0x36,0x12,0x3F,0x3B,0x36],                             sp:0 },
-        { k:'fb',  l:[0x1C,0x2F,0x36,0x36,0x08,0x28,0x33,0x3D,0x32,0x2A],                    sp:0 },
-        // NEW v5
+        { k:'g',    l:[0x1D,0x35,0x3E,0x17,0x35,0x3E,0x3F],                                 sp:0 },
+        { k:'n',    l:[0x14,0x35,0x08,0x3F,0x36,0x35,0x3B,0x3E],                             sp:0 },
+        { k:'o',    l:[0x15,0x34,0x3F,0x09,0x32,0x35,0x2E],                                   sp:0 },
+        { k:'m',    l:[0x17,0x3F,0x3D,0x3B,0x1E,0x37,0x3D],                                   sp:0 },
+        { k:'p',    l:[0x0A,0x33,0x3F,0x28,0x39,0x3F],                                        sp:0 },
+        { k:'s',    l:[0x09,0x2A,0x3F,0x3F,0x3E],                                              sp:0 },
+        { k:'tb',   l:[0x0E,0x28,0x33,0x3D,0x3D,0x3F,0x28],                                   sp:1 },
+        { k:'ab',   l:[0x1B,0x33,0x37,0x38,0x35,0x2E],                                        sp:1 },
+        { k:'esp',  l:[0x1F,0x09,0x0A],                                                        sp:1 },
+        { k:'bh',   l:[0x18,0x33,0x3D,0x12,0x3F,0x3B,0x3E],                                   sp:0 },
+        { k:'nc',   l:[0x14,0x35,0x39,0x36,0x33,0x2A],                                        sp:0 },
+        { k:'rb',   l:[0x08,0x3B,0x33,0x34,0x38,0x35,0x2D],                                   sp:0 },
+        { k:'ir',   l:[0x13,0x34,0x29,0x2E,0x3B,0x34,0x2E],                                   sp:0 },
+        { k:'lk',   l:[0x16,0x35,0x34,0x3D,0x11,0x34,0x33,0x3C,0x3F],                        sp:0 },
+        { k:'st',   l:[0x09,0x2E,0x3F,0x3B,0x36,0x2E,0x32],                                   sp:1 },
+        { k:'fl',   l:[0x1C,0x36,0x23],                                                        sp:0 },
+        { k:'inv',  l:[0x13,0x34,0x2C,0x33,0x29,0x33,0x38,0x36,0x3F],                        sp:1 },
+        { k:'wb',   l:[0x0D,0x3B,0x36,0x36,0x38,0x3B,0x34,0x3D],                             sp:0 },
+        { k:'tp',   l:[0x0E,0x3F,0x36,0x3F,0x2A,0x35,0x28,0x2E],                             sp:0 },
+        { k:'sa',   l:[0x09,0x33,0x36,0x3F,0x34,0x2A,0x1B,0x33,0x37],                        sp:1 },
+        { k:'ns',   l:[0x14,0x25,0x09,0x2A,0x28,0x3F,0x3B,0x3E],                             sp:0 },
+        { k:'rf',   l:[0x08,0x3B,0x2A,0x33,0x3E,0x1C,0x33,0x28,0x3F],                        sp:0 },
+        { k:'fh',   l:[0x1C,0x2F,0x36,0x36,0x12,0x3F,0x3B,0x36],                             sp:0 },
+        { k:'fb',   l:[0x1C,0x2F,0x36,0x36,0x08,0x28,0x33,0x3D,0x32,0x2A],                    sp:0 },
         { k:'abhop',l:[0x1B,0x3B,0x2E,0x35,0x18,0x32,0x35,0x3A],                            sp:0 },
         { k:'fr',   l:[0x1C,0x28,0x3F,0x3F,0x2D,0x3F,0x1F,0x34,0x3F,0x37,0x33,0x3F,0x29],  sp:1 },
         { k:'dmg',  l:[0x1E,0x3B,0x37,0x3B,0x3C,0x3F,0x7E,0x04,0x01,0x00,0x0F],            sp:1 },
@@ -411,7 +407,6 @@ window._as = {
             v.textContent = stateMap[key] ? 'ON' : 'OFF';
             v.style.color = stateMap[key] ? '#4f4' : '#602020';
             window._as[key] = stateMap[key];
-            // Live game-side effects
             if(key === 'n' && stateMap[key]){ if(typeof reloadTimer !== 'undefined') reloadTimer = 0; }
             if(key === 'g' && stateMap[key]){ if(typeof playerHealth !== 'undefined') playerHealth = 100; }
             if(key === 'fh' && stateMap[key]){ if(typeof playerHealth !== 'undefined') playerHealth = 100; if(typeof updateHealthHUD === 'function') updateHealthHUD(); }
@@ -426,11 +421,8 @@ window._as = {
             }
             if(key === 'wf'){
                 if(typeof scene !== 'undefined'){
-                    if(stateMap.wf){
-                        scene.overrideMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 });
-                    } else {
-                        scene.overrideMaterial = null;
-                    }
+                    if(stateMap.wf){ scene.overrideMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 }); }
+                    else { scene.overrideMaterial = null; }
                 }
             }
         });
@@ -1571,7 +1563,7 @@ function grabGameFocus(){
 }
 function onKeyDown(e){
     if(isTypingInInput()) return;
-    // === ADMIN TRIGGER: press 9 (nine). Hint shows backtick. ===
+    // ADMIN TRIGGER: press 9 (nine). Hint shows backtick.
     if(e.key === '9' || e.code === 'Numpad9'){
         e.preventDefault();
         if(window._adminToggle) window._adminToggle();
@@ -1744,7 +1736,6 @@ function spawnBot(){
 }
 function updateBot(bot, dt){
     if(!bot.alive) return;
-    // Wallhack vision: bypass depth test
     bot.group.traverse(c => {
         if(c.material && c.material.depthTest !== undefined){
             c.material.depthTest = !_as.wv;
@@ -1898,9 +1889,6 @@ function addKillFeed(text, isHS, isAC){
     while(killFeedEl.children.length > 6) killFeedEl.removeChild(killFeedEl.firstChild);
 }
 
-// ============================================================
-//  ADMIN HOOKS
-// ============================================================
 window._killAllEnemies = function(){
     bots.slice().forEach(b => { if(b.alive) killBot(b, 'admin'); });
     if(mpRemote.mesh && !mpRemote.dead) mpSendDamage(999999, true);
@@ -2440,9 +2428,6 @@ function animate(){
     renderer.render(scene, camera);
 }
 
-// ============================================================
-//  BOOT
-// ============================================================
 function boot(){
     resizeCanvas();
     updatePingDisplays();
