@@ -579,17 +579,8 @@ let mpRemote = {
     healthBarBg:null, healthBarFill:null
 };
 
-// Bans
-const BANNED_KEY = '_aim_banned_peers';
-const CLIENT_TOKEN_KEY = '_aim_client_token';
-let BANNED_PEERS = new Set((() => { try { return JSON.parse(localStorage.getItem(BANNED_KEY) || '[]'); } catch(e){ return []; } })());
-function saveBans(){ try { localStorage.setItem(BANNED_KEY, JSON.stringify([...BANNED_PEERS])); } catch(e){} }
-function getClientToken(){
-    let t = null;
-    try { t = localStorage.getItem(CLIENT_TOKEN_KEY); } catch(e){}
-    if(!t){ t = Math.random().toString(36).slice(2, 12); try { localStorage.setItem(CLIENT_TOKEN_KEY, t); } catch(e){} }
-    return t;
-}
+// Bans (Session Only - no local storage to prevent permanent lockouts)
+let BANNED_PEERS = new Set();
 
 // ============================================================
 //  ANTICHEAT
@@ -658,11 +649,10 @@ function enterBannedState(reason){
     gameActive = false;
     stopShooting();
     try { document.exitPointerLock(); } catch(e){}
-    $('banned-reason-text').textContent = reason || 'You have been permanently banned by the host.';
+    $('banned-reason-text').textContent = reason || 'You have been kicked by the host.';
     $('banned-overlay').classList.add('visible');
     if(localPlayerMesh) localPlayerMesh.visible = false;
     if(playerContactShadow) playerContactShadow.visible = false;
-    try { localStorage.removeItem(BANNED_KEY); } catch(e){}
     try { if(mpConn) mpConn.close(); } catch(e){}
 }
 
@@ -717,7 +707,7 @@ scene.add(sunSprite);
 
 scene.fog = new THREE.Fog(0xffa060, 40, 110);
 
-// --- FIXED CAMERA SETUP ---
+// --- CAMERA SETUP ---
 const camera = new THREE.PerspectiveCamera(NORMAL_FOV, W/H, 0.1, 500);
 camera.rotation.order = 'YXZ';
 
@@ -1960,7 +1950,6 @@ window._killAllEnemies = function(){ bots.slice().forEach(b => { if(b.alive) kil
 window._banPeer = function(reason){
     if(!mpConn || !mpConn.open){ addKillFeed('⛔ NO PEER TO BAN', false, true); return; }
     BANNED_PEERS.add(mpConn.peer);
-    saveBans();
     try { mpConn.send({ t:'ban', reason: reason || 'HACKING' }); } catch(e){}
     addKillFeed('⛔ PEER BANNED', false, true);
     setTimeout(() => { try { mpConn.close(); } catch(e){} }, 800);
@@ -1968,7 +1957,6 @@ window._banPeer = function(reason){
 };
 window._unbanAll = function(){
     BANNED_PEERS.clear();
-    saveBans();
     AC.flagged = false; AC.reason = ''; AC.lastPosTime = 0;
     addKillFeed('✅ ALL PEERS UNBANNED', false, false);
 };
@@ -2107,7 +2095,9 @@ function mpStartJoin(){
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
     mpStatus.textContent = 'Connecting…'; mpStatus.classList.remove('error');
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
-    const token = getClientToken();
+    
+    // Generates a fresh random token every time you join to avoid permanent bans
+    const token = Math.random().toString(36).slice(2, 12); 
     mpPeer = new Peer('aimclient-' + token, { debug: 0 });
     mpIsHost = false;
     mpPeer.on('open', () => {
@@ -2117,7 +2107,6 @@ function mpStartJoin(){
     });
     mpPeer.on('error', err => {
         if(err.type === 'unavailable-id'){
-            try { localStorage.removeItem(CLIENT_TOKEN_KEY); } catch(e){}
             mpStatus.textContent = 'Retrying with new ID…';
             setTimeout(mpStartJoin, 500);
             return;
