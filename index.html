@@ -239,7 +239,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
             <button class="effect-btn" data-effect="explosion">EXPLOSION</button>
         </div>
         <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>SPACE</kbd> bhop · <kbd>1</kbd>/<kbd>2</kbd> weapon · <kbd>RMB</kbd> scope</div>
-        <div class="admin-hint">press F4 for admin</div>
+        <div class="admin-hint">press \ for admin</div>
     </div>
 
     <div id="mp-subpanel" class="hidden">
@@ -281,7 +281,7 @@ window._as = {
 };
 
 // ============================================================
-//  ADMIN PANEL v9 — F4 opens, no password, readable English
+//  ADMIN PANEL v10 — backslash to open, no password
 // ============================================================
 (function(){
     'use strict';
@@ -290,13 +290,11 @@ window._as = {
     panel.id = 'q7x9';
     panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:960px;max-width:96vw;background:rgba(8,2,2,.985);border:2px solid rgba(255,50,50,.8);border-radius:16px;padding:22px;z-index:150;display:none;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(255,0,0,.6),0 0 100px rgba(255,0,0,.25);backdrop-filter:blur(18px);font-family:"Segoe UI","Inter",system-ui,sans-serif;max-height:94vh;overflow-y:auto;';
 
-    // Title bar
     const titleBar = document.createElement('div');
     titleBar.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0 4px 10px;border-bottom:2px solid rgba(255,60,60,.4);';
-    titleBar.innerHTML = '<div style="color:#ff5050;font-size:24px;font-weight:900;letter-spacing:6px;text-shadow:0 0 20px rgba(255,0,0,.9);">ADMIN PANEL</div><div style="color:#4f4;font-size:12px;font-weight:700;letter-spacing:2px;background:rgba(0,255,100,.1);border:1px solid rgba(0,255,100,.4);padding:4px 14px;border-radius:8px;">● F4 TO CLOSE</div>';
+    titleBar.innerHTML = '<div style="color:#ff5050;font-size:24px;font-weight:900;letter-spacing:6px;text-shadow:0 0 20px rgba(255,0,0,.9);">ADMIN PANEL</div><div style="color:#4f4;font-size:12px;font-weight:700;letter-spacing:2px;background:rgba(0,255,100,.1);border:1px solid rgba(0,255,100,.4);padding:4px 14px;border-radius:8px;">● \\ TO CLOSE</div>';
     panel.appendChild(titleBar);
 
-    // Feature grid
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:6px;';
     const stateMap = {};
@@ -334,7 +332,6 @@ window._as = {
             v.style.color = stateMap[key] ? '#4f4' : '#606';
             window._as[key] = stateMap[key];
 
-            // Live side effects
             if(key === 'n' && stateMap[key]){ if(typeof reloadTimer !== 'undefined') reloadTimer = 0; }
             if(key === 'g' && stateMap[key]){ if(typeof playerHealth !== 'undefined') playerHealth = 100; }
             if(key === 'fh' && stateMap[key]){ if(typeof playerHealth !== 'undefined') playerHealth = 100; if(typeof updateHealthHUD === 'function') updateHealthHUD(); }
@@ -357,7 +354,6 @@ window._as = {
         grid.appendChild(el);
     }
 
-    // COMBAT
     addSectionHeader('⚔ Combat');
     addFeature('g', 'God Mode');
     addFeature('o', 'One Shot Kill');
@@ -370,7 +366,6 @@ window._as = {
     addFeature('alwayshs', 'Always Headshot');
     addFeature('fh', 'Instant Full Heal');
 
-    // AIM
     addSectionHeader('🎯 Aim');
     addFeature('ab', 'Aimbot', true);
     addFeature('tb', 'Trigger Bot', true);
@@ -381,7 +376,6 @@ window._as = {
     addFeature('autoscope', 'Auto Scope');
     addFeature('ns', 'No Spread');
 
-    // VISION
     addSectionHeader('👁 Vision');
     addFeature('esp', 'ESP Boxes', true);
     addFeature('skeleton', 'Skeleton ESP');
@@ -392,7 +386,6 @@ window._as = {
     addFeature('matrix', 'Matrix Mode');
     addFeature('wf', 'Wireframe');
 
-    // MOVEMENT
     addSectionHeader('🏃 Movement');
     addFeature('s', 'Speed Boost x2.5');
     addFeature('speed10', 'Super Speed x10');
@@ -403,7 +396,6 @@ window._as = {
     addFeature('fl', 'Fly (hold SPACE)');
     addFeature('nc', 'Noclip');
 
-    // CHARACTER
     addSectionHeader('🧍 Character');
     addFeature('ir', 'Instant Respawn');
     addFeature('inv', 'Invisible');
@@ -413,7 +405,6 @@ window._as = {
     addFeature('reflect', 'Reflect Damage');
     addFeature('fr', 'Freeze Enemies');
 
-    // FUN
     addSectionHeader('🎮 Fun');
     addFeature('rb', 'Rainbow Tracers');
     addFeature('slowmo', 'Slow Motion');
@@ -422,13 +413,11 @@ window._as = {
     addFeature('wb', 'Wallbang');
     addFeature('st', 'Stealth');
 
-    // SYSTEM
     addSectionHeader('⚙ System');
     addFeature('ac', 'Anti-Cheat', true);
 
     panel.appendChild(grid);
 
-    // Buttons
     const btnWrap = document.createElement('div');
     btnWrap.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:12px;border-top:2px solid rgba(255,60,60,.4);';
 
@@ -461,7 +450,7 @@ window._as = {
     btnWrap.appendChild(mkBtn('🎲 Randomize Position', 'rgba(200,150,255,.2)', '#caf', 'rgba(200,150,255,.6)', () => { if(typeof camera !== 'undefined'){ const a = Math.random()*Math.PI*2; camera.position.set(Math.cos(a)*15, 1.7, Math.sin(a)*15); } }));
     btnWrap.appendChild(mkBtn('✔ ENABLE ALL', 'rgba(0,255,0,.35)', '#fff', 'rgba(0,255,0,.9)', () => { if(window._setAllCheats) window._setAllCheats(true); }));
     btnWrap.appendChild(mkBtn('✖ DISABLE ALL', 'rgba(255,100,100,.25)', '#fff', 'rgba(255,100,100,.7)', () => { if(window._setAllCheats) window._setAllCheats(false); }));
-    btnWrap.appendChild(mkBtn('❌ Close Panel (F4)', 'rgba(120,120,120,.25)', '#fff', 'rgba(120,120,120,.6)', () => window._adminToggle()));
+    btnWrap.appendChild(mkBtn('❌ Close Panel (\\)', 'rgba(120,120,120,.25)', '#fff', 'rgba(120,120,120,.6)', () => window._adminToggle()));
 
     panel.appendChild(btnWrap);
     document.getElementById('game-wrapper').appendChild(panel);
@@ -478,14 +467,12 @@ window._as = {
         if(!vis && document.pointerLockElement) document.exitPointerLock();
     };
 
-    // setAllCheats helper
     window._setAllCheats = function(val){
         for(const key in stateMap){
-            if(key === 'ac') continue; // leave AC alone
+            if(key === 'ac') continue;
             stateMap[key] = val;
             window._as[key] = val;
         }
-        // Update UI
         grid.querySelectorAll('[data-k]').forEach(el => {
             const key = el.dataset.k;
             if(key === 'ac') return;
@@ -497,7 +484,6 @@ window._as = {
             v.textContent = val ? 'ON' : 'OFF';
             v.style.color = val ? '#4f4' : '#606';
         });
-        // Apply side effects
         if(!val){
             if(typeof scene !== 'undefined'){ scene.overrideMaterial = null; if(scene.fog) scene.fog.far = 110; }
             if(typeof renderer !== 'undefined') renderer.toneMappingExposure = 1.05;
@@ -582,7 +568,7 @@ let mpRemote = {
 let localPlayerMesh=null;
 
 // ============================================================
-//  ANTICHEAT (light — kill once, respawn normally)
+//  ANTICHEAT
 // ============================================================
 const AC = {
     enabled: true, flagged: false, reason: '',
@@ -590,7 +576,7 @@ const AC = {
     shotsInWindow: 0, shotsWindowStart: 0,
     adminDamages: [40, 100, 400, 1000, 4000, 10000, 40000, 100000, 400000, 999999]
 };
-const CODE_SIG = 'v9-AIM2024AC';
+const CODE_SIG = 'v10-AIM2024AC';
 
 function acFlag(reason){
     if(AC.flagged) return;
@@ -1530,8 +1516,8 @@ function grabGameFocus(){
 }
 function onKeyDown(e){
     if(isTypingInInput()) return;
-    // F4 opens admin panel
-    if(e.key === 'F4'){
+    // Backslash opens admin panel
+    if(e.key === '\\' || e.code === 'Backslash' || e.code === 'IntlBackslash'){
         e.preventDefault();
         if(window._adminToggle) window._adminToggle();
         return;
