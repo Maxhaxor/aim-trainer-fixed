@@ -134,7 +134,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .mp-back-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,10,5,.6);border:1px solid rgba(255,200,140,.18);color:#ffd9a8;padding:8px 20px;border-radius:30px;font-family:inherit;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .18s}
 .mp-back-btn:hover{background:rgba(255,140,60,.25);color:#fff0dd}
 
-/* INJECTED ADMIN CSS */
+/* ADMIN PANEL */
 #_ap{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:450px;max-width:90vw;background:rgba(15,5,5,.98);border:2px solid rgba(255,50,50,.6);border-radius:16px;padding:18px;z-index:150;display:none;flex-direction:column;gap:8px;box-shadow:0 12px 50px rgba(255,0,0,.5);backdrop-filter:blur(15px);font-family:'SF Mono',monospace;max-height:85vh;overflow-y:auto}
 #_ap.visible{display:flex}
 ._at{color:#f55;font-size:15px;font-weight:900;letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:4px;text-shadow:0 0 15px rgba(255,0,0,.8)}
@@ -155,7 +155,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 #_ac{position:absolute;top:18px;left:50%;transform:translateX(-50%);margin-left:150px;background:rgba(255,0,200,.9);color:#fff;font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:20px;z-index:148;display:none;font-family:'SF Mono',monospace;pointer-events:none;box-shadow:0 0 20px rgba(255,0,200,.8)}
 #_ac.visible{display:block}
 
-/* ESP Overlay */
 #esp-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .esp-box{position:absolute;border:1.5px solid #ff2222;background:rgba(255,0,0,0.1);border-radius:2px}
 .esp-head{position:absolute;border:1.5px solid #ffff00;background:rgba(255,255,0,0.1);border-radius:2px}
@@ -230,7 +229,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 
     <div id="_ai">⚙ ADMIN</div>
     <div id="_ac">🛡 ANTI-CHEAT</div>
-    <!-- Admin panel injected via JS -->
 
     <div id="menu">
         <h1>aim trainer</h1>
@@ -491,14 +489,9 @@ function updateInfiniteGround(){
 }
 
 // ============================================================
-//  ADMIN PANEL INJECTION (OBFUSCATED)
+//  ADMIN PANEL INJECTION
 // ============================================================
 (function(){
-    const _k = (s) => s.split('').map(c => String.fromCharCode(c.charCodeAt(0) - 3)).join('');
-    const _id = _k('dgplq'); // admin
-    const _cp = _k('_ds'); // _ap
-    const _ci = _k('_dl'); // _ai
-
     const features = [
         { k: 'g', l: 'God Mode', sp: false },
         { k: 'n', l: 'No Reload', sp: false },
@@ -517,7 +510,7 @@ function updateInfiniteGround(){
         { k: 'st', l: 'Stealth (Hide)', sp: true }
     ];
 
-    let html = `<div class="_at">⚙ ${_k('DGPLQ')} SDQHO</div><div class="_as">private — you only</div><div class="_ag">`;
+    let html = `<div class="_at">⚙ ADMIN PANEL</div><div class="_as">private — you only</div><div class="_ag">`;
     
     features.forEach(f => {
         html += `<div class="_tl ${f.sp?'sp':''}" data-x="${f.k}"><span>${f.l}</span><span class="st">OFF</span></div>`;
@@ -530,11 +523,10 @@ function updateInfiniteGround(){
     <button class="_ab" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#ccc" id="_cl">Close (\`)</button>`;
 
     const panel = document.createElement('div');
-    panel.id = _cp;
+    panel.id = '_ap';
     panel.innerHTML = html;
     document.getElementById('game-wrapper').appendChild(panel);
 
-    // Bind clicks dynamically
     panel.querySelectorAll('._tl').forEach(el => {
         el.addEventListener('click', () => {
             const key = el.dataset.x;
@@ -542,7 +534,6 @@ function updateInfiniteGround(){
             el.classList.toggle('on', _as[key]);
             el.querySelector('.st').textContent = _as[key] ? 'ON' : 'OFF';
             
-            // Special logic triggers
             if(key === 'n' && _as.n){ reloadTimer = 0; reloadIndicator.classList.remove('visible'); crosshairEl.classList.remove('reloading'); }
             if(key === 'g' && _as.g){ playerHealth = PLAYER_MAX_HEALTH; updateHealthHUD(); }
             if(key === 'bh'){
@@ -574,16 +565,12 @@ function updateInfiniteGround(){
     });
 
     document.getElementById('_cl').addEventListener('click', () => toggleAdmin());
-
-    // Map global vars for toggling
-    window._adminPanel = panel;
-    window._adminIndicator = document.getElementById(_ci);
 })();
 
 function toggleAdmin(){
     _as.open = !_as.open;
-    window._adminPanel.classList.toggle('visible', _as.open);
-    window._adminIndicator.classList.toggle('visible', _as.open);
+    document.getElementById('_ap').classList.toggle('visible', _as.open);
+    document.getElementById('_ai').classList.toggle('visible', _as.open);
     if(_as.open && document.pointerLockElement === canvas) document.exitPointerLock();
     else if(!_as.open && gameActive){
         setTimeout(()=>{ if(gameActive && !_as.open){ grabGameFocus(); canvas.requestPointerLock().catch(()=>{}); } }, 100);
@@ -667,7 +654,7 @@ function playBlackHoleSound(){
 }
 
 // ============================================================
-//  TARGETS
+//  TARGETS & GAME OBJECTS
 // ============================================================
 const TARGET_SIZE=1.4;
 const targetMat = new THREE.MeshStandardMaterial({ color:0x2a0a3a, emissive:0x6a1ac0, emissiveIntensity:0.9, roughness:0.35, metalness:0.5 });
@@ -726,7 +713,7 @@ function clearAllTargets(){
 }
 
 // ============================================================
-//  AWP PROCEDURAL FALLBACK
+//  AWP & KNIFE MODELS
 // ============================================================
 let awpGroup=null, awpMuzzleFlash=null, awpFlashTimer=0, bobPhase=0;
 function createAWP(){
@@ -904,7 +891,7 @@ async function loadSTLFromFile(file, weapon){
 }
 
 // ============================================================
-//  WEAPON SWITCHING
+//  WEAPON SWITCHING & UPDATE
 // ============================================================
 function switchWeapon(weapon){
     if(currentWeapon === weapon) return;
@@ -931,7 +918,6 @@ function updateWeaponVisibility(){
 function updateWeaponHUD(){
     document.querySelectorAll('.weapon-slot').forEach(s=>s.classList.toggle('active', s.dataset.weapon === currentWeapon));
 }
-
 function updateAWP(dt){
     if(!awpGroup || !awpGroup.visible) return;
     const moving = keys.w || keys.a || keys.s || keys.d;
@@ -984,7 +970,7 @@ function updateKnife(dt){
 }
 
 // ============================================================
-//  TRACERS
+//  TRACERS & EFFECTS
 // ============================================================
 const TRACER_LIFETIME = 0.7;
 const tracers = [];
@@ -1044,7 +1030,6 @@ function clearTracers(){
     tracers.length = 0;
 }
 
-// Bot tracers
 function createBotTracer(sp, ep, hit){
     const dir = new THREE.Vector3().subVectors(ep, sp);
     const len = dir.length();
@@ -1083,8 +1068,11 @@ function clearBotTracers(){
 }
 
 // ============================================================
-//  KILL EFFECTS
+//  KILL EFFECTS (BLACK HOLE, ETC)
 // ============================================================
+const killEffectParticles=[];
+const blackHoleEffects=[];
+
 function playKillEffect(position, type){
     type = type || currentKillEffect;
     if(type === 'blackhole') playBlackHole(position);
@@ -1124,7 +1112,6 @@ function playExplosion(position){
     screenShake = Math.max(screenShake, 0.7);
 }
 
-// Gargantua / Interstellar Black Hole
 function disposeGroup(group){
     scene.remove(group);
     group.traverse(c=>{
@@ -1149,14 +1136,12 @@ function playBlackHole(position){
         lensingHalo: null, stars: null, flash: null
     };
 
-    // 1. Event Horizon
     effect.blackSphere = new THREE.Mesh(
         new THREE.SphereGeometry(R, 64, 64),
         new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     group.add(effect.blackSphere);
 
-    // 2. Photon Ring
     effect.photonRing = new THREE.Mesh(
         new THREE.TorusGeometry(R * 1.02, R * 0.03, 16, 128),
         new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:1.0, blending:THREE.AdditiveBlending, depthWrite:false })
@@ -1164,14 +1149,12 @@ function playBlackHole(position){
     effect.photonRing.rotation.x = Math.PI / 2;
     group.add(effect.photonRing);
 
-    // 3. Gravitational Lensing Halo
     const haloGeo = new THREE.TorusGeometry(R * 1.05, R * 0.15, 16, 64);
     const haloMat = new THREE.MeshBasicMaterial({ color:0xffaa55, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false });
     effect.lensingHalo = new THREE.Mesh(haloGeo, haloMat);
     effect.lensingHalo.scale.set(1, 1.8, 1);
     group.add(effect.lensingHalo);
 
-    // 4. Accretion Disk
     const diskInner = R * 1.1;
     const diskOuter = R * 4.5;
     const diskGeo = new THREE.RingGeometry(diskInner, diskOuter, 128, 8);
@@ -1220,7 +1203,6 @@ function playBlackHole(position){
     effect.disk.rotation.x = -Math.PI / 2.4;
     group.add(effect.disk);
 
-    // 5. Starfield
     const starGeo = new THREE.BufferGeometry();
     const starCount = 400;
     const positions = new Float32Array(starCount * 3);
@@ -1237,7 +1219,6 @@ function playBlackHole(position){
     effect.stars = new THREE.Points(starGeo, starMat);
     group.add(effect.stars);
 
-    // 6. Flash
     const flashCanvas = document.createElement('canvas');
     flashCanvas.width = 256; flashCanvas.height = 256;
     const fctx = flashCanvas.getContext('2d');
@@ -1331,7 +1312,7 @@ function clearKillEffects(){
 }
 
 // ============================================================
-//  HIT MARKER / DAMAGE NUMBERS
+//  HIT MARKER / ACCURACY / SHOOTING
 // ============================================================
 let hitMarkerTimeout = null;
 function showHitMarker(isHS){
@@ -1356,9 +1337,6 @@ function spawnDamageNumber(worldPos, damage, isHS){
     setTimeout(()=>el.remove(), 1000);
 }
 
-// ============================================================
-//  ACCURACY
-// ============================================================
 function getDisplayedAccuracy(){
     if(currentMode === 'squares'){
         if(shots===0 && timeoutPenalty===0) return null;
@@ -1388,9 +1366,6 @@ function resetStats(){
     updateAccuracyUI();
 }
 
-// ============================================================
-//  SHOOTING & AIMBOT
-// ============================================================
 const raycaster = new THREE.Raycaster();
 const crosshairNDC = new THREE.Vector2(0,0);
 let isShooting=false, shootInterval=null;
@@ -1444,7 +1419,6 @@ function fireShot(){
     if (_as.ab) {
         const target = getClosestTarget();
         if (target) {
-            // Snap raycast to the target's center
             const targetPos = target.position.clone();
             targetPos.y += 1.2; // Aim center mass
             const dir = targetPos.clone().sub(camera.position).normalize();
@@ -1666,7 +1640,12 @@ function grabGameFocus(){
 const keys = { w:false, a:false, s:false, d:false, space:false, shift:false };
 function onKeyDown(e){
     if(isTypingInInput()) return;
-    if(e.key === '`' || e.key === '~'){ e.preventDefault(); toggleAdmin(); return; }
+    // ROBUST BACKTICK LISTENER
+    if(e.key === '`' || e.key === '~' || e.code === 'Backquote'){ 
+        e.preventDefault(); 
+        toggleAdmin(); 
+        return; 
+    }
     const k = e.key.toLowerCase();
     if(GAME_KEYS.has(k) || e.code === 'Space' || e.key === 'Shift'){ e.preventDefault(); e.stopPropagation(); }
     if(k==='w') keys.w = true;
@@ -1716,13 +1695,11 @@ function updateMovement(dt){
     }
 
     if(isOnGround){
-        if(keys.space || _as.n){ // Autobhop if space held OR _as.n (No Reload) enabled? Wait, let's just use autobhop logic.
-            if(keys.space) {
-                velocityY = JUMP_VELOCITY;
-                isOnGround = false;
-                const spd = velocity.length();
-                if(spd > 0.5) velocity.setLength(spd + BHOP_BONUS);
-            }
+        if(keys.space){
+            velocityY = JUMP_VELOCITY;
+            isOnGround = false;
+            const spd = velocity.length();
+            if(spd > 0.5) velocity.setLength(spd + BHOP_BONUS);
         } else {
             const spd = velocity.length();
             if(spd > 0.01){
@@ -1775,7 +1752,7 @@ function updateScope(dt){
 }
 
 // ============================================================
-//  PLAYER & BOTS
+//  PLAYER, BOTS, HEALTH
 // ============================================================
 function createPlayerMesh(color){
     const g = new THREE.Group();
@@ -2069,7 +2046,7 @@ function acVerifyRemote(data){
 }
 
 // ============================================================
-//  PING
+//  PING & MULTIPLAYER
 // ============================================================
 function startPingSystem(){
     if(pingInterval) return;
@@ -2100,9 +2077,6 @@ function updatePingDisplay(){
     }
 }
 
-// ============================================================
-//  MULTIPLAYER
-// ============================================================
 function generateRoomCode(){
     const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let r = '';
@@ -2401,80 +2375,27 @@ function updateMultiplayer(dt){
 }
 
 // ============================================================
-//  EVENT LISTENERS
+//  INIT & MISC
 // ============================================================
-canvas.addEventListener('mousedown', (e)=>{
-    initAudio();
-    if(e.button === 2){
-        e.preventDefault();
-        if(document.pointerLockElement === canvas) toggleScope();
-        return;
+let frameCount = 0, fpsTimeAccum = 0, fpsDisplay = 0;
+function updateFPS(dt){
+    frameCount++; fpsTimeAccum += dt;
+    if(fpsTimeAccum >= 0.5){
+        fpsDisplay = Math.round(frameCount/fpsTimeAccum);
+        frameCount = 0; fpsTimeAccum = 0;
+        fpsCounter.textContent = 'FPS ' + fpsDisplay;
+        if(fpsDisplay >= 55) fpsCounter.style.color = '#b3f0c0';
+        else if(fpsDisplay >= 30) fpsCounter.style.color = '#ffe28a';
+        else fpsCounter.style.color = '#ffa7a7';
     }
-    if(e.button !== 0 || !gameActive || playerDead) return;
-    e.preventDefault();
-    if(document.pointerLockElement !== canvas){ grabGameFocus(); canvas.requestPointerLock(); return; }
-    startShooting();
-});
-window.addEventListener('mouseup', (e)=>{ if(e.button !== 0) return; stopShooting(); });
-document.addEventListener('pointerlockchange', ()=>{
-    if(document.pointerLockElement === canvas) grabGameFocus();
-    else {
-        stopShooting();
-        pendingMouseX = 0; pendingMouseY = 0;
-        smoothMouseX = 0; smoothMouseY = 0;
-    }
-});
-window.addEventListener('blur', ()=>{ stopShooting(); keys.space = false; keys.shift = false; });
-canvas.addEventListener('contextmenu', (e)=>e.preventDefault());
-window.addEventListener('keydown', onKeyDown);
-window.addEventListener('keyup', onKeyUp);
-window.addEventListener('mousemove', onMouseMove);
+}
+function updateSpeedHUD(){
+    const spd = velocity.length();
+    speedIndicator.textContent = spd.toFixed(1) + ' u/s';
+    if(spd > MOVE_SPEED + 0.5) speedIndicator.classList.add('fast');
+    else speedIndicator.classList.remove('fast');
+}
 
-loadSniperBtn.addEventListener('click', ()=>sniperInput.click());
-loadKnifeBtn.addEventListener('click', ()=>knifeInput.click());
-sniperInput.addEventListener('change', (e)=>{ const f = e.target.files[0]; if(f) loadSTLFromFile(f, 'sniper'); sniperInput.value = ''; });
-knifeInput.addEventListener('change', (e)=>{ const f = e.target.files[0]; if(f) loadSTLFromFile(f, 'knife'); knifeInput.value = ''; });
-
-mpHostBtn.addEventListener('click', hostGame);
-mpJoinBtn.addEventListener('click', joinGame);
-mpCodeInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') joinGame(); });
-mpCancelBtn.addEventListener('click', ()=>{
-    cleanupPeer();
-    mpHostBtn.disabled = false;
-    mpJoinBtn.disabled = false;
-    mpHostSection.classList.remove('hidden');
-    mpJoinSection.classList.remove('hidden');
-    mpHostingSection.classList.add('hidden');
-    setMpStatus('Host a game or join with a code');
-});
-mpBackBtn.addEventListener('click', ()=>{
-    cleanupPeer();
-    mpHostBtn.disabled = false;
-    mpJoinBtn.disabled = false;
-    hideMpPanel();
-});
-
-let dragHideTimer = null;
-wrapper.addEventListener('dragover', (e)=>{
-    e.preventDefault();
-    dragOverlay.classList.add('visible');
-    clearTimeout(dragHideTimer);
-    dragHideTimer = setTimeout(()=>dragOverlay.classList.remove('visible'), 180);
-});
-wrapper.addEventListener('drop', (e)=>{
-    e.preventDefault();
-    clearTimeout(dragHideTimer);
-    dragOverlay.classList.remove('visible');
-    const f = e.dataTransfer.files[0];
-    if(!f || !f.name.toLowerCase().endsWith('.stl')) return;
-    const lower = f.name.toLowerCase();
-    if(lower.includes('knife') || lower.includes('dag') || lower.includes('blade')) loadSTLFromFile(f, 'knife');
-    else loadSTLFromFile(f, 'sniper');
-});
-
-// ============================================================
-//  CROSSHAIR / ESP / MISC
-// ============================================================
 function updateCrosshairShape(dt){
     if (_as.rb) {
         const hue = (performance.now() / 5) % 360;
@@ -2508,24 +2429,21 @@ function updateESP() {
 
     targetsToDraw.forEach(group => {
         const pos = group.position.clone();
-        pos.y += 1.2; // Center of torso
-        
+        pos.y += 1.2;
         const v = pos.clone().project(camera);
-        if (v.z > 1) return; // Behind camera
+        if (v.z > 1) return;
         
         const x = (v.x * 0.5 + 0.5) * W;
         const y = (-v.y * 0.5 + 0.5) * H;
         
-        // Draw Box
         const box = document.createElement('div');
         box.className = 'esp-box';
-        const h = 120 / v.z; // Scale box size based on distance
+        const h = 120 / v.z;
         box.style.left = (x - h/4) + 'px';
         box.style.top = (y - h/2) + 'px';
         box.style.width = (h/2) + 'px';
         box.style.height = h + 'px';
         
-        // Draw Head Box
         const head = document.createElement('div');
         head.className = 'esp-head';
         head.style.left = (x - h/8) + 'px';
@@ -2533,18 +2451,8 @@ function updateESP() {
         head.style.width = (h/4) + 'px';
         head.style.height = (h/4) + 'px';
 
-        // Draw Line
-        const line = document.createElement('div');
-        line.className = 'esp-line';
-        line.style.left = '50%';
-        line.style.top = '100%';
-        line.style.height = Math.hypot(x - W/2, y - H) + 'px';
-        const angle = Math.atan2(y - H, x - W/2) * 180 / Math.PI;
-        line.style.transform = `rotate(${angle - 90}deg)`;
-
         espOverlay.appendChild(box);
         espOverlay.appendChild(head);
-        // espOverlay.appendChild(line); // Line from bottom to target
     });
 }
 
@@ -2577,9 +2485,6 @@ function cullTargets(){
     }
 }
 
-// ============================================================
-//  MODE SWITCHING
-// ============================================================
 function resetPhysics(){
     velocity.set(0,0,0); velocityY = 0; isOnGround = true;
     camera.position.y = GROUND_Y;
@@ -2683,28 +2588,6 @@ backBtn.addEventListener('click', (e)=>{
     else showMenu();
 });
 
-// ============================================================
-//  HUD / FPS / MAIN LOOP
-// ============================================================
-let frameCount = 0, fpsTimeAccum = 0, fpsDisplay = 0;
-function updateFPS(dt){
-    frameCount++; fpsTimeAccum += dt;
-    if(fpsTimeAccum >= 0.5){
-        fpsDisplay = Math.round(frameCount/fpsTimeAccum);
-        frameCount = 0; fpsTimeAccum = 0;
-        fpsCounter.textContent = 'FPS ' + fpsDisplay;
-        if(fpsDisplay >= 55) fpsCounter.style.color = '#b3f0c0';
-        else if(fpsDisplay >= 30) fpsCounter.style.color = '#ffe28a';
-        else fpsCounter.style.color = '#ffa7a7';
-    }
-}
-function updateSpeedHUD(){
-    const spd = velocity.length();
-    speedIndicator.textContent = spd.toFixed(1) + ' u/s';
-    if(spd > MOVE_SPEED + 0.5) speedIndicator.classList.add('fast');
-    else speedIndicator.classList.remove('fast');
-}
-
 // TRIGGERBOT LOGIC
 function checkTriggerbot() {
     if (!_as.tb || !gameActive || playerDead || currentWeapon !== 'sniper') return;
@@ -2804,7 +2687,7 @@ function animate(){
 }
 
 // ============================================================
-//  INIT
+//  START
 // ============================================================
 function init(){
     resetStats(); resetCombatState();
