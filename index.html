@@ -20,6 +20,7 @@ body {
 canvas#gameCanvas {
     display: block; width: 100%; height: 100%;
     cursor: none; background: #0a0e1a;
+    outline: none;
 }
 #accuracy-text {
     position: absolute; top: 50%; left: 50%;
@@ -403,7 +404,6 @@ canvas#gameCanvas {
     letter-spacing: 2px; backdrop-filter: blur(4px);
 }
 #drag-overlay.visible { display: flex; }
-/* Multiplayer sub-panel */
 #mp-subpanel {
     position: absolute; inset: 0;
     background: rgba(30,14,8,0.96);
@@ -503,7 +503,7 @@ canvas#gameCanvas {
 </head>
 <body>
 <div id="game-wrapper">
-    <canvas id="gameCanvas" width="1000" height="650"></canvas>
+    <canvas id="gameCanvas" width="1000" height="650" tabindex="0"></canvas>
 
     <div id="scope-overlay">
         <svg viewBox="0 0 1000 650" preserveAspectRatio="none">
@@ -762,7 +762,6 @@ const damageFlashEl = document.getElementById('damage-flash');
 const respawnOverlay = document.getElementById('respawn-overlay');
 const respawnSecEl = document.getElementById('respawn-sec');
 
-// MP sub-panel DOM
 const mpSubpanel = document.getElementById('mp-subpanel');
 const mpStatus = document.getElementById('mp-status');
 const mpHostSection = document.getElementById('mp-host-section');
@@ -1617,7 +1616,6 @@ function fireShot() {
         return;
     }
 
-    // Sniper
     if (currentMode === 'squares') {
         shots++;
         triggerAWPShot();
@@ -1716,7 +1714,6 @@ function performKnifeAttack() {
         return;
     }
 
-    // Bot / target logic (existing)
     if (currentMode === 'deathmatch') {
         for (const bot of bots) {
             if (!bot.alive) continue;
@@ -1806,12 +1803,40 @@ function applyMouseLook() {
 }
 
 // ============================================================
-//  INPUT
+//  INPUT  — macOS accent-popup fix
 // ============================================================
+const GAME_KEYS = new Set(['w', 'a', 's', 'd', 'v', '1', '2', ' ']);
+
+function isTypingInInput() {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+}
+
+function grabGameFocus() {
+    // Blur any focused input (e.g. the MP room-code field), then focus
+    // the canvas so keydown events are dispatched from a non-text target.
+    // This is what actually prevents the macOS accent popup for good.
+    if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+    }
+    try { canvas.focus({ preventScroll: true }); } catch (e) { try { canvas.focus(); } catch(_){} }
+}
+
 const keys = { w: false, a: false, s: false, d: false, space: false };
 
 function onKeyDown(e) {
+    // Let text inputs (room code field) behave normally — no preventDefault there.
+    if (isTypingInInput()) return;
+
     const k = e.key.toLowerCase();
+    // KILL THE MACOS ACCENT POPUP: preventDefault on keydown for every game key
+    if (GAME_KEYS.has(k) || e.code === 'Space') {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
     if (k === 'w') keys.w = true;
     if (k === 'a') keys.a = true;
     if (k === 's') keys.s = true;
@@ -1822,13 +1847,15 @@ function onKeyDown(e) {
         thirdPerson = !thirdPerson;
         updateWeaponVisibility();
     }
-    if (e.code === 'Space' || k === ' ') {
-        keys.space = true;
+    if (e.code === 'Space' || k === ' ') keys.space = true;
+}
+
+function onKeyUp(e) {
+    if (isTypingInInput()) return;
+    const k = e.key.toLowerCase();
+    if (GAME_KEYS.has(k) || e.code === 'Space') {
         e.preventDefault();
     }
-}
-function onKeyUp(e) {
-    const k = e.key.toLowerCase();
     if (k === 'w') keys.w = false;
     if (k === 'a') keys.a = false;
     if (k === 's') keys.s = false;
@@ -1926,7 +1953,7 @@ function updateScope(dt) {
 }
 
 // ============================================================
-//  PLAYER MODEL (used for local 3rd-person + remote player)
+//  PLAYER MODEL
 // ============================================================
 function createPlayerMesh(color) {
     const group = new THREE.Group();
@@ -2277,7 +2304,7 @@ function hostGame() {
         if (err.type === 'unavailable-id') {
             try { mpPeer.destroy(); } catch(e){}
             mpHostBtn.disabled = false;
-            hostGame(); // retry with new code
+            hostGame();
             return;
         }
         setMpStatus('Error: ' + err.type, true);
@@ -2340,11 +2367,7 @@ function joinGame() {
 
 function setupMpConnection() {
     if (!mpConn) return;
-    mpIsHost = mpConn.peer.startsWith('aimtr-') === false;
-
-    // If this is the guest (we connected to someone), mpConn.peer is the host's ID (starts with aimtr-)
-    // If this is the host (someone connected to us), mpConn.peer is the guest's random ID
-    // So: isHost = !conn.peer.startsWith('aimtr-')
+    mpIsHost = !mpConn.peer.startsWith('aimtr-');
 
     mpConn.on('data', handleMpData);
     mpConn.on('close', () => {
@@ -2434,7 +2457,6 @@ function startMultiplayerGame() {
     currentWeapon = 'sniper';
     updateWeaponHUD();
 
-    // Create local + remote player meshes
     if (localPlayerMesh) {
         scene.remove(localPlayerMesh);
         localPlayerMesh.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); });
@@ -2450,14 +2472,12 @@ function startMultiplayerGame() {
     mpRemote.mesh = createPlayerMesh(0xff4444);
     scene.add(mpRemote.mesh);
 
-    // Remote health bar
     if (mpRemote.healthBarBg) scene.remove(mpRemote.healthBarBg);
     if (mpRemote.healthBarFill) scene.remove(mpRemote.healthBarFill);
     const hb = createHealthBar();
     mpRemote.healthBarBg = hb.barBg;
     mpRemote.healthBarFill = hb.barFill;
 
-    // Spawn: host at +Z, guest at -Z
     if (mpIsHost) {
         camera.position.set(0, GROUND_Y, 8);
         yaw = 0;
@@ -2484,6 +2504,10 @@ function startMultiplayerGame() {
     smoothMouseX = 0; smoothMouseY = 0;
     crosshairKick = 0;
     crosshairGapVisual = 5;
+
+    // Blur the code input / join button and focus canvas so held keys
+    // never trigger macOS's accent-character popup.
+    grabGameFocus();
 
     if (document.pointerLockElement !== canvas) {
         canvas.requestPointerLock().catch(() => {});
@@ -2537,7 +2561,6 @@ function endMultiplayer() {
 function updateMultiplayer(dt) {
     updateMpSync(dt);
 
-    // Remote player mesh
     if (mpRemote.mesh) {
         mpRemote.pos.lerp(mpRemote.targetPos, Math.min(1, dt * 15));
         mpRemote.mesh.position.copy(mpRemote.pos);
@@ -2577,7 +2600,6 @@ function updateMultiplayer(dt) {
         }
     }
 
-    // Local player mesh (third person)
     if (localPlayerMesh) {
         const show = thirdPerson && !playerDead;
         localPlayerMesh.visible = show;
@@ -2587,7 +2609,6 @@ function updateMultiplayer(dt) {
         }
     }
 
-    // Respawn
     if (playerDead) {
         playerRespawnTimer -= dt;
         respawnSecEl.textContent = Math.max(0, Math.ceil(playerRespawnTimer));
@@ -2608,12 +2629,20 @@ canvas.addEventListener('mousedown', (e) => {
     }
     if (e.button !== 0 || !gameActive || playerDead) return;
     e.preventDefault();
-    if (document.pointerLockElement !== canvas) { canvas.requestPointerLock(); return; }
+    if (document.pointerLockElement !== canvas) {
+        grabGameFocus();
+        canvas.requestPointerLock();
+        return;
+    }
     startShooting();
 });
 window.addEventListener('mouseup', (e) => { if (e.button !== 0) return; stopShooting(); });
 document.addEventListener('pointerlockchange', () => {
-    if (document.pointerLockElement !== canvas) {
+    if (document.pointerLockElement === canvas) {
+        // Locked — make sure canvas is the focused element so keydowns
+        // don't route through any lingering text input.
+        grabGameFocus();
+    } else {
         stopShooting();
         pendingMouseX = 0; pendingMouseY = 0;
         smoothMouseX = 0; smoothMouseY = 0;
@@ -2638,7 +2667,6 @@ knifeInput.addEventListener('change', (e) => {
     knifeInput.value = '';
 });
 
-// MP buttons
 mpHostBtn.addEventListener('click', hostGame);
 mpJoinBtn.addEventListener('click', joinGame);
 mpCodeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') joinGame(); });
@@ -2658,7 +2686,6 @@ mpBackBtn.addEventListener('click', () => {
     hideMpPanel();
 });
 
-// Drag/drop
 let dragHideTimer = null;
 wrapper.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -2815,6 +2842,10 @@ function startMode(mode) {
     crosshairKick = 0;
     crosshairGapVisual = 5;
 
+    // Blur any focused input before we start — ensures held keys never
+    // leak into a text field and trigger the macOS accent popup.
+    grabGameFocus();
+
     if (document.pointerLockElement !== canvas) canvas.requestPointerLock().catch(() => {});
 }
 
@@ -2848,7 +2879,6 @@ function showMenu() {
     keys.w = keys.a = keys.s = keys.d = keys.space = false;
     if (document.pointerLockElement === canvas) document.exitPointerLock();
 
-    // Cleanup MP if needed
     if (mpActive || mpPeer) {
         cleanupPeer();
         if (localPlayerMesh) {
@@ -2961,7 +2991,6 @@ function animate() {
     sunSprite.position.x = camera.position.x - 30;
     sunSprite.position.z = camera.position.z - 95;
 
-    // Third-person render offset
     const savedCamPos = camera.position.clone();
     const inTPMode = thirdPerson && (currentMode === 'multiplayer' || currentMode === 'deathmatch');
     if (inTPMode) {
