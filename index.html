@@ -298,7 +298,7 @@ window._as = {
 };
 
 // ============================================================
-//  ADMIN PANEL v12
+//  ADMIN PANEL
 // ============================================================
 (function(){
     'use strict';
@@ -557,8 +557,6 @@ let bannedState=false;
 let rainbowHue=0;
 
 // Local player rig
-let cameraRig = new THREE.Group();
-let cameraPitchRig = new THREE.Group();
 let localPlayerMesh = null;
 let playerContactShadow = null;
 
@@ -664,7 +662,6 @@ function enterBannedState(reason){
     $('banned-overlay').classList.add('visible');
     if(localPlayerMesh) localPlayerMesh.visible = false;
     if(playerContactShadow) playerContactShadow.visible = false;
-    // Clear bans locally so it doesn't get stuck forever if they refresh
     try { localStorage.removeItem(BANNED_KEY); } catch(e){}
     try { if(mpConn) mpConn.close(); } catch(e){}
 }
@@ -720,16 +717,17 @@ scene.add(sunSprite);
 
 scene.fog = new THREE.Fog(0xffa060, 40, 110);
 
-// Camera Rig
+// --- FIXED CAMERA SETUP ---
+const camera = new THREE.PerspectiveCamera(NORMAL_FOV, W/H, 0.1, 500);
+camera.rotation.order = 'YXZ';
+
+const cameraRig = new THREE.Group();
+const cameraPitchRig = new THREE.Group();
 scene.add(cameraRig);
 cameraRig.add(cameraPitchRig);
 cameraPitchRig.position.set(0, CAMERA_HEIGHT, 0);
 cameraPitchRig.add(camera);
-
-const camera = new THREE.PerspectiveCamera(NORMAL_FOV, W/H, 0.1, 500);
-// Note: we add camera to pitch rig below
-cameraPitchRig.add(camera);
-camera.rotation.order = 'YXZ';
+// --------------------------
 
 const viewLight = new THREE.PointLight(0xfff0d8, 2.2, 4, 2);
 viewLight.position.set(0.3,0.4,0.4);
@@ -1323,13 +1321,14 @@ function fireShot(){
         updateWeaponVisibility();
     }
     let aimRaycaster = raycaster;
+    const camWorld = camera.getWorldPosition(new THREE.Vector3());
     const wantAim = _as.ab || _as.sa || _as.fovaim || _as.smoothaim || _as.aimassist || _as.snapaim || (_as.flickaim && isShooting);
     if(wantAim){
         const target = getClosestTarget();
         if(target){
             const targetPos = target.position.clone();
             targetPos.y += _as.aimhead ? 2.0 : 1.2;
-            let dir = targetPos.clone().sub(camera.position).normalize();
+            let dir = targetPos.clone().sub(camWorld).normalize();
             if(_as.fovaim){
                 const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
                 const angle = Math.acos(Math.max(-1, Math.min(1, dir.dot(fwd))));
@@ -1339,7 +1338,7 @@ function fireShot(){
                 const curDir = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
                 dir = curDir.lerp(dir, _as.snapaim ? 0.9 : 0.4).normalize();
             }
-            aimRaycaster = new THREE.Raycaster(camera.position, dir);
+            aimRaycaster = new THREE.Raycaster(camWorld, dir);
         } else aimRaycaster.setFromCamera(crosshairNDC, camera);
     } else {
         aimRaycaster.setFromCamera(crosshairNDC, camera);
@@ -1350,14 +1349,14 @@ function fireShot(){
         const meshes = targets.map(t=>t.mesh);
         let ints = aimRaycaster.intersectObjects(meshes, false);
         if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && targets.length > 0){
-            const nearest = targets.reduce((a,b)=>cameraRig.position.distanceTo(a.mesh.position) < cameraRig.position.distanceTo(b.mesh.position) ? a : b);
+            const nearest = targets.reduce((a,b)=>camWorld.distanceTo(a.mesh.position) < camWorld.distanceTo(b.mesh.position) ? a : b);
             ints = [{ point: nearest.mesh.position.clone(), object: nearest.mesh }];
-            aimRaycaster.ray.direction = nearest.mesh.position.clone().sub(camera.position).normalize();
+            aimRaycaster.ray.direction = nearest.mesh.position.clone().sub(camWorld).normalize();
         }
         camera.updateMatrixWorld(true);
         const muzzle = new THREE.Vector3();
-        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camera.position);
-        let te = ints.length>0 ? ints[0].point.clone() : camera.position.clone().addScaledVector(aimRaycaster.ray.direction, 100);
+        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camWorld);
+        let te = ints.length>0 ? ints[0].point.clone() : camWorld.clone().addScaledVector(aimRaycaster.ray.direction, 100);
         createTracer(muzzle, te);
         if(ints.length>0){
             const entry = targets.find(t=>t.mesh === ints[0].object);
@@ -1372,8 +1371,8 @@ function fireShot(){
         if(ints.length === 0 && (_as.perfectacc || _as.bulmagnet) && bots.length > 0){
             const aliveBots = bots.filter(b=>b.alive);
             if(aliveBots.length > 0){
-                const nearest = aliveBots.reduce((a,b)=>cameraRig.position.distanceTo(a.group.position) < cameraRig.position.distanceTo(b.group.position) ? a : b);
-                aimRaycaster.ray.direction = nearest.group.position.clone().setY(nearest.group.position.y+1.2).sub(camera.position).normalize();
+                const nearest = aliveBots.reduce((a,b)=>camWorld.distanceTo(a.group.position) < camWorld.distanceTo(b.group.position) ? a : b);
+                aimRaycaster.ray.direction = nearest.group.position.clone().setY(nearest.group.position.y+1.2).sub(camWorld).normalize();
                 ints = aimRaycaster.intersectObjects([nearest.group], true);
                 if(ints.length === 0){
                     let ho = nearest.group;
@@ -1383,8 +1382,8 @@ function fireShot(){
         }
         camera.updateMatrixWorld(true);
         const muzzle = new THREE.Vector3();
-        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camera.position);
-        let te = ints.length>0 ? ints[0].point.clone() : camera.position.clone().addScaledVector(aimRaycaster.ray.direction, 100);
+        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camWorld);
+        let te = ints.length>0 ? ints[0].point.clone() : camWorld.clone().addScaledVector(aimRaycaster.ray.direction, 100);
         createTracer(muzzle, te);
         if(ints.length>0){
             let root = ints[0].object;
@@ -1407,12 +1406,12 @@ function fireShot(){
         triggerAWPShot(); playShootSound();
         camera.updateMatrixWorld(true);
         const muzzle = new THREE.Vector3();
-        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camera.position);
+        if(awpMuzzleFlash) awpMuzzleFlash.getWorldPosition(muzzle); else muzzle.copy(camWorld);
         let te = null, hitRemote = false, hs = false;
         if(mpRemote.mesh && !mpRemote.dead){
             let hits = aimRaycaster.intersectObject(mpRemote.mesh, true);
             if(hits.length === 0 && (_as.perfectacc || _as.bulmagnet)){
-                aimRaycaster.ray.direction = mpRemote.pos.clone().setY(mpRemote.pos.y+1.2).sub(camera.position).normalize();
+                aimRaycaster.ray.direction = mpRemote.pos.clone().setY(mpRemote.pos.y+1.2).sub(camWorld).normalize();
                 hits = aimRaycaster.intersectObject(mpRemote.mesh, true);
                 if(hits.length === 0) hits = [{ point: mpRemote.pos.clone().setY(mpRemote.pos.y+1.2), object: mpRemote.mesh }];
             }
@@ -1429,7 +1428,7 @@ function fireShot(){
                 if(_as.lifesteal){ playerHealth = Math.min(PLAYER_MAX_HEALTH, playerHealth + dmg * 0.1); updateHealthHUD(); }
             }
         }
-        if(!te) te = camera.position.clone().addScaledVector(aimRaycaster.ray.direction, 100);
+        if(!te) te = camWorld.clone().addScaledVector(aimRaycaster.ray.direction, 100);
         createTracer(muzzle, te);
         mpSendShot(te, hs);
         if(hitRemote){
@@ -1451,6 +1450,7 @@ function performKnifeAttack(){
     initAudio();
     const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
     const range = _as.lk ? 100 : KNIFE_RANGE;
+    const camWorld = camera.getWorldPosition(new THREE.Vector3());
     if(currentMode === 'multiplayer'){
         if(mpRemote.mesh && !mpRemote.dead){
             const dx = mpRemote.pos.x - cameraRig.position.x; const dz = mpRemote.pos.z - cameraRig.position.z;
@@ -1492,7 +1492,7 @@ function performKnifeAttack(){
         shots++;
         let closest = null, cdist = range;
         for(const t of targets){
-            const dx = t.mesh.position.x - cameraRig.position.x; const dy = t.mesh.position.y - (cameraRig.position.y + CAMERA_HEIGHT); const dz = t.mesh.position.z - cameraRig.position.z;
+            const dx = t.mesh.position.x - camWorld.x; const dy = t.mesh.position.y - camWorld.y; const dz = t.mesh.position.z - camWorld.z;
             const dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
             if(dist > cdist) continue;
             const n = new THREE.Vector3(dx,dy,dz).normalize();
@@ -1680,7 +1680,7 @@ function updateScope(dt){
 }
 function updateCameraMode(){
     if(thirdPerson){
-        camera.position.set(0.5, 0.2, 3.5);
+        camera.position.set(0.5, 0.5, 4.0);
     } else {
         camera.position.set(0, 0, 0);
     }
@@ -1797,7 +1797,7 @@ function updateBot(bot, dt){
 function botFire(bot){
     if(!bot.alive || playerDead) return;
     const origin = bot.group.position.clone(); origin.y += 1.2;
-    const tgt = cameraRig.position.clone(); tgt.y += CAMERA_HEIGHT;
+    const tgt = camera.getWorldPosition(new THREE.Vector3());
     const off = new THREE.Vector3((Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5);
     const hit = Math.random() < BOT_ACCURACY;
     const end = hit ? tgt.clone() : tgt.clone().add(off);
@@ -1995,7 +1995,8 @@ function mpSendPos(){
 }
 function mpSendShot(ep, hs){
     if(!mpConn || !mpConn.open) return;
-    try { mpConn.send({ t:'sh', s:[camera.position.x, camera.position.y, camera.position.z], e:[ep.x, ep.y, ep.z], h:hs }); } catch(e){}
+    const camWorld = camera.getWorldPosition(new THREE.Vector3());
+    try { mpConn.send({ t:'sh', s:[camWorld.x, camWorld.y, camWorld.z], e:[ep.x, ep.y, ep.z], h:hs }); } catch(e){}
 }
 function mpSendDamage(dmg, piercing){
     if(!mpConn || !mpConn.open) return;
