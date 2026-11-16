@@ -285,29 +285,21 @@ const Peer = window.Peer;
 
 // === FULL CHEAT STATE (120+ FEATURES) ===
 window._as = {
-    // Combat
     g:false, o:false, m:false, dmg:false, dmgmax:false, quad:false, p:false, n:false, rf:false, autofire:false,
     alwayshs:false, perfectacc:false, norecoil:false, bulmagnet:false, lifesteal:false, infammo:false, reflect:false, fh:false,
     autoreload:false, explosive:false, bouncy:false, ricochet:false, vampire:false, thorns:false, fastfire:false,
-    // Aim
     ab:false, tb:false, fovaim:false, flickaim:false, smoothaim:false, sa:false, aimassist:false, snapaim:false, autoscope:false, aimhead:false,
     aimwall:false, aimbody:false, triggerbot:false, autoshoot:false,
-    // Vision
     esp:false, skeleton:false, nametag:false, distesp:false, headcircle:false, wv:false, fb:false, matrix:false, wf:false,
     nightvis:false, thermal:false, xray:false, radar:false, bloom:false, chams:false, fullbright:false, wireframe:false,
-    // Movement
     s:false, speed10:false, abhop:false, perfectbhop:false, rocket:false, superjump:false, triplejump:false,
     lg:false, zerograv:false, highgrav:false, fl:false, nc:false, longjump:false, infjump:false,
     dash:false, teleportrandom:false, noknockback:false, fastfall:false,
-    // Character
     ir:false, inv:false, bh:false, lk:false, shield:false, fr:false, kaura:false, forcepush:false, forcepull:false,
     tpspawn:false, tprandom:false, st:false, smallhead:false, giant:false, tiny:false, bigweapon:false,
-    // RAGE
     spinbot:false, ragebot:false, antiaim:false, doubletap:false, fakelag:false, forcehost:false,
-    // Fun
     rb:false, slowmo:false, fastgame:false, tp:false, wb:false, invertc:false, rainbowworld:false, neon:false, blackout:false, lowpoly:false, mirror:false,
     invertcolors:false, blur:false, shake:false, sepia:false, staticnoise:false,
-    // System
     ac:true, autoban:false, debug:false
 };
 
@@ -416,6 +408,7 @@ const SKYBOXES = {
             <button id="btn-disable" style="background:#111;border:1px solid #333;color:#ccc;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;">DISABLE ALL</button>
         </div>
         <div style="display:flex;gap:10px;">
+            <button id="btn-unban" style="background:rgba(0,255,100,0.1);border:1px solid rgba(0,255,100,0.3);color:#80ff80;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">UNBAN ALL</button>
             <button id="btn-ban" style="background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff8080;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">BAN PEER</button>
             <button id="btn-nuke" style="background:rgba(255,50,50,0.2);border:1px solid rgba(255,50,50,0.5);color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">NUKE</button>
         </div>
@@ -622,6 +615,7 @@ const SKYBOXES = {
 
     topBar.querySelector('#btn-enable').addEventListener('click', () => window._setAll(true));
     topBar.querySelector('#btn-disable').addEventListener('click', () => window._setAll(false));
+    topBar.querySelector('#btn-unban').addEventListener('click', () => { if(window._unbanAll) window._unbanAll(); });
     topBar.querySelector('#btn-ban').addEventListener('click', () => { if(window._banPeer) window._banPeer('HACKING'); });
     topBar.querySelector('#btn-nuke').addEventListener('click', () => { if(window._nuke) window._nuke(); });
 
@@ -2364,7 +2358,6 @@ function mpStartJoin(){
             }
         }, 5000);
         
-        // THE FIX: We pass setupConn immediately. It handles checking if the connection is already open.
         setupConn(conn);
         
         conn.on('open', () => { clearTimeout(connTimeout); });
@@ -2401,7 +2394,6 @@ function setupConn(conn){
         }
     };
 
-    // THE FIX: Check if connection is already open (race condition), otherwise attach listener
     if (conn.open) {
         handleOpen();
     } else {
