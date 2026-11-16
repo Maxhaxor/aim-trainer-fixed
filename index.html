@@ -313,6 +313,14 @@ window._crosshair = {
     outline: true
 };
 
+// STL Adjustment State
+window._stlAdjust = {
+    sniper: {
+        rot: { x: 0, y: -Math.PI/2, z: 0 },
+        pos: { x: 0.22, y: -0.22, z: -0.55 }
+    }
+};
+
 // Skybox State
 const SKYBOXES = {
     sunset: { top: '#1a1040', mid: '#ff6a3a', bot: '#ffb86a', hor: '#ffe0a0', fog: '#ffa060', light: 2.4, sun: true, bg: 0x1a1040 },
@@ -389,7 +397,7 @@ const SKYBOXES = {
 
     const logo = document.createElement('div');
     logo.style.cssText = 'padding:0 24px 20px;color:#e8e8e8;font-size:16px;font-weight:800;letter-spacing:2px;display:flex;align-items:center;justify-content:space-between;';
-    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v15</span>';
+    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v16</span>';
     sidebar.appendChild(logo);
 
     const tabsEl = document.createElement('div');
@@ -427,7 +435,7 @@ const SKYBOXES = {
 
     const TAB_NAMES = { 
         rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', 
-        fun:'VISUALS', crosshair:'CROSSHAIR', skybox:'SKYBOXES', system:'SYSTEM' 
+        fun:'VISUALS', crosshair:'CROSSHAIR', skybox:'SKYBOXES', weapon:'WEAPON', system:'SYSTEM' 
     };
     let activeTab = 'rage';
 
@@ -529,6 +537,42 @@ const SKYBOXES = {
                 grid.appendChild(btn);
             }
             contentEl.appendChild(grid);
+            return;
+        }
+
+        if(activeTab === 'weapon') {
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px;';
+
+            const mkSlider = (label, type, axis, min, max, step) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;flex-direction:column;gap:8px;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
+                let cur = window._stlAdjust.sniper[type][axis];
+                row.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;color:#ccc;font-size:12px;font-weight:600;">
+                        <span>${label}</span><span id="val-sniper-${type}-${axis}" style="color:#ff5050;">${cur}</span>
+                    </div>
+                    <input type="range" id="sl-sniper-${type}-${axis}" min="${min}" max="${max}" step="${step}" value="${cur}" style="width:100%;accent-color:#ff5050;cursor:pointer;">
+                `;
+                setTimeout(() => {
+                    row.querySelector(`#sl-sniper-${type}-${axis}`).addEventListener('input', (e) => {
+                        const v = parseFloat(e.target.value);
+                        window._stlAdjust.sniper[type][axis] = v;
+                        row.querySelector(`#val-sniper-${type}-${axis}`).textContent = v;
+                        window._applyWeaponAdjust();
+                    });
+                }, 0);
+                return row;
+            };
+
+            wrap.appendChild(mkSlider('Sniper Rot X', 'rot', 'x', -Math.PI, Math.PI, 0.1));
+            wrap.appendChild(mkSlider('Sniper Rot Y', 'rot', 'y', -Math.PI, Math.PI, 0.1));
+            wrap.appendChild(mkSlider('Sniper Rot Z', 'rot', 'z', -Math.PI, Math.PI, 0.1));
+            wrap.appendChild(mkSlider('Sniper Pos X', 'pos', 'x', -2, 2, 0.05));
+            wrap.appendChild(mkSlider('Sniper Pos Y', 'pos', 'y', -2, 2, 0.05));
+            wrap.appendChild(mkSlider('Sniper Pos Z', 'pos', 'z', -3, 1, 0.05));
+
+            contentEl.appendChild(wrap);
             return;
         }
 
@@ -655,7 +699,7 @@ const _as = window._as;
 //  CONFIG
 // ============================================================
 const STL_CONFIG = {
-    sniper: { autoFitLength:2.2, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
+    sniper: { autoFitLength:2.2, rotation:{x:0,y:-Math.PI/2,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
     knife:  { autoFitLength:0.55, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.3,y:-0.24,z:-0.6}, material:{color:0xd0d8e0,roughness:0.15,metalness:0.9,emissive:0x1a2233,emissiveIntensity:0.3} }
 };
 const BASE_GRAVITY=20, JUMP_VELOCITY=7.5, MOVE_SPEED=6, GROUND_ACCEL=10, FRICTION=5.2, BHOP_BONUS=0.2, AIR_ACCEL=7, AIR_WISH_CAP=1.2;
@@ -965,6 +1009,25 @@ window._applySkybox = function(name) {
     }
 };
 
+window._applyWeaponAdjust = function() {
+    if (awpGroup && window._stlAdjust.sniper) {
+        awpGroup.userData.baseRot.set(
+            window._stlAdjust.sniper.rot.x,
+            window._stlAdjust.sniper.rot.y,
+            window._stlAdjust.sniper.rot.z
+        );
+        awpGroup.userData.basePos.set(
+            window._stlAdjust.sniper.pos.x,
+            window._stlAdjust.sniper.pos.y,
+            window._stlAdjust.sniper.pos.z
+        );
+        if(!isScoped && !thirdPerson) {
+            awpGroup.position.copy(awpGroup.userData.basePos);
+            awpGroup.rotation.copy(awpGroup.userData.baseRot);
+        }
+    }
+};
+
 // ============================================================
 //  AUDIO
 // ============================================================
@@ -1164,6 +1227,12 @@ function applySTLGeometry(geometry, sourceName, weapon){
     newGroup.position.set(config.position.x, config.position.y, config.position.z);
     newGroup.userData.basePos = newGroup.position.clone();
     newGroup.userData.baseRot = newGroup.rotation.clone();
+    
+    if (weapon === 'sniper') {
+        window._stlAdjust.sniper.rot = { x: config.rotation.x, y: config.rotation.y, z: config.rotation.z };
+        window._stlAdjust.sniper.pos = { x: config.position.x, y: config.position.y, z: config.position.z };
+    }
+
     const oldGroup = (weapon==='sniper') ? awpGroup : knifeGroup;
     camera.remove(oldGroup);
     oldGroup.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material){ if(Array.isArray(c.material)) c.material.forEach(m=>m.dispose()); else c.material.dispose(); } });
@@ -2195,7 +2264,7 @@ window._teleportToEnemy = function(){
 };
 
 // ============================================================
-//  MULTIPLAYER (Fixed Connection Race Condition)
+//  MULTIPLAYER
 // ============================================================
 function mpSendPos(){
     if(!mpConn || !mpConn.open) return;
