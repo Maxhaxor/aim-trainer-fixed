@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box;user-select:none}
 body{background:#0b0f1c;min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Segoe UI','Inter',system-ui,sans-serif;overflow:hidden}
 #game-wrapper{position:relative;width:min(96vw,141vh,1700px);aspect-ratio:1000/650;border-radius:24px;overflow:hidden;box-shadow:0 25px 40px -10px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06)}
-canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0a0e1a;outline:none;transition:filter .15s}
+canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0a0e1a;outline:none;transition:filter .15s, transform .15s}
 #accuracy-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:34px;color:#ffe8c0;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.8px;text-shadow:0 0 10px rgba(0,0,0,.95),0 1px 3px rgba(0,0,0,1);white-space:nowrap;pointer-events:none;z-index:6}
 #miss-timer{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin-top:56px;color:#ff8a8a;font-size:12px;font-weight:600;letter-spacing:1px;text-shadow:0 0 6px rgba(0,0,0,.9);white-space:nowrap;pointer-events:none;z-index:6;opacity:0;transition:opacity .2s}
 #miss-timer.visible{opacity:1}
@@ -108,7 +108,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .effect-btn.active{background:rgba(255,150,60,.25);border-color:rgba(255,180,90,.6);color:#ffe8c0;box-shadow:0 0 10px rgba(255,150,60,.35)}
 #menu .footer-hint{color:#7a5a44;font-size:11px;letter-spacing:1px;margin-top:4px;text-align:center}
 #menu .footer-hint kbd{background:#2a1a12;padding:1px 6px;border-radius:4px;font-family:monospace;color:#c09a7a;border:1px solid #3a2418;margin:0 2px;font-size:10px}
-#menu .admin-hint{color:#a08060;font-size:12px;letter-spacing:1.5px;margin-top:4px;font-style:italic;text-shadow:0 0 8px rgba(255,200,140,.2)}
 #drag-overlay{position:absolute;inset:0;background:rgba(255,150,60,.15);border:4px dashed rgba(255,180,90,.7);z-index:200;pointer-events:none;display:none;align-items:center;justify-content:center;color:#ffd9a8;font-size:22px;font-weight:700;letter-spacing:2px;backdrop-filter:blur(4px)}
 #drag-overlay.visible{display:flex}
 #mp-subpanel{position:absolute;inset:0;background:rgba(30,14,8,.96);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:110;gap:16px;transition:opacity .25s}
@@ -133,7 +132,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 .mp-back-btn:hover{background:rgba(255,140,60,.25);color:#fff0dd}
 #esp-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .esp-box{position:absolute;border:1.5px solid #ff2222;background:rgba(255,0,0,0.1);border-radius:2px}
-#admin-backdrop{position:absolute;inset:0;z-index:149;display:none;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);cursor:default}
+#admin-backdrop{position:absolute;inset:0;z-index:149;display:none;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);cursor:default}
 #banned-overlay{position:absolute;inset:0;background:#050505;z-index:9999;display:none;flex-direction:column;justify-content:center;align-items:center;gap:20px;font-family:system-ui,sans-serif;}
 #banned-overlay.visible{display:flex;}
 .banned-title{color:#ff3030;font-size:88px;font-weight:900;letter-spacing:14px;text-shadow:0 0 60px rgba(255,0,0,.8);}
@@ -254,7 +253,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
             <button class="effect-btn" data-effect="explosion">EXPLOSION</button>
         </div>
         <div class="footer-hint"><kbd>ESC</kbd> release · <kbd>WASD</kbd> move · <kbd>V</kbd> 3rd person · <kbd>1</kbd>/<kbd>2</kbd> weapon</div>
-        <div class="admin-hint">press \ for admin</div>
     </div>
 
     <div id="mp-subpanel" class="hidden">
@@ -283,103 +281,145 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
-// === FULL CHEAT STATE (MASSIVE) ===
+// === FULL CHEAT STATE (110+ FEATURES) ===
 window._as = {
     // Combat
     g:false, o:false, m:false, dmg:false, dmgmax:false, quad:false, p:false, n:false, rf:false, autofire:false,
     alwayshs:false, perfectacc:false, norecoil:false, bulmagnet:false, lifesteal:false, infammo:false, reflect:false, fh:false,
+    autoreload:false, explosive:false, bouncy:false, ricochet:false, vampire:false, thorns:false, fastfire:false,
     // Aim
     ab:false, tb:false, fovaim:false, flickaim:false, smoothaim:false, sa:false, aimassist:false, snapaim:false, autoscope:false, aimhead:false,
+    aimwall:false, aimbody:false, triggerbot:false, autoshoot:false,
     // Vision
     esp:false, skeleton:false, nametag:false, distesp:false, headcircle:false, wv:false, fb:false, matrix:false, wf:false,
-    nightvis:false, thermal:false, xray:false, radar:false, bloom:false, chams:false,
+    nightvis:false, thermal:false, xray:false, radar:false, bloom:false, chams:false, fullbright:false, wireframe:false,
     // Movement
     s:false, speed10:false, abhop:false, perfectbhop:false, rocket:false, superjump:false, triplejump:false,
     lg:false, zerograv:false, highgrav:false, fl:false, nc:false, longjump:false, infjump:false,
+    dash:false, teleportrandom:false, noknockback:false, fastfall:false,
     // Character
     ir:false, inv:false, bh:false, lk:false, shield:false, fr:false, kaura:false, forcepush:false, forcepull:false,
-    tpspawn:false, tprandom:false, st:false,
+    tpspawn:false, tprandom:false, st:false, smallhead:false, giant:false, tiny:false, bigweapon:false,
     // RAGE
     spinbot:false, ragebot:false, antiaim:false, doubletap:false, fakelag:false, forcehost:false,
     // Fun
     rb:false, slowmo:false, fastgame:false, tp:false, wb:false, invertc:false, rainbowworld:false, neon:false, blackout:false, lowpoly:false, mirror:false,
+    invertcolors:false, blur:false, shake:false, sepia:false, staticnoise:false,
     // System
     ac:true, autoban:false, debug:false
 };
 
 // ============================================================
-//  ADMIN PANEL (RAGE EDITION)
+//  CLEAN MINIMALIST ADMIN PANEL
 // ============================================================
 (function(){
     'use strict';
+
+    // 110+ Features organized by category
     const FEATURES = {
         rage: [
             ['ragebot','Ragebot (Instant Snap)'], ['spinbot','Spinbot'], ['antiaim','Anti-Aim'],
             ['doubletap','Double Tap'], ['fakelag','Fake Lag'], ['forcehost','Force Host'],
-            ['autofire','Auto Fire (Shoot on sight)'], ['alwayshs','Always Headshot'], ['perfectacc','Perfect Accuracy']
+            ['autoshoot','Auto Shoot'], ['alwayshs','Always Headshot'], ['perfectacc','Perfect Accuracy']
         ],
         combat: [
             ['g','God Mode'], ['o','One Shot Kill'], ['m','Mega Damage x10'], ['dmg','Damage x100'],
             ['dmgmax','Max Damage 999999'], ['quad','Quad Damage x4'], ['p','Pierce'], ['n','No Reload'],
             ['rf','Rapid Fire'], ['norecoil','No Recoil'], ['bulmagnet','Bullet Magnet'], ['lifesteal','Lifesteal'],
-            ['infammo','Infinite Ammo'], ['reflect','Reflect Damage'], ['fh','Instant Heal']
+            ['infammo','Infinite Ammo'], ['reflect','Reflect Damage'], ['fh','Instant Heal'], ['autoreload','Auto Reload'],
+            ['explosive','Explosive Bullets'], ['bouncy','Bouncy Bullets'], ['ricochet','Ricochet'], ['vampire','Vampire Mode'],
+            ['thorns','Thorns'], ['fastfire','Fast Fire']
         ],
         aim: [
             ['ab','Aimbot'], ['tb','Trigger Bot'], ['fovaim','FOV Aimbot'], ['flickaim','Flick Aimbot'],
             ['smoothaim','Smooth Aimbot'], ['sa','Silent Aim'], ['aimassist','Aim Assist'], ['snapaim','Snap Aim'],
-            ['autoscope','Auto Scope'], ['aimhead','Aim Priority Head']
+            ['autoscope','Auto Scope'], ['aimhead','Aim Priority Head'], ['aimwall','Aim Through Walls'],
+            ['aimbody','Aim Priority Body'], ['triggerbot','Auto Trigger'], ['autoshoot','Auto Shoot']
         ],
         vision: [
             ['esp','ESP Boxes'], ['skeleton','Skeleton ESP'], ['nametag','Name ESP'], ['distesp','Distance ESP'],
             ['headcircle','Head Circle'], ['wv','Wallhack'], ['fb','Fullbright'], ['matrix','Matrix Mode'],
             ['wf','Wireframe'], ['nightvis','Night Vision'], ['thermal','Thermal'], ['xray','X-Ray'],
-            ['radar','Radar'], ['chams','Chams (Colored Models)']
+            ['radar','Radar'], ['chams','Chams (Colors)'], ['fullbright','Fullbright Overlay']
         ],
         move: [
             ['s','Speed x2.5'], ['speed10','Super Speed x10'], ['abhop','Auto Bhop'], ['perfectbhop','Perfect Bhop'],
             ['rocket','Rocket Jump'], ['superjump','Super Jump'], ['triplejump','Triple Jump'], ['lg','Low Gravity'],
             ['zerograv','Zero Gravity'], ['highgrav','High Gravity'], ['fl','Fly'], ['nc','Noclip'],
-            ['longjump','Long Jump'], ['infjump','Infinite Jump']
+            ['longjump','Long Jump'], ['infjump','Infinite Jump'], ['dash','Dash'], ['teleportrandom','Teleport Random'],
+            ['noknockback','No Knockback'], ['fastfall','Fast Fall']
         ],
         char: [
             ['ir','Instant Respawn'], ['inv','Invisible'], ['bh','Big Head'], ['lk','Long Knife'],
             ['shield','Shield 5 Hits'], ['fr','Freeze Enemies'], ['kaura','Kill Aura'], ['forcepush','Force Push'],
-            ['forcepull','Force Pull'], ['tpspawn','Teleport to Spawn'], ['tprandom','Teleport Random'], ['st','Stealth']
+            ['forcepull','Force Pull'], ['tpspawn','Teleport to Spawn'], ['tprandom','Teleport Random'], ['st','Stealth'],
+            ['smallhead','Small Head'], ['giant','Giant Mode'], ['tiny','Tiny Mode'], ['bigweapon','Big Weapon']
         ],
         fun: [
             ['rb','Rainbow Tracers'], ['slowmo','Slow Motion'], ['fastgame','Fast Forward'], ['tp','Teleport to Enemy'],
             ['wb','Wallbang'], ['invertc','Invert Controls'], ['rainbowworld','Rainbow World'], ['neon','Neon Mode'],
-            ['blackout','Blackout'], ['lowpoly','Low Poly'], ['mirror','Mirror Mode']
+            ['blackout','Blackout'], ['lowpoly','Low Poly'], ['mirror','Mirror Mode'], ['invertcolors','Invert Colors'],
+            ['blur','Blur Effect'], ['shake','Screen Shake'], ['sepia','Sepia Mode'], ['staticnoise','Static Noise']
         ],
         system: [['ac','Anti-Cheat'], ['autoban','Auto-Ban on Cheat'], ['debug','Debug Overlay']]
     };
+
     const stateMap = {};
     for(const tab in FEATURES) FEATURES[tab].forEach(([k]) => { stateMap[k] = window._as[k] === true; });
 
+    // Main Panel Container (Ultra-clean, sidebar layout)
     const panel = document.createElement('div');
     panel.id = 'admin-panel';
-    panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:780px;max-width:96vw;background:rgba(12,12,14,.98);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0;z-index:150;display:none;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;max-height:88vh;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.9);';
+    panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:880px;height:600px;max-width:96vw;max-height:90vh;background:#0a0a0c;border:1px solid #222;border-radius:12px;padding:0;z-index:150;display:none;flex-direction:row;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.05);';
 
-    const header = document.createElement('div');
-    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);';
-    header.innerHTML = '<div style="color:#e8e8e8;font-size:14px;font-weight:600;letter-spacing:3px;">ADMIN</div><div id="admin-close" style="color:#606060;font-size:20px;cursor:pointer;line-height:1;padding:0 4px;">×</div>';
-    panel.appendChild(header);
-    header.querySelector('#admin-close').addEventListener('click', () => window._adminToggle());
+    // Left Sidebar (Categories)
+    const sidebar = document.createElement('div');
+    sidebar.style.cssText = 'width:200px;background:#0f0f12;border-right:1px solid #222;display:flex;flex-direction:column;padding:20px 0;';
+    panel.appendChild(sidebar);
+
+    const logo = document.createElement('div');
+    logo.style.cssText = 'padding:0 24px 20px;color:#e8e8e8;font-size:16px;font-weight:800;letter-spacing:2px;display:flex;align-items:center;justify-content:space-between;';
+    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v14</span>';
+    sidebar.appendChild(logo);
 
     const tabsEl = document.createElement('div');
-    tabsEl.style.cssText = 'display:flex;gap:2px;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto;';
-    panel.appendChild(tabsEl);
+    tabsEl.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;';
+    sidebar.appendChild(tabsEl);
 
-    const TAB_NAMES = { rage:'🔥 RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVE', char:'CHAR', fun:'FUN', system:'SYSTEM' };
-    let activeTab = 'rage';
+    // Right Content Area
+    const contentArea = document.createElement('div');
+    contentArea.style.cssText = 'flex:1;display:flex;flex-direction:column;background:#0a0a0c;position:relative;';
+    panel.appendChild(contentArea);
 
+    // Top Bar (Actions)
+    const topBar = document.createElement('div');
+    topBar.style.cssText = 'height:60px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;';
+    topBar.innerHTML = `
+        <div style="display:flex;gap:10px;">
+            <button id="btn-enable" style="background:#111;border:1px solid #333;color:#ccc;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;">ENABLE ALL</button>
+            <button id="btn-disable" style="background:#111;border:1px solid #333;color:#ccc;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;">DISABLE ALL</button>
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button id="btn-ban" style="background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff8080;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">BAN PEER</button>
+            <button id="btn-nuke" style="background:rgba(255,50,50,0.2);border:1px solid rgba(255,50,50,0.5);color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">NUKE</button>
+        </div>
+    `;
+    contentArea.appendChild(topBar);
+
+    // Toggle Grid Container
     const contentEl = document.createElement('div');
-    contentEl.style.cssText = 'padding:16px 20px;overflow-y:auto;flex:1;min-height:0;';
-    panel.appendChild(contentEl);
+    contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;';
+    contentArea.appendChild(contentEl);
 
-    const actionsEl = document.createElement('div');
-    actionsEl.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:14px 20px;border-top:1px solid rgba(255,255,255,.06);';
-    panel.appendChild(actionsEl);
+    // Bottom Bar (Status)
+    const bottomBar = document.createElement('div');
+    bottomBar.style.cssText = 'height:40px;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#555;font-size:10px;letter-spacing:1px;';
+    bottomBar.innerHTML = `<span>STATUS: <span style="color:#4f4;">UNDETECTED</span></span><span style="cursor:pointer;" id="admin-close">CLOSE [ \\ ]</span>`;
+    contentArea.appendChild(bottomBar);
+    bottomBar.querySelector('#admin-close').addEventListener('click', () => window._adminToggle());
+
+    const TAB_NAMES = { rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', fun:'VISUALS', system:'SYSTEM' };
+    let activeTab = 'rage';
 
     function buildTabs(){
         tabsEl.innerHTML = '';
@@ -387,8 +427,14 @@ window._as = {
             const t = document.createElement('div');
             t.dataset.tab = tab;
             t.textContent = TAB_NAMES[tab];
-            t.style.cssText = 'padding:12px 16px;color:#606060;font-size:11px;font-weight:600;letter-spacing:1.5px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;';
-            if(tab === activeTab){ t.style.color = '#ff5050'; t.style.borderBottomColor = '#ff5050'; }
+            t.style.cssText = 'padding:12px 24px;color:#666;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;';
+            if(tab === activeTab){ 
+                t.style.color = '#e8e8e8'; 
+                t.style.background = 'rgba(255,255,255,0.03)'; 
+                t.style.borderLeftColor = '#ff3333'; 
+            }
+            t.addEventListener('mouseenter', () => { if(tab !== activeTab) t.style.color = '#999'; });
+            t.addEventListener('mouseleave', () => { if(tab !== activeTab) t.style.color = '#666'; });
             t.addEventListener('click', () => { activeTab = tab; buildTabs(); buildContent(); });
             tabsEl.appendChild(t);
         }
@@ -396,52 +442,66 @@ window._as = {
 
     function buildContent(){
         contentEl.innerHTML = '';
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:4px;';
         const feats = FEATURES[activeTab] || [];
         feats.forEach(([key, label]) => {
             const on = stateMap[key];
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:6px;cursor:pointer;transition:background .15s;background:'+(on?'rgba(255,80,80,.08)':'transparent')+';';
-            row.addEventListener('mouseenter', () => row.style.background = on ? 'rgba(255,80,80,.13)' : 'rgba(255,255,255,.03)');
-            row.addEventListener('mouseleave', () => row.style.background = on ? 'rgba(255,80,80,.08)' : 'transparent');
+            row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:8px;cursor:pointer;transition:background 0.1s;background:'+(on?'rgba(255,255,255,0.04)':'rgba(0,0,0,0)')+';border:1px solid '+(on?'#333':'transparent')+';';
+            row.addEventListener('mouseenter', () => row.style.background = on ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)');
+            row.addEventListener('mouseleave', () => row.style.background = on ? 'rgba(255,255,255,0.04)' : 'transparent');
+
             const labelEl = document.createElement('span');
             labelEl.textContent = label;
-            labelEl.style.cssText = 'color:'+(on?'#e8e8e8':'#909090')+';font-size:13px;letter-spacing:.3px;';
+            labelEl.style.cssText = 'color:'+(on?'#e8e8e8':'#888')+';font-size:13px;font-weight:500;';
             row.appendChild(labelEl);
+
+            // Sleek iOS-style toggle
             const toggle = document.createElement('div');
-            toggle.style.cssText = 'width:34px;height:18px;border-radius:9px;background:'+(on?'#ff5050':'#2a2a2a')+';position:relative;flex-shrink:0;transition:background .2s;';
+            toggle.style.cssText = 'width:36px;height:20px;border-radius:10px;background:'+(on?'#ff3333':'#222')+';position:relative;flex-shrink:0;transition:background 0.2s;';
             const knob = document.createElement('div');
-            knob.style.cssText = 'width:14px;height:14px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:left .2s;left:'+(on?'18px':'2px')+';';
+            knob.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:left 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);left:'+(on?'18px':'2px')+';box-shadow:0 1px 3px rgba(0,0,0,0.5);';
             toggle.appendChild(knob);
             row.appendChild(toggle);
+
             row.addEventListener('click', ev => {
                 ev.stopPropagation();
                 stateMap[key] = !stateMap[key];
                 window._as[key] = stateMap[key];
-                buildContent();
+                buildContent(); // Re-render to update visual state instantly
                 applySideEffect(key, stateMap[key]);
             });
-            grid.appendChild(row);
+            contentEl.appendChild(row);
         });
-        contentEl.appendChild(grid);
     }
 
     function applySideEffect(key, on){
         if(key === 'n' && on && typeof reloadTimer !== 'undefined') reloadTimer = 0;
         if(key === 'g' && on && typeof playerHealth !== 'undefined') playerHealth = 100;
         if(key === 'fh' && on && typeof playerHealth !== 'undefined'){ playerHealth = 100; if(typeof updateHealthHUD === 'function') updateHealthHUD(); }
+        
         if(key === 'bh'){
             if(typeof bots !== 'undefined') bots.forEach(b => { if(b.group && b.group.userData.headMesh) b.group.userData.headMesh.scale.setScalar(on ? 3 : 1); });
             if(typeof mpRemote !== 'undefined' && mpRemote.mesh && mpRemote.mesh.userData.headMesh) mpRemote.mesh.userData.headMesh.scale.setScalar(on ? 3 : 1);
         }
-        if(key === 'fb'){
-            if(typeof scene !== 'undefined' && scene.fog) scene.fog.far = on ? 400 : 110;
-            if(typeof renderer !== 'undefined') renderer.toneMappingExposure = on ? 2.0 : 1.05;
+        if(key === 'smallhead'){
+            if(typeof bots !== 'undefined') bots.forEach(b => { if(b.group && b.group.userData.headMesh) b.group.userData.headMesh.scale.setScalar(on ? 0.5 : 1); });
+            if(typeof mpRemote !== 'undefined' && mpRemote.mesh && mpRemote.mesh.userData.headMesh) mpRemote.mesh.userData.headMesh.scale.setScalar(on ? 0.5 : 1);
         }
-        if(key === 'wf' || key === 'matrix'){
+        if(key === 'giant'){
+            if(typeof bots !== 'undefined') bots.forEach(b => { if(b.group) b.group.scale.setScalar(on ? 2 : 1); });
+            if(typeof mpRemote !== 'undefined' && mpRemote.mesh) mpRemote.mesh.scale.setScalar(on ? 2 : 1);
+        }
+        if(key === 'tiny'){
+            if(typeof bots !== 'undefined') bots.forEach(b => { if(b.group) b.group.scale.setScalar(on ? 0.5 : 1); });
+            if(typeof mpRemote !== 'undefined' && mpRemote.mesh) mpRemote.mesh.scale.setScalar(on ? 0.5 : 1);
+        }
+        if(key === 'fb' || key === 'fullbright'){
+            if(typeof scene !== 'undefined' && scene.fog) scene.fog.far = (on || window._as.fb || window._as.fullbright) ? 400 : 110;
+            if(typeof renderer !== 'undefined') renderer.toneMappingExposure = (on || window._as.fb || window._as.fullbright) ? 2.0 : 1.05;
+        }
+        if(key === 'wf' || key === 'matrix' || key === 'wireframe'){
             if(typeof scene !== 'undefined'){
-                if(window._as.wf || window._as.matrix) scene.overrideMaterial = new THREE.MeshBasicMaterial({ wireframe:true, color:0x00ff00 });
+                if(window._as.wf || window._as.matrix || window._as.wireframe) scene.overrideMaterial = new THREE.MeshBasicMaterial({ wireframe:true, color:0x00ff00 });
                 else scene.overrideMaterial = null;
             }
         }
@@ -449,37 +509,23 @@ window._as = {
         if(key === 'radar'){ const r = document.getElementById('radar'); if(r) r.classList.toggle('visible', on); }
         if(key === 'debug'){ const d = document.getElementById('debug-overlay'); if(d) d.classList.toggle('visible', on); }
         if(key === 'autoban'){ if(typeof AC !== 'undefined') AC.autoBan = on; }
-        if(['nightvis','thermal','blackout','neon','rainbowworld'].includes(key) && on){
-            ['nightvis','thermal','blackout','neon','rainbowworld'].forEach(k => { if(k !== key) stateMap[k] = window._as[k] = false; });
+        if(['nightvis','thermal','blackout','neon','rainbowworld','invertcolors','sepia'].includes(key) && on){
+            ['nightvis','thermal','blackout','neon','rainbowworld','invertcolors','sepia'].forEach(k => { if(k !== key) stateMap[k] = window._as[k] = false; });
             buildContent();
+        }
+        if(key === 'mirror'){
+            if(typeof canvas !== 'undefined') canvas.style.transform = on ? 'scaleX(-1)' : 'none';
+        }
+        if(key === 'blur'){
+            if(typeof canvas !== 'undefined') canvas.style.filter = on ? 'blur(3px)' : (canvas.style.filter.includes('hue-rotate') ? canvas.style.filter.split(' blur(3px)')[0] : '');
         }
     }
 
-    function mkBtn(label, on, cb){
-        const b = document.createElement('button');
-        b.style.cssText = 'background:'+(on ? 'rgba(255,80,80,.12)' : 'rgba(255,255,255,.04)')+';border:1px solid '+(on ? 'rgba(255,80,80,.3)' : 'rgba(255,255,255,.08)')+';color:'+(on ? '#ff8080' : '#909090')+';padding:10px 8px;border-radius:6px;font-family:inherit;font-size:11px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .15s;';
-        b.textContent = label;
-        b.addEventListener('mouseenter', () => b.style.background = on ? 'rgba(255,80,80,.2)' : 'rgba(255,255,255,.08)');
-        b.addEventListener('mouseleave', () => b.style.background = on ? 'rgba(255,80,80,.12)' : 'rgba(255,255,255,.04)');
-        b.addEventListener('click', ev => { ev.stopPropagation(); cb(); });
-        actionsEl.appendChild(b);
-    }
-
-    function buildActions(){
-        actionsEl.innerHTML = '';
-        mkBtn('Kill All', false, () => { if(window._killAllEnemies) window._killAllEnemies(); });
-        mkBtn('Nuke', true, () => { if(window._nuke) window._nuke(); });
-        mkBtn('Ban Peer', true, () => { if(window._banPeer) window._banPeer('HACKING'); });
-        mkBtn('Unban', false, () => { if(window._unbanAll) window._unbanAll(); });
-        mkBtn('Teleport Enemy', false, () => { if(window._teleportToEnemy) window._teleportToEnemy(); });
-        mkBtn('Reset Scores', false, () => { if(window._resetScores) window._resetScores(); });
-        mkBtn('Spawn 10 Bots', false, () => { if(window._spawnBots) window._spawnBots(10); });
-        mkBtn('Clear Bots', false, () => { if(window._clearBots) window._clearBots(); });
-        mkBtn('Spawn 20 Targets', false, () => { if(window._spawnTargets) window._spawnTargets(20); });
-        mkBtn('Clear Targets', false, () => { if(window._clearTargets) window._clearTargets(); });
-        mkBtn('Enable All', false, () => window._setAll(true));
-        mkBtn('Disable All', false, () => window._setAll(false));
-    }
+    // Action buttons
+    topBar.querySelector('#btn-enable').addEventListener('click', () => window._setAll(true));
+    topBar.querySelector('#btn-disable').addEventListener('click', () => window._setAll(false));
+    topBar.querySelector('#btn-ban').addEventListener('click', () => { if(window._banPeer) window._banPeer('HACKING'); });
+    topBar.querySelector('#btn-nuke').addEventListener('click', () => { if(window._nuke) window._nuke(); });
 
     window._setAll = function(val){
         for(const tab in FEATURES){
@@ -490,12 +536,12 @@ window._as = {
         }
         if(!val && typeof scene !== 'undefined'){ scene.overrideMaterial = null; if(scene.fog) scene.fog.far = 110; }
         if(typeof renderer !== 'undefined') renderer.toneMappingExposure = 1.05;
+        if(typeof canvas !== 'undefined'){ canvas.style.transform = 'none'; }
         buildContent();
     };
 
     buildTabs();
     buildContent();
-    buildActions();
     document.getElementById('game-wrapper').appendChild(panel);
 
     const backdrop = document.getElementById('admin-backdrop');
@@ -522,10 +568,11 @@ const STL_CONFIG = {
 };
 const BASE_GRAVITY=20, JUMP_VELOCITY=7.5, MOVE_SPEED=6, GROUND_ACCEL=10, FRICTION=5.2, BHOP_BONUS=0.2, AIR_ACCEL=7, AIR_WISH_CAP=1.2;
 const CAMERA_HEIGHT = 1.7;
-const NORMAL_FOV=75, SCOPED_FOV=40, SCOPE_SENS_MULT=0.55;
+let NORMAL_FOV=75, SCOPED_FOV=40, SCOPE_SENS_MULT=0.55;
 const PLAYER_MAX_HEALTH=100, BOT_MAX_HEALTH=100;
 const KNIFE_RANGE=3.0, KNIFE_DAMAGE=50, KNIFE_COOLDOWN=0.45;
-const SNIPER_BODY_DAMAGE=40, SNIPER_HEAD_DAMAGE=100, SNIPER_RELOAD_TIME=1.6;
+const SNIPER_BODY_DAMAGE=40, SNIPER_HEAD_DAMAGE=100;
+let SNIPER_RELOAD_TIME=1.6;
 const BOT_DAMAGE=12, BOT_FIRE_MIN=2.2, BOT_FIRE_MAX=3.4, BOT_ACCURACY=0.5, BOT_MOVE_SPEED=2.8, BOT_STOP_DIST=7, BOT_SHOOT_RANGE=22, MAX_BOTS=10;
 const BLACK_HOLE_R = 0.55;
 const TARGET_SIZE=1.4;
@@ -1307,16 +1354,23 @@ function getClosestTarget(){
 }
 function fireShot(){
     if(playerDead || bannedState) return;
-    if(currentWeapon === 'sniper' && reloadTimer > 0 && !_as.n && !_as.rf) return;
+    if(currentWeapon === 'sniper' && reloadTimer > 0 && !_as.n && !_as.rf && !_as.autoreload) return;
     crosshairKick = 1.0;
     initAudio();
     if(currentWeapon === 'knife'){ performKnifeAttack(); return; }
-    if(!_as.n && !_as.rf){
+    
+    if(_as.autoreload) reloadTimer = 0;
+    else if(!_as.n && !_as.rf && !_as.fastfire){
         reloadTimer = SNIPER_RELOAD_TIME;
         reloadIndicator.classList.add('visible');
         crosshairEl.classList.add('reloading');
         playReloadSound();
+    } else if(_as.fastfire) {
+        reloadTimer = 0.2;
+        reloadIndicator.classList.add('visible');
+        crosshairEl.classList.add('reloading');
     }
+
     if(_as.autoscope && currentWeapon === 'sniper' && !isScoped && gameActive){
         isScoped = true;
         if(thirdPerson) { thirdPerson = false; updateCameraMode(); }
@@ -1404,6 +1458,7 @@ function fireShot(){
                 spawnDamageNumber(ints[0].point, dmg, hs);
                 damageBot(bot, dmg, hs?'headshot':'sniper');
                 if(_as.lifesteal){ playerHealth = Math.min(PLAYER_MAX_HEALTH, playerHealth + dmg * 0.1); updateHealthHUD(); }
+                if(_as.explosive) playExplosion(ints[0].point);
             }
         }
     } else if(currentMode === 'multiplayer'){
@@ -1430,6 +1485,7 @@ function fireShot(){
                 if(_as.dmgmax) dmg = 999999;
                 spawnDamageNumber(hits[0].point, dmg, hs);
                 if(_as.lifesteal){ playerHealth = Math.min(PLAYER_MAX_HEALTH, playerHealth + dmg * 0.1); updateHealthHUD(); }
+                if(_as.explosive) playExplosion(hits[0].point);
             }
         }
         if(!te) te = camWorld.clone().addScaledVector(aimRaycaster.ray.direction, 100);
@@ -1632,6 +1688,7 @@ function updateMovement(dt){
     if(_as.lg) GRAVITY *= 0.25;
     if(_as.zerograv) GRAVITY = 0;
     if(_as.highgrav) GRAVITY *= 3;
+    if(_as.fastfall) GRAVITY *= 2;
     const doJump = keys.space || _as.abhop;
 
     if(isOnGround){ jumpCount = 0; }
@@ -1767,6 +1824,8 @@ function spawnBot(){
     const x = cameraRig.position.x + Math.cos(a)*d; const z = cameraRig.position.z + Math.sin(a)*d;
     const group = createPlayerMesh(0x882222);
     if (_as.bh) group.userData.headMesh.scale.setScalar(3);
+    if (_as.giant) group.scale.setScalar(2);
+    if (_as.tiny) group.scale.setScalar(0.5);
     group.position.set(x, 0, z); group.userData.isBot = true;
     scene.add(group);
     const hb = createHealthBar();
@@ -1795,7 +1854,7 @@ function updateBot(bot, dt){
     } else bot.walkPhase += dt*2;
     bot.group.rotation.y = Math.atan2(dx, dz);
     if(bot.group.userData.legs){ const sw = _as.fr ? 0 : Math.sin(bot.walkPhase)*0.35; bot.group.userData.legs.left.rotation.x = sw; bot.group.userData.legs.right.rotation.x = -sw; }
-    const barY = bot.group.position.y + 2.4;
+    const barY = bot.group.position.y + 2.4 * bot.group.scale.y;
     bot.barBg.position.set(bot.group.position.x, barY, bot.group.position.z); bot.barBg.quaternion.copy(camera.quaternion);
     bot.barFill.position.copy(bot.barBg.position); bot.barFill.quaternion.copy(camera.quaternion);
     const ratio = Math.max(0.001, bot.health/bot.maxHealth);
@@ -2045,7 +2104,7 @@ function updateMPRemote(dt){
     mpRemote.yaw += dy * Math.min(1, dt*10);
     mpRemote.mesh.rotation.y = mpRemote.yaw;
     if(mpRemote.healthBarBg){
-        const barY = mpRemote.pos.y + 2.4;
+        const barY = mpRemote.pos.y + 2.4 * mpRemote.mesh.scale.y;
         mpRemote.healthBarBg.position.set(mpRemote.pos.x, barY, mpRemote.pos.z); mpRemote.healthBarBg.quaternion.copy(camera.quaternion);
         mpRemote.healthBarFill.position.copy(mpRemote.healthBarBg.position); mpRemote.healthBarFill.quaternion.copy(camera.quaternion);
         const ratio = Math.max(0.001, mpRemote.health/100);
@@ -2102,18 +2161,17 @@ function updatePingDisplays(){
     pingDisplayEl.textContent = txt; pingInGameEl.textContent = txt; mpPingDisplayEl.textContent = txt;
 }
 
+// Fix for "Peer not available" error
 function mpStartHost(){
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
     mpStatus.textContent = 'Creating room…'; mpStatus.classList.remove('error');
     mpHostSection.classList.add('hidden'); mpJoinSection.classList.add('hidden'); mpHostingSection.classList.remove('hidden');
     
-    // Create a short code
     const code = Math.random().toString(36).substring(2,7).toUpperCase();
     mpRoomCode = code; mpCodeDisplay.textContent = code;
     
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
     
-    // Try to host with the code
     mpPeer = new Peer('aimtrainer-' + code, { debug: 0 });
     mpIsHost = true;
     
@@ -2133,8 +2191,7 @@ function mpStartHost(){
     
     mpPeer.on('error', err => { 
         if(err.type === 'unavailable-id'){
-            // Code collision, try again
-            mpStartHost();
+            mpStartHost(); // Retry if code collides
         } else {
             mpStatus.textContent = 'Error: ' + err.type; 
             mpStatus.classList.add('error'); 
@@ -2142,6 +2199,7 @@ function mpStartHost(){
     });
 }
 
+// Fix for "Peer not available" error
 function mpStartJoin(){
     const code = (mpCodeInput.value || '').trim().toUpperCase();
     if(code.length < 4){ mpStatus.textContent = 'Enter a valid 5-char code'; mpStatus.classList.add('error'); return; }
@@ -2150,7 +2208,6 @@ function mpStartJoin(){
     mpStatus.textContent = 'Connecting…'; mpStatus.classList.remove('error');
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
     
-    // Generate a fresh random token every time you join to avoid permanent bans
     const token = Math.random().toString(36).slice(2, 12); 
     mpPeer = new Peer('aimclient-' + token, { debug: 0 });
     mpIsHost = false;
@@ -2159,7 +2216,7 @@ function mpStartJoin(){
         const conn = mpPeer.connect('aimtrainer-' + code, { reliable: true });
         mpConn = conn;
         
-        // Timeout if host is unreachable
+        // 5 second timeout if host is unreachable
         const connTimeout = setTimeout(() => {
             if(!conn.open){
                 mpStatus.textContent = 'Error: Host not found or room is full.';
@@ -2352,6 +2409,12 @@ function updateVisualFilters(){
     else if(_as.blackout) f = 'brightness(0.25)';
     else if(_as.neon) f = 'saturate(3) contrast(1.5) hue-rotate(180deg)';
     else if(_as.rainbowworld){ rainbowHue = (rainbowHue + 0.5) % 360; f = 'hue-rotate(' + rainbowHue + 'deg) saturate(1.8)'; }
+    else if(_as.invertcolors) f = 'invert(1)';
+    else if(_as.sepia) f = 'sepia(1)';
+    
+    if(_as.blur) f += ' blur(3px)';
+    if(_as.staticnoise) f += ' contrast(2) grayscale(1)'; // simple approximation
+    
     canvas.style.filter = f;
 }
 function updateDebugOverlay(){
@@ -2534,7 +2597,7 @@ function animate(){
         killAuraTick(dt); forcePushTick(); forcePullTick();
 
         // Ragebot auto-fire
-        if(_as.ragebot || _as.autofire) {
+        if(_as.ragebot || _as.autofire || _as.triggerbot) {
             const tgt = getClosestTarget();
             if(tgt && !playerDead && !bannedState) {
                 fireShot();
