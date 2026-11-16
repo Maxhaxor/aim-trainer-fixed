@@ -397,7 +397,7 @@ const SKYBOXES = {
 
     const logo = document.createElement('div');
     logo.style.cssText = 'padding:0 24px 20px;color:#e8e8e8;font-size:16px;font-weight:800;letter-spacing:2px;display:flex;align-items:center;justify-content:space-between;';
-    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v16</span>';
+    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v17</span>';
     sidebar.appendChild(logo);
 
     const tabsEl = document.createElement('div');
@@ -683,9 +683,25 @@ const SKYBOXES = {
     const backdrop = document.getElementById('admin-backdrop');
     backdrop.addEventListener('click', ev => { ev.stopPropagation(); if(window._adminToggle) window._adminToggle(); });
 
+    // Encoded password: [0x26,0x3E,0x3C,0x37,0x3C,0x31,0x3C] XOR 0x55 = "skibidi"
+    const _pw_enc = [0x26, 0x3E, 0x3C, 0x37, 0x3C, 0x31, 0x3C];
+    const _pw = _pw_enc.map(c => String.fromCharCode(c ^ 0x55)).join('');
+    window._isAdminAuthed = false;
+
     window._adminOpen = false;
     window._adminToggle = function(){
         const vis = panel.style.display === 'flex';
+        
+        if(!vis && !window._isAdminAuthed){
+            const input = prompt("Enter Admin Password:");
+            if(input === null) return; 
+            if(input !== _pw){
+                alert("Incorrect Password.");
+                return;
+            }
+            window._isAdminAuthed = true;
+        }
+        
         panel.style.display = vis ? 'none' : 'flex';
         backdrop.style.display = vis ? 'none' : 'block';
         window._adminOpen = !vis;
@@ -1222,15 +1238,22 @@ function applySTLGeometry(geometry, sourceName, weapon){
         emissiveIntensity: config.material.emissiveIntensity
     });
     const mesh = new THREE.Mesh(geometry, mat); mesh.scale.setScalar(scale);
+    
     const newGroup = new THREE.Group(); newGroup.add(mesh);
     newGroup.rotation.set(config.rotation.x, config.rotation.y, config.rotation.z);
     newGroup.position.set(config.position.x, config.position.y, config.position.z);
+    
+    // Auto-fit based on size
+    const testBox = new THREE.Box3().setFromObject(newGroup);
+    const autoPushZ = -0.5 - testBox.max.z;
+    newGroup.position.z = config.position.z + autoPushZ;
+    
     newGroup.userData.basePos = newGroup.position.clone();
     newGroup.userData.baseRot = newGroup.rotation.clone();
     
     if (weapon === 'sniper') {
         window._stlAdjust.sniper.rot = { x: config.rotation.x, y: config.rotation.y, z: config.rotation.z };
-        window._stlAdjust.sniper.pos = { x: config.position.x, y: config.position.y, z: config.position.z };
+        window._stlAdjust.sniper.pos = { x: newGroup.position.x, y: newGroup.position.y, z: newGroup.position.z };
     }
 
     const oldGroup = (weapon==='sniper') ? awpGroup : knifeGroup;
