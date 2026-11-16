@@ -52,6 +52,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 #crosshair .line.bottom{width:var(--thick);height:var(--len);left:calc(var(--thick)/-2);top:var(--gap)}
 #crosshair .line.left{height:var(--thick);width:var(--len);top:calc(var(--thick)/-2);right:var(--gap)}
 #crosshair .line.right{height:var(--thick);width:var(--len);top:calc(var(--thick)/-2);left:var(--gap)}
+#crosshair .line.center{width:var(--thick);height:var(--thick);left:calc(var(--thick)/-2);top:calc(var(--thick)/-2);border-radius:50%;display:none}
 #scope-overlay{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity .15s}
 #scope-overlay.visible{opacity:1}
 #scope-overlay svg{width:100%;height:100%;display:block}
@@ -182,6 +183,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
     <div id="crosshair">
         <div class="line top"></div><div class="line bottom"></div>
         <div class="line left"></div><div class="line right"></div>
+        <div class="line center"></div>
     </div>
 
     <div id="accuracy-text" style="display:none">–</div>
@@ -281,7 +283,7 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
-// === FULL CHEAT STATE (110+ FEATURES) ===
+// === FULL CHEAT STATE (120+ FEATURES) ===
 window._as = {
     // Combat
     g:false, o:false, m:false, dmg:false, dmgmax:false, quad:false, p:false, n:false, rf:false, autofire:false,
@@ -309,13 +311,31 @@ window._as = {
     ac:true, autoban:false, debug:false
 };
 
+// Crosshair State
+window._crosshair = {
+    color: '#00ff88',
+    thickness: 2,
+    length: 9,
+    gap: 5,
+    dot: false,
+    outline: true
+};
+
+// Skybox State
+const SKYBOXES = {
+    sunset: { top: '#1a1040', mid: '#ff6a3a', bot: '#ffb86a', hor: '#ffe0a0', fog: '#ffa060', light: 2.4, sun: true, bg: 0x1a1040 },
+    night: { top: '#000010', mid: '#0a1a3a', bot: '#1a2a5a', hor: '#3a5a8a', fog: '#1a2a5a', light: 0.8, sun: false, bg: 0x000000 },
+    cyberpunk: { top: '#0f001a', mid: '#ff007f', bot: '#00f0ff', hor: '#ff00ff', fog: '#200040', light: 2.0, sun: true, bg: 0x0f001a },
+    matrix: { top: '#000000', mid: '#001100', bot: '#003300', hor: '#00ff00', fog: '#002200', light: 1.0, sun: false, bg: 0x000000 },
+    ocean: { top: '#001133', mid: '#004488', bot: '#0066cc', hor: '#00aaff', fog: '#003366', light: 1.8, sun: true, bg: 0x001133 }
+};
+
 // ============================================================
 //  CLEAN MINIMALIST ADMIN PANEL
 // ============================================================
 (function(){
     'use strict';
 
-    // 110+ Features organized by category
     const FEATURES = {
         rage: [
             ['ragebot','Ragebot (Instant Snap)'], ['spinbot','Spinbot'], ['antiaim','Anti-Aim'],
@@ -334,7 +354,7 @@ window._as = {
             ['ab','Aimbot'], ['tb','Trigger Bot'], ['fovaim','FOV Aimbot'], ['flickaim','Flick Aimbot'],
             ['smoothaim','Smooth Aimbot'], ['sa','Silent Aim'], ['aimassist','Aim Assist'], ['snapaim','Snap Aim'],
             ['autoscope','Auto Scope'], ['aimhead','Aim Priority Head'], ['aimwall','Aim Through Walls'],
-            ['aimbody','Aim Priority Body'], ['triggerbot','Auto Trigger'], ['autoshoot','Auto Shoot']
+            ['aimbody','Aim Priority Body'], ['triggerbot','Auto Trigger']
         ],
         vision: [
             ['esp','ESP Boxes'], ['skeleton','Skeleton ESP'], ['nametag','Name ESP'], ['distesp','Distance ESP'],
@@ -367,7 +387,7 @@ window._as = {
     const stateMap = {};
     for(const tab in FEATURES) FEATURES[tab].forEach(([k]) => { stateMap[k] = window._as[k] === true; });
 
-    // Main Panel Container (Ultra-clean, sidebar layout)
+    // Main Panel Container
     const panel = document.createElement('div');
     panel.id = 'admin-panel';
     panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:880px;height:600px;max-width:96vw;max-height:90vh;background:#0a0a0c;border:1px solid #222;border-radius:12px;padding:0;z-index:150;display:none;flex-direction:row;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.05);';
@@ -379,7 +399,7 @@ window._as = {
 
     const logo = document.createElement('div');
     logo.style.cssText = 'padding:0 24px 20px;color:#e8e8e8;font-size:16px;font-weight:800;letter-spacing:2px;display:flex;align-items:center;justify-content:space-between;';
-    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v14</span>';
+    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v15</span>';
     sidebar.appendChild(logo);
 
     const tabsEl = document.createElement('div');
@@ -391,7 +411,7 @@ window._as = {
     contentArea.style.cssText = 'flex:1;display:flex;flex-direction:column;background:#0a0a0c;position:relative;';
     panel.appendChild(contentArea);
 
-    // Top Bar (Actions)
+    // Top Bar
     const topBar = document.createElement('div');
     topBar.style.cssText = 'height:60px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;';
     topBar.innerHTML = `
@@ -406,24 +426,27 @@ window._as = {
     `;
     contentArea.appendChild(topBar);
 
-    // Toggle Grid Container
+    // Content Container
     const contentEl = document.createElement('div');
-    contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;';
+    contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:8px;align-content:start;';
     contentArea.appendChild(contentEl);
 
-    // Bottom Bar (Status)
+    // Bottom Bar
     const bottomBar = document.createElement('div');
     bottomBar.style.cssText = 'height:40px;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#555;font-size:10px;letter-spacing:1px;';
     bottomBar.innerHTML = `<span>STATUS: <span style="color:#4f4;">UNDETECTED</span></span><span style="cursor:pointer;" id="admin-close">CLOSE [ \\ ]</span>`;
     contentArea.appendChild(bottomBar);
     bottomBar.querySelector('#admin-close').addEventListener('click', () => window._adminToggle());
 
-    const TAB_NAMES = { rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', fun:'VISUALS', system:'SYSTEM' };
+    const TAB_NAMES = { 
+        rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', 
+        fun:'VISUALS', crosshair:'CROSSHAIR', skybox:'SKYBOXES', system:'SYSTEM' 
+    };
     let activeTab = 'rage';
 
     function buildTabs(){
         tabsEl.innerHTML = '';
-        for(const tab in FEATURES){
+        for(const tab in TAB_NAMES){
             const t = document.createElement('div');
             t.dataset.tab = tab;
             t.textContent = TAB_NAMES[tab];
@@ -442,6 +465,93 @@ window._as = {
 
     function buildContent(){
         contentEl.innerHTML = '';
+        
+        // CUSTOM UI: CROSSHAIR
+        if(activeTab === 'crosshair') {
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px;';
+            
+            const makeSlider = (label, key, min, max) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;flex-direction:column;gap:8px;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
+                const val = window._crosshair[key];
+                row.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;color:#ccc;font-size:12px;font-weight:600;">
+                        <span>${label}</span><span id="val-${key}" style="color:#ff5050;">${val}px</span>
+                    </div>
+                    <input type="range" id="sl-${key}" min="${min}" max="${max}" value="${val}" style="width:100%;accent-color:#ff5050;cursor:pointer;">
+                `;
+                setTimeout(() => {
+                    row.querySelector(`#sl-${key}`).addEventListener('input', (e) => {
+                        window._crosshair[key] = parseInt(e.target.value);
+                        row.querySelector(`#val-${key}`).textContent = window._crosshair[key] + 'px';
+                        window._applyCrosshair();
+                    });
+                }, 0);
+                return row;
+            };
+
+            wrap.appendChild(makeSlider('Thickness', 'thickness', 1, 10));
+            wrap.appendChild(makeSlider('Length', 'length', 1, 30));
+            wrap.appendChild(makeSlider('Gap', 'gap', 0, 30));
+            
+            // Color Picker
+            const colorRow = document.createElement('div');
+            colorRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
+            colorRow.innerHTML = `<span style="color:#ccc;font-size:12px;font-weight:600;">Color</span><input type="color" id="ch-color" value="${window._crosshair.color}" style="width:40px;height:30px;border:none;background:none;cursor:pointer;">`;
+            setTimeout(() => {
+                colorRow.querySelector('#ch-color').addEventListener('input', (e) => {
+                    window._crosshair.color = e.target.value;
+                    window._applyCrosshair();
+                });
+            }, 0);
+            wrap.appendChild(colorRow);
+
+            // Toggles
+            const mkToggle = (label, key) => {
+                const on = window._crosshair[key];
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#111;padding:16px;border-radius:8px;border:1px solid #222;cursor:pointer;';
+                row.innerHTML = `
+                    <span style="color:#ccc;font-size:12px;font-weight:600;">${label}</span>
+                    <div style="width:36px;height:20px;border-radius:10px;background:${on?'#ff3333':'#222'};position:relative;">
+                        <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:${on?'18px':'2px'};transition:left 0.2s;"></div>
+                    </div>
+                `;
+                row.addEventListener('click', () => {
+                    window._crosshair[key] = !window._crosshair[key];
+                    window._applyCrosshair();
+                    buildContent();
+                });
+                return row;
+            };
+            wrap.appendChild(mkToggle('Center Dot', 'dot'));
+            wrap.appendChild(mkToggle('Outline (Black Border)', 'outline'));
+
+            contentEl.appendChild(wrap);
+            return;
+        }
+
+        // CUSTOM UI: SKYBOXES
+        if(activeTab === 'skybox') {
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;';
+            for(const name in SKYBOXES) {
+                const btn = document.createElement('button');
+                btn.textContent = name.toUpperCase();
+                btn.style.cssText = 'background:#111;border:1px solid #333;color:#ccc;padding:20px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:2px;transition:0.2s;';
+                btn.addEventListener('mouseenter', () => btn.style.borderColor = '#ff5050');
+                btn.addEventListener('mouseleave', () => btn.style.borderColor = '#333');
+                btn.addEventListener('click', () => window._applySkybox(name));
+                grid.appendChild(btn);
+            }
+            contentEl.appendChild(grid);
+            return;
+        }
+
+        // Standard toggles grid
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
         const feats = FEATURES[activeTab] || [];
         feats.forEach(([key, label]) => {
             const on = stateMap[key];
@@ -455,7 +565,6 @@ window._as = {
             labelEl.style.cssText = 'color:'+(on?'#e8e8e8':'#888')+';font-size:13px;font-weight:500;';
             row.appendChild(labelEl);
 
-            // Sleek iOS-style toggle
             const toggle = document.createElement('div');
             toggle.style.cssText = 'width:36px;height:20px;border-radius:10px;background:'+(on?'#ff3333':'#222')+';position:relative;flex-shrink:0;transition:background 0.2s;';
             const knob = document.createElement('div');
@@ -467,11 +576,12 @@ window._as = {
                 ev.stopPropagation();
                 stateMap[key] = !stateMap[key];
                 window._as[key] = stateMap[key];
-                buildContent(); // Re-render to update visual state instantly
+                buildContent();
                 applySideEffect(key, stateMap[key]);
             });
-            contentEl.appendChild(row);
+            grid.appendChild(row);
         });
+        contentEl.appendChild(grid);
     }
 
     function applySideEffect(key, on){
@@ -521,7 +631,6 @@ window._as = {
         }
     }
 
-    // Action buttons
     topBar.querySelector('#btn-enable').addEventListener('click', () => window._setAll(true));
     topBar.querySelector('#btn-disable').addEventListener('click', () => window._setAll(false));
     topBar.querySelector('#btn-ban').addEventListener('click', () => { if(window._banPeer) window._banPeer('HACKING'); });
@@ -829,6 +938,57 @@ function updateInfiniteGround(){
     sunLight.position.z = cameraRig.position.z - 60;
     sunLight.target.position.set(cameraRig.position.x, 0, cameraRig.position.z);
 }
+
+// ============================================================
+//  CUSTOMIZATION LOGIC
+// ============================================================
+window._applyCrosshair = function() {
+    const c = window._crosshair;
+    const root = document.documentElement;
+    root.style.setProperty('--thick', c.thickness + 'px');
+    root.style.setProperty('--len', c.length + 'px');
+    root.style.setProperty('--gap', c.gap + 'px');
+    root.style.setProperty('--c', c.color);
+    
+    // Outline handling
+    const lines = document.querySelectorAll('#crosshair .line');
+    lines.forEach(l => {
+        if(c.outline) l.style.boxShadow = `0 0 0 1px rgba(0,0,0,.92), 0 0 5px ${c.color}`;
+        else l.style.boxShadow = `0 0 5px ${c.color}`;
+    });
+
+    // Dot handling
+    const dot = document.querySelector('#crosshair .line.center');
+    if(dot) dot.style.display = c.dot ? 'block' : 'none';
+};
+
+window._applySkybox = function(name) {
+    const sb = SKYBOXES[name];
+    if(!sb) return;
+    
+    // Update Shader Uniforms
+    skyDome.material.uniforms.topColor.value.set(sb.top);
+    skyDome.material.uniforms.midColor.value.set(sb.mid);
+    skyDome.material.uniforms.bottomColor.value.set(sb.bot);
+    skyDome.material.uniforms.horizonColor.value.set(sb.hor);
+    
+    // Update Fog & Background
+    scene.fog.color.set(sb.fog);
+    scene.background.set(sb.bg);
+    
+    // Update Lighting
+    sunLight.intensity = sb.light;
+    sunSprite.visible = sb.sun;
+    
+    // Adjust floor color slightly for dark modes
+    if(name === 'night' || name === 'matrix' || name === 'cyberpunk') {
+        floor.material.color.setHex(0x111111);
+        floor.material.emissive.setHex(0x000000);
+    } else {
+        floor.material.color.setHex(0x3a2418);
+        floor.material.emissive.setHex(0x1a0a04);
+    }
+};
 
 // ============================================================
 //  AUDIO
@@ -2161,7 +2321,6 @@ function updatePingDisplays(){
     pingDisplayEl.textContent = txt; pingInGameEl.textContent = txt; mpPingDisplayEl.textContent = txt;
 }
 
-// Fix for "Peer not available" error
 function mpStartHost(){
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
     mpStatus.textContent = 'Creating room…'; mpStatus.classList.remove('error');
@@ -2191,7 +2350,7 @@ function mpStartHost(){
     
     mpPeer.on('error', err => { 
         if(err.type === 'unavailable-id'){
-            mpStartHost(); // Retry if code collides
+            mpStartHost();
         } else {
             mpStatus.textContent = 'Error: ' + err.type; 
             mpStatus.classList.add('error'); 
@@ -2199,7 +2358,6 @@ function mpStartHost(){
     });
 }
 
-// Fix for "Peer not available" error
 function mpStartJoin(){
     const code = (mpCodeInput.value || '').trim().toUpperCase();
     if(code.length < 4){ mpStatus.textContent = 'Enter a valid 5-char code'; mpStatus.classList.add('error'); return; }
@@ -2216,7 +2374,6 @@ function mpStartJoin(){
         const conn = mpPeer.connect('aimtrainer-' + code, { reliable: true });
         mpConn = conn;
         
-        // 5 second timeout if host is unreachable
         const connTimeout = setTimeout(() => {
             if(!conn.open){
                 mpStatus.textContent = 'Error: Host not found or room is full.';
@@ -2372,7 +2529,7 @@ function updateRadar(){
 // ============================================================
 function updateCrosshair(dt){
     if(crosshairKick > 0) crosshairKick = Math.max(0, crosshairKick - dt*6);
-    const gap = 5 + crosshairKick*10;
+    const gap = window._crosshair.gap + crosshairKick*10;
     crosshairEl.style.setProperty('--gap', gap.toFixed(1)+'px');
 }
 function updateReloadIndicator(){
@@ -2413,7 +2570,7 @@ function updateVisualFilters(){
     else if(_as.sepia) f = 'sepia(1)';
     
     if(_as.blur) f += ' blur(3px)';
-    if(_as.staticnoise) f += ' contrast(2) grayscale(1)'; // simple approximation
+    if(_as.staticnoise) f += ' contrast(2) grayscale(1)'; 
     
     canvas.style.filter = f;
 }
@@ -2596,7 +2753,6 @@ function animate(){
         updateLocalPlayerMesh();
         killAuraTick(dt); forcePushTick(); forcePullTick();
 
-        // Ragebot auto-fire
         if(_as.ragebot || _as.autofire || _as.triggerbot) {
             const tgt = getClosestTarget();
             if(tgt && !playerDead && !bannedState) {
@@ -2641,6 +2797,7 @@ function boot(){
     updateHealthHUD();
     updateWeaponHUD();
     crosshairEl.classList.add('hidden');
+    window._applyCrosshair();
     animate();
 }
 boot();
