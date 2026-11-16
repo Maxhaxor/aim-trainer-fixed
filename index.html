@@ -52,7 +52,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 #crosshair .line.bottom{width:var(--thick);height:var(--len);left:calc(var(--thick)/-2);top:var(--gap)}
 #crosshair .line.left{height:var(--thick);width:var(--len);top:calc(var(--thick)/-2);right:var(--gap)}
 #crosshair .line.right{height:var(--thick);width:var(--len);top:calc(var(--thick)/-2);left:var(--gap)}
-#crosshair .line.center{width:var(--thick);height:var(--thick);left:calc(var(--thick)/-2);top:calc(var(--thick)/-2);border-radius:50%;display:none}
 #scope-overlay{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity .15s}
 #scope-overlay.visible{opacity:1}
 #scope-overlay svg{width:100%;height:100%;display:block}
@@ -183,7 +182,6 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
     <div id="crosshair">
         <div class="line top"></div><div class="line bottom"></div>
         <div class="line left"></div><div class="line right"></div>
-        <div class="line center"></div>
     </div>
 
     <div id="accuracy-text" style="display:none">–</div>
@@ -283,51 +281,32 @@ canvas#gameCanvas{display:block;width:100%;height:100%;cursor:none;background:#0
 import * as THREE from 'three';
 const Peer = window.Peer;
 
-// === FULL CHEAT STATE (120+ FEATURES) ===
+// === FULL CHEAT STATE (110+ FEATURES) ===
 window._as = {
+    // Combat
     g:false, o:false, m:false, dmg:false, dmgmax:false, quad:false, p:false, n:false, rf:false, autofire:false,
     alwayshs:false, perfectacc:false, norecoil:false, bulmagnet:false, lifesteal:false, infammo:false, reflect:false, fh:false,
     autoreload:false, explosive:false, bouncy:false, ricochet:false, vampire:false, thorns:false, fastfire:false,
+    // Aim
     ab:false, tb:false, fovaim:false, flickaim:false, smoothaim:false, sa:false, aimassist:false, snapaim:false, autoscope:false, aimhead:false,
     aimwall:false, aimbody:false, triggerbot:false, autoshoot:false,
+    // Vision
     esp:false, skeleton:false, nametag:false, distesp:false, headcircle:false, wv:false, fb:false, matrix:false, wf:false,
     nightvis:false, thermal:false, xray:false, radar:false, bloom:false, chams:false, fullbright:false, wireframe:false,
+    // Movement
     s:false, speed10:false, abhop:false, perfectbhop:false, rocket:false, superjump:false, triplejump:false,
     lg:false, zerograv:false, highgrav:false, fl:false, nc:false, longjump:false, infjump:false,
     dash:false, teleportrandom:false, noknockback:false, fastfall:false,
+    // Character
     ir:false, inv:false, bh:false, lk:false, shield:false, fr:false, kaura:false, forcepush:false, forcepull:false,
     tpspawn:false, tprandom:false, st:false, smallhead:false, giant:false, tiny:false, bigweapon:false,
+    // RAGE
     spinbot:false, ragebot:false, antiaim:false, doubletap:false, fakelag:false, forcehost:false,
+    // Fun
     rb:false, slowmo:false, fastgame:false, tp:false, wb:false, invertc:false, rainbowworld:false, neon:false, blackout:false, lowpoly:false, mirror:false,
     invertcolors:false, blur:false, shake:false, sepia:false, staticnoise:false,
+    // System
     ac:true, autoban:false, debug:false
-};
-
-// Crosshair State
-window._crosshair = {
-    color: '#00ff88',
-    thickness: 2,
-    length: 9,
-    gap: 5,
-    dot: false,
-    outline: true
-};
-
-// STL Adjustment State
-window._stlAdjust = {
-    sniper: {
-        rot: { x: 0, y: -Math.PI/2, z: 0 },
-        pos: { x: 0.22, y: -0.22, z: -0.55 }
-    }
-};
-
-// Skybox State
-const SKYBOXES = {
-    sunset: { top: '#1a1040', mid: '#ff6a3a', bot: '#ffb86a', hor: '#ffe0a0', fog: '#ffa060', light: 2.4, sun: true, bg: 0x1a1040 },
-    night: { top: '#000010', mid: '#0a1a3a', bot: '#1a2a5a', hor: '#3a5a8a', fog: '#1a2a5a', light: 0.8, sun: false, bg: 0x000000 },
-    cyberpunk: { top: '#0f001a', mid: '#ff007f', bot: '#00f0ff', hor: '#ff00ff', fog: '#200040', light: 2.0, sun: true, bg: 0x0f001a },
-    matrix: { top: '#000000', mid: '#001100', bot: '#003300', hor: '#00ff00', fog: '#002200', light: 1.0, sun: false, bg: 0x000000 },
-    ocean: { top: '#001133', mid: '#004488', bot: '#0066cc', hor: '#00aaff', fog: '#003366', light: 1.8, sun: true, bg: 0x001133 }
 };
 
 // ============================================================
@@ -336,6 +315,7 @@ const SKYBOXES = {
 (function(){
     'use strict';
 
+    // 110+ Features organized by category
     const FEATURES = {
         rage: [
             ['ragebot','Ragebot (Instant Snap)'], ['spinbot','Spinbot'], ['antiaim','Anti-Aim'],
@@ -354,7 +334,7 @@ const SKYBOXES = {
             ['ab','Aimbot'], ['tb','Trigger Bot'], ['fovaim','FOV Aimbot'], ['flickaim','Flick Aimbot'],
             ['smoothaim','Smooth Aimbot'], ['sa','Silent Aim'], ['aimassist','Aim Assist'], ['snapaim','Snap Aim'],
             ['autoscope','Auto Scope'], ['aimhead','Aim Priority Head'], ['aimwall','Aim Through Walls'],
-            ['aimbody','Aim Priority Body'], ['triggerbot','Auto Trigger']
+            ['aimbody','Aim Priority Body'], ['triggerbot','Auto Trigger'], ['autoshoot','Auto Shoot']
         ],
         vision: [
             ['esp','ESP Boxes'], ['skeleton','Skeleton ESP'], ['nametag','Name ESP'], ['distesp','Distance ESP'],
@@ -387,27 +367,31 @@ const SKYBOXES = {
     const stateMap = {};
     for(const tab in FEATURES) FEATURES[tab].forEach(([k]) => { stateMap[k] = window._as[k] === true; });
 
+    // Main Panel Container (Ultra-clean, sidebar layout)
     const panel = document.createElement('div');
     panel.id = 'admin-panel';
     panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:880px;height:600px;max-width:96vw;max-height:90vh;background:#0a0a0c;border:1px solid #222;border-radius:12px;padding:0;z-index:150;display:none;flex-direction:row;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.05);';
 
+    // Left Sidebar (Categories)
     const sidebar = document.createElement('div');
     sidebar.style.cssText = 'width:200px;background:#0f0f12;border-right:1px solid #222;display:flex;flex-direction:column;padding:20px 0;';
     panel.appendChild(sidebar);
 
     const logo = document.createElement('div');
     logo.style.cssText = 'padding:0 24px 20px;color:#e8e8e8;font-size:16px;font-weight:800;letter-spacing:2px;display:flex;align-items:center;justify-content:space-between;';
-    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v17</span>';
+    logo.innerHTML = '<span>ADMIN</span><span style="color:#444;font-size:11px;">v14</span>';
     sidebar.appendChild(logo);
 
     const tabsEl = document.createElement('div');
     tabsEl.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;';
     sidebar.appendChild(tabsEl);
 
+    // Right Content Area
     const contentArea = document.createElement('div');
     contentArea.style.cssText = 'flex:1;display:flex;flex-direction:column;background:#0a0a0c;position:relative;';
     panel.appendChild(contentArea);
 
+    // Top Bar (Actions)
     const topBar = document.createElement('div');
     topBar.style.cssText = 'height:60px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;';
     topBar.innerHTML = `
@@ -416,32 +400,30 @@ const SKYBOXES = {
             <button id="btn-disable" style="background:#111;border:1px solid #333;color:#ccc;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;">DISABLE ALL</button>
         </div>
         <div style="display:flex;gap:10px;">
-            <button id="btn-unban" style="background:rgba(0,255,100,0.1);border:1px solid rgba(0,255,100,0.3);color:#80ff80;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">UNBAN ALL</button>
             <button id="btn-ban" style="background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);color:#ff8080;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">BAN PEER</button>
             <button id="btn-nuke" style="background:rgba(255,50,50,0.2);border:1px solid rgba(255,50,50,0.5);color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">NUKE</button>
         </div>
     `;
     contentArea.appendChild(topBar);
 
+    // Toggle Grid Container
     const contentEl = document.createElement('div');
-    contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:8px;align-content:start;';
+    contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;';
     contentArea.appendChild(contentEl);
 
+    // Bottom Bar (Status)
     const bottomBar = document.createElement('div');
     bottomBar.style.cssText = 'height:40px;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#555;font-size:10px;letter-spacing:1px;';
     bottomBar.innerHTML = `<span>STATUS: <span style="color:#4f4;">UNDETECTED</span></span><span style="cursor:pointer;" id="admin-close">CLOSE [ \\ ]</span>`;
     contentArea.appendChild(bottomBar);
     bottomBar.querySelector('#admin-close').addEventListener('click', () => window._adminToggle());
 
-    const TAB_NAMES = { 
-        rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', 
-        fun:'VISUALS', crosshair:'CROSSHAIR', skybox:'SKYBOXES', weapon:'WEAPON', system:'SYSTEM' 
-    };
+    const TAB_NAMES = { rage:'RAGE', combat:'COMBAT', aim:'AIM', vision:'VISION', move:'MOVEMENT', char:'CHARACTER', fun:'VISUALS', system:'SYSTEM' };
     let activeTab = 'rage';
 
     function buildTabs(){
         tabsEl.innerHTML = '';
-        for(const tab in TAB_NAMES){
+        for(const tab in FEATURES){
             const t = document.createElement('div');
             t.dataset.tab = tab;
             t.textContent = TAB_NAMES[tab];
@@ -460,124 +442,6 @@ const SKYBOXES = {
 
     function buildContent(){
         contentEl.innerHTML = '';
-        
-        if(activeTab === 'crosshair') {
-            const wrap = document.createElement('div');
-            wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px;';
-            
-            const makeSlider = (label, key, min, max) => {
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;flex-direction:column;gap:8px;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
-                const val = window._crosshair[key];
-                row.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;color:#ccc;font-size:12px;font-weight:600;">
-                        <span>${label}</span><span id="val-${key}" style="color:#ff5050;">${val}px</span>
-                    </div>
-                    <input type="range" id="sl-${key}" min="${min}" max="${max}" value="${val}" style="width:100%;accent-color:#ff5050;cursor:pointer;">
-                `;
-                setTimeout(() => {
-                    row.querySelector(`#sl-${key}`).addEventListener('input', (e) => {
-                        window._crosshair[key] = parseInt(e.target.value);
-                        row.querySelector(`#val-${key}`).textContent = window._crosshair[key] + 'px';
-                        window._applyCrosshair();
-                    });
-                }, 0);
-                return row;
-            };
-
-            wrap.appendChild(makeSlider('Thickness', 'thickness', 1, 10));
-            wrap.appendChild(makeSlider('Length', 'length', 1, 30));
-            wrap.appendChild(makeSlider('Gap', 'gap', 0, 30));
-            
-            const colorRow = document.createElement('div');
-            colorRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
-            colorRow.innerHTML = `<span style="color:#ccc;font-size:12px;font-weight:600;">Color</span><input type="color" id="ch-color" value="${window._crosshair.color}" style="width:40px;height:30px;border:none;background:none;cursor:pointer;">`;
-            setTimeout(() => {
-                colorRow.querySelector('#ch-color').addEventListener('input', (e) => {
-                    window._crosshair.color = e.target.value;
-                    window._applyCrosshair();
-                });
-            }, 0);
-            wrap.appendChild(colorRow);
-
-            const mkToggle = (label, key) => {
-                const on = window._crosshair[key];
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#111;padding:16px;border-radius:8px;border:1px solid #222;cursor:pointer;';
-                row.innerHTML = `
-                    <span style="color:#ccc;font-size:12px;font-weight:600;">${label}</span>
-                    <div style="width:36px;height:20px;border-radius:10px;background:${on?'#ff3333':'#222'};position:relative;">
-                        <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:${on?'18px':'2px'};transition:left 0.2s;"></div>
-                    </div>
-                `;
-                row.addEventListener('click', () => {
-                    window._crosshair[key] = !window._crosshair[key];
-                    window._applyCrosshair();
-                    buildContent();
-                });
-                return row;
-            };
-            wrap.appendChild(mkToggle('Center Dot', 'dot'));
-            wrap.appendChild(mkToggle('Outline (Black Border)', 'outline'));
-
-            contentEl.appendChild(wrap);
-            return;
-        }
-
-        if(activeTab === 'skybox') {
-            const grid = document.createElement('div');
-            grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;';
-            for(const name in SKYBOXES) {
-                const btn = document.createElement('button');
-                btn.textContent = name.toUpperCase();
-                btn.style.cssText = 'background:#111;border:1px solid #333;color:#ccc;padding:20px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:2px;transition:0.2s;';
-                btn.addEventListener('mouseenter', () => btn.style.borderColor = '#ff5050');
-                btn.addEventListener('mouseleave', () => btn.style.borderColor = '#333');
-                btn.addEventListener('click', () => window._applySkybox(name));
-                grid.appendChild(btn);
-            }
-            contentEl.appendChild(grid);
-            return;
-        }
-
-        if(activeTab === 'weapon') {
-            const wrap = document.createElement('div');
-            wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px;';
-
-            const mkSlider = (label, type, axis, min, max, step) => {
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;flex-direction:column;gap:8px;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
-                let cur = window._stlAdjust.sniper[type][axis];
-                row.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;color:#ccc;font-size:12px;font-weight:600;">
-                        <span>${label}</span><span id="val-sniper-${type}-${axis}" style="color:#ff5050;">${cur}</span>
-                    </div>
-                    <input type="range" id="sl-sniper-${type}-${axis}" min="${min}" max="${max}" step="${step}" value="${cur}" style="width:100%;accent-color:#ff5050;cursor:pointer;">
-                `;
-                setTimeout(() => {
-                    row.querySelector(`#sl-sniper-${type}-${axis}`).addEventListener('input', (e) => {
-                        const v = parseFloat(e.target.value);
-                        window._stlAdjust.sniper[type][axis] = v;
-                        row.querySelector(`#val-sniper-${type}-${axis}`).textContent = v;
-                        window._applyWeaponAdjust();
-                    });
-                }, 0);
-                return row;
-            };
-
-            wrap.appendChild(mkSlider('Sniper Rot X', 'rot', 'x', -Math.PI, Math.PI, 0.1));
-            wrap.appendChild(mkSlider('Sniper Rot Y', 'rot', 'y', -Math.PI, Math.PI, 0.1));
-            wrap.appendChild(mkSlider('Sniper Rot Z', 'rot', 'z', -Math.PI, Math.PI, 0.1));
-            wrap.appendChild(mkSlider('Sniper Pos X', 'pos', 'x', -2, 2, 0.05));
-            wrap.appendChild(mkSlider('Sniper Pos Y', 'pos', 'y', -2, 2, 0.05));
-            wrap.appendChild(mkSlider('Sniper Pos Z', 'pos', 'z', -3, 1, 0.05));
-
-            contentEl.appendChild(wrap);
-            return;
-        }
-
-        const grid = document.createElement('div');
-        grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
         const feats = FEATURES[activeTab] || [];
         feats.forEach(([key, label]) => {
             const on = stateMap[key];
@@ -591,6 +455,7 @@ const SKYBOXES = {
             labelEl.style.cssText = 'color:'+(on?'#e8e8e8':'#888')+';font-size:13px;font-weight:500;';
             row.appendChild(labelEl);
 
+            // Sleek iOS-style toggle
             const toggle = document.createElement('div');
             toggle.style.cssText = 'width:36px;height:20px;border-radius:10px;background:'+(on?'#ff3333':'#222')+';position:relative;flex-shrink:0;transition:background 0.2s;';
             const knob = document.createElement('div');
@@ -602,12 +467,11 @@ const SKYBOXES = {
                 ev.stopPropagation();
                 stateMap[key] = !stateMap[key];
                 window._as[key] = stateMap[key];
-                buildContent();
+                buildContent(); // Re-render to update visual state instantly
                 applySideEffect(key, stateMap[key]);
             });
-            grid.appendChild(row);
+            contentEl.appendChild(row);
         });
-        contentEl.appendChild(grid);
     }
 
     function applySideEffect(key, on){
@@ -657,9 +521,9 @@ const SKYBOXES = {
         }
     }
 
+    // Action buttons
     topBar.querySelector('#btn-enable').addEventListener('click', () => window._setAll(true));
     topBar.querySelector('#btn-disable').addEventListener('click', () => window._setAll(false));
-    topBar.querySelector('#btn-unban').addEventListener('click', () => { if(window._unbanAll) window._unbanAll(); });
     topBar.querySelector('#btn-ban').addEventListener('click', () => { if(window._banPeer) window._banPeer('HACKING'); });
     topBar.querySelector('#btn-nuke').addEventListener('click', () => { if(window._nuke) window._nuke(); });
 
@@ -683,25 +547,9 @@ const SKYBOXES = {
     const backdrop = document.getElementById('admin-backdrop');
     backdrop.addEventListener('click', ev => { ev.stopPropagation(); if(window._adminToggle) window._adminToggle(); });
 
-    // Encoded password: [0x26,0x3E,0x3C,0x37,0x3C,0x31,0x3C] XOR 0x55 = "skibidi"
-    const _pw_enc = [0x26, 0x3E, 0x3C, 0x37, 0x3C, 0x31, 0x3C];
-    const _pw = _pw_enc.map(c => String.fromCharCode(c ^ 0x55)).join('');
-    window._isAdminAuthed = false;
-
     window._adminOpen = false;
     window._adminToggle = function(){
         const vis = panel.style.display === 'flex';
-        
-        if(!vis && !window._isAdminAuthed){
-            const input = prompt("Enter Admin Password:");
-            if(input === null) return; 
-            if(input !== _pw){
-                alert("Incorrect Password.");
-                return;
-            }
-            window._isAdminAuthed = true;
-        }
-        
         panel.style.display = vis ? 'none' : 'flex';
         backdrop.style.display = vis ? 'none' : 'block';
         window._adminOpen = !vis;
@@ -715,7 +563,7 @@ const _as = window._as;
 //  CONFIG
 // ============================================================
 const STL_CONFIG = {
-    sniper: { autoFitLength:2.2, rotation:{x:0,y:-Math.PI/2,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
+    sniper: { autoFitLength:2.2, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.22,y:-0.22,z:-0.92}, material:{color:0x3d4a26,roughness:0.62,metalness:0.28,emissive:0x080a04,emissiveIntensity:0.35} },
     knife:  { autoFitLength:0.55, rotation:{x:0,y:Math.PI,z:0}, position:{x:0.3,y:-0.24,z:-0.6}, material:{color:0xd0d8e0,roughness:0.15,metalness:0.9,emissive:0x1a2233,emissiveIntensity:0.3} }
 };
 const BASE_GRAVITY=20, JUMP_VELOCITY=7.5, MOVE_SPEED=6, GROUND_ACCEL=10, FRICTION=5.2, BHOP_BONUS=0.2, AIR_ACCEL=7, AIR_WISH_CAP=1.2;
@@ -769,6 +617,7 @@ let jumpCount=0;
 let bannedState=false;
 let rainbowHue=0;
 
+// Local player rig
 let localPlayerMesh = null;
 let playerContactShadow = null;
 
@@ -791,6 +640,7 @@ let mpRemote = {
     healthBarBg:null, healthBarFill:null
 };
 
+// Bans (Session Only)
 let BANNED_PEERS = new Set();
 
 // ============================================================
@@ -979,70 +829,6 @@ function updateInfiniteGround(){
     sunLight.position.z = cameraRig.position.z - 60;
     sunLight.target.position.set(cameraRig.position.x, 0, cameraRig.position.z);
 }
-
-// ============================================================
-//  CUSTOMIZATION LOGIC
-// ============================================================
-window._applyCrosshair = function() {
-    const c = window._crosshair;
-    const root = document.documentElement;
-    root.style.setProperty('--thick', c.thickness + 'px');
-    root.style.setProperty('--len', c.length + 'px');
-    root.style.setProperty('--gap', c.gap + 'px');
-    root.style.setProperty('--c', c.color);
-    
-    const lines = document.querySelectorAll('#crosshair .line');
-    lines.forEach(l => {
-        if(c.outline) l.style.boxShadow = `0 0 0 1px rgba(0,0,0,.92), 0 0 5px ${c.color}`;
-        else l.style.boxShadow = `0 0 5px ${c.color}`;
-    });
-
-    const dot = document.querySelector('#crosshair .line.center');
-    if(dot) dot.style.display = c.dot ? 'block' : 'none';
-};
-
-window._applySkybox = function(name) {
-    const sb = SKYBOXES[name];
-    if(!sb) return;
-    
-    skyDome.material.uniforms.topColor.value.set(sb.top);
-    skyDome.material.uniforms.midColor.value.set(sb.mid);
-    skyDome.material.uniforms.bottomColor.value.set(sb.bot);
-    skyDome.material.uniforms.horizonColor.value.set(sb.hor);
-    
-    scene.fog.color.set(sb.fog);
-    scene.background.set(sb.bg);
-    
-    sunLight.intensity = sb.light;
-    sunSprite.visible = sb.sun;
-    
-    if(name === 'night' || name === 'matrix' || name === 'cyberpunk') {
-        floor.material.color.setHex(0x111111);
-        floor.material.emissive.setHex(0x000000);
-    } else {
-        floor.material.color.setHex(0x3a2418);
-        floor.material.emissive.setHex(0x1a0a04);
-    }
-};
-
-window._applyWeaponAdjust = function() {
-    if (awpGroup && window._stlAdjust.sniper) {
-        awpGroup.userData.baseRot.set(
-            window._stlAdjust.sniper.rot.x,
-            window._stlAdjust.sniper.rot.y,
-            window._stlAdjust.sniper.rot.z
-        );
-        awpGroup.userData.basePos.set(
-            window._stlAdjust.sniper.pos.x,
-            window._stlAdjust.sniper.pos.y,
-            window._stlAdjust.sniper.pos.z
-        );
-        if(!isScoped && !thirdPerson) {
-            awpGroup.position.copy(awpGroup.userData.basePos);
-            awpGroup.rotation.copy(awpGroup.userData.baseRot);
-        }
-    }
-};
 
 // ============================================================
 //  AUDIO
@@ -1238,24 +1024,11 @@ function applySTLGeometry(geometry, sourceName, weapon){
         emissiveIntensity: config.material.emissiveIntensity
     });
     const mesh = new THREE.Mesh(geometry, mat); mesh.scale.setScalar(scale);
-    
     const newGroup = new THREE.Group(); newGroup.add(mesh);
     newGroup.rotation.set(config.rotation.x, config.rotation.y, config.rotation.z);
     newGroup.position.set(config.position.x, config.position.y, config.position.z);
-    
-    // Auto-fit based on size
-    const testBox = new THREE.Box3().setFromObject(newGroup);
-    const autoPushZ = -0.5 - testBox.max.z;
-    newGroup.position.z = config.position.z + autoPushZ;
-    
     newGroup.userData.basePos = newGroup.position.clone();
     newGroup.userData.baseRot = newGroup.rotation.clone();
-    
-    if (weapon === 'sniper') {
-        window._stlAdjust.sniper.rot = { x: config.rotation.x, y: config.rotation.y, z: config.rotation.z };
-        window._stlAdjust.sniper.pos = { x: newGroup.position.x, y: newGroup.position.y, z: newGroup.position.z };
-    }
-
     const oldGroup = (weapon==='sniper') ? awpGroup : knifeGroup;
     camera.remove(oldGroup);
     oldGroup.traverse(c=>{ if(c.geometry)c.geometry.dispose(); if(c.material){ if(Array.isArray(c.material)) c.material.forEach(m=>m.dispose()); else c.material.dispose(); } });
@@ -1831,7 +1604,7 @@ function applyMouseLook(dt){
     if(_as.invertc){ yaw += smoothMouseX*eff; pitch += smoothMouseY*eff; }
     else { yaw -= smoothMouseX*eff; pitch -= smoothMouseY*eff; }
     
-    if(_as.spinbot) yaw += dt * 15.0;
+    if(_as.spinbot) yaw += dt * 15.0; // Rage spinbot
 
     if(pitch > PITCH_LIMIT) pitch = PITCH_LIMIT;
     if(pitch < -PITCH_LIMIT) pitch = -PITCH_LIMIT;
@@ -2009,7 +1782,7 @@ function ensureLocalPlayerMesh(){
     if(localPlayerMesh) return;
     localPlayerMesh = createPlayerMesh(0x3366cc);
     localPlayerMesh.userData.headMesh.userData.isHead = true;
-    localPlayerMesh.userData.headMesh.visible = false;
+    localPlayerMesh.userData.headMesh.visible = false; // hide own head
     localPlayerMesh.visible = false;
     cameraRig.add(localPlayerMesh);
 
@@ -2388,6 +2161,7 @@ function updatePingDisplays(){
     pingDisplayEl.textContent = txt; pingInGameEl.textContent = txt; mpPingDisplayEl.textContent = txt;
 }
 
+// Fix for "Peer not available" error
 function mpStartHost(){
     if(typeof Peer !== 'function'){ mpStatus.textContent = 'PeerJS not loaded'; mpStatus.classList.add('error'); return; }
     mpStatus.textContent = 'Creating room…'; mpStatus.classList.remove('error');
@@ -2417,7 +2191,7 @@ function mpStartHost(){
     
     mpPeer.on('error', err => { 
         if(err.type === 'unavailable-id'){
-            mpStartHost();
+            mpStartHost(); // Retry if code collides
         } else {
             mpStatus.textContent = 'Error: ' + err.type; 
             mpStatus.classList.add('error'); 
@@ -2425,6 +2199,7 @@ function mpStartHost(){
     });
 }
 
+// Fix for "Peer not available" error
 function mpStartJoin(){
     const code = (mpCodeInput.value || '').trim().toUpperCase();
     if(code.length < 4){ mpStatus.textContent = 'Enter a valid 5-char code'; mpStatus.classList.add('error'); return; }
@@ -2441,6 +2216,7 @@ function mpStartJoin(){
         const conn = mpPeer.connect('aimtrainer-' + code, { reliable: true });
         mpConn = conn;
         
+        // 5 second timeout if host is unreachable
         const connTimeout = setTimeout(() => {
             if(!conn.open){
                 mpStatus.textContent = 'Error: Host not found or room is full.';
@@ -2450,9 +2226,7 @@ function mpStartJoin(){
             }
         }, 5000);
         
-        setupConn(conn);
-        
-        conn.on('open', () => { clearTimeout(connTimeout); });
+        conn.on('open', () => { clearTimeout(connTimeout); setupConn(conn); });
         conn.on('error', (err) => { clearTimeout(connTimeout); mpStatus.textContent = 'Error: ' + err; mpStatus.classList.add('error'); });
     });
     
@@ -2468,14 +2242,13 @@ function mpStartJoin(){
 }
 
 function setupConn(conn){
-    const handleOpen = () => {
+    conn.on('open', () => {
         mpActive = true;
         try { conn.send({ t:'hello' }); } catch(e){}
         pingIdCounter++;
         const id = pingIdCounter;
         pingPending.set(id, performance.now());
         try { conn.send({ t:'p', id }); } catch(e){}
-        
         if(!gameActive){
             setTimeout(() => {
                 if(gameActive) return;
@@ -2484,14 +2257,7 @@ function setupConn(conn){
                 startMode('multiplayer');
             }, 400);
         }
-    };
-
-    if (conn.open) {
-        handleOpen();
-    } else {
-        conn.on('open', handleOpen);
-    }
-
+    });
     conn.on('data', data => handleMPMessage(data));
     conn.on('close', () => {
         mpActive = false;
@@ -2503,7 +2269,6 @@ function setupConn(conn){
         }
     });
 }
-
 function mpCancel(){
     try { if(mpConn) mpConn.close(); } catch(e){}
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
@@ -2607,7 +2372,7 @@ function updateRadar(){
 // ============================================================
 function updateCrosshair(dt){
     if(crosshairKick > 0) crosshairKick = Math.max(0, crosshairKick - dt*6);
-    const gap = window._crosshair.gap + crosshairKick*10;
+    const gap = 5 + crosshairKick*10;
     crosshairEl.style.setProperty('--gap', gap.toFixed(1)+'px');
 }
 function updateReloadIndicator(){
@@ -2648,7 +2413,7 @@ function updateVisualFilters(){
     else if(_as.sepia) f = 'sepia(1)';
     
     if(_as.blur) f += ' blur(3px)';
-    if(_as.staticnoise) f += ' contrast(2) grayscale(1)'; 
+    if(_as.staticnoise) f += ' contrast(2) grayscale(1)'; // simple approximation
     
     canvas.style.filter = f;
 }
@@ -2831,6 +2596,7 @@ function animate(){
         updateLocalPlayerMesh();
         killAuraTick(dt); forcePushTick(); forcePullTick();
 
+        // Ragebot auto-fire
         if(_as.ragebot || _as.autofire || _as.triggerbot) {
             const tgt = getClosestTarget();
             if(tgt && !playerDead && !bannedState) {
@@ -2875,7 +2641,6 @@ function boot(){
     updateHealthHUD();
     updateWeaponHUD();
     crosshairEl.classList.add('hidden');
-    window._applyCrosshair();
     animate();
 }
 boot();
