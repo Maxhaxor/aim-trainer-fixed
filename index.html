@@ -387,12 +387,10 @@ const SKYBOXES = {
     const stateMap = {};
     for(const tab in FEATURES) FEATURES[tab].forEach(([k]) => { stateMap[k] = window._as[k] === true; });
 
-    // Main Panel Container
     const panel = document.createElement('div');
     panel.id = 'admin-panel';
     panel.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:880px;height:600px;max-width:96vw;max-height:90vh;background:#0a0a0c;border:1px solid #222;border-radius:12px;padding:0;z-index:150;display:none;flex-direction:row;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.05);';
 
-    // Left Sidebar (Categories)
     const sidebar = document.createElement('div');
     sidebar.style.cssText = 'width:200px;background:#0f0f12;border-right:1px solid #222;display:flex;flex-direction:column;padding:20px 0;';
     panel.appendChild(sidebar);
@@ -406,12 +404,10 @@ const SKYBOXES = {
     tabsEl.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;';
     sidebar.appendChild(tabsEl);
 
-    // Right Content Area
     const contentArea = document.createElement('div');
     contentArea.style.cssText = 'flex:1;display:flex;flex-direction:column;background:#0a0a0c;position:relative;';
     panel.appendChild(contentArea);
 
-    // Top Bar
     const topBar = document.createElement('div');
     topBar.style.cssText = 'height:60px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;';
     topBar.innerHTML = `
@@ -426,12 +422,10 @@ const SKYBOXES = {
     `;
     contentArea.appendChild(topBar);
 
-    // Content Container
     const contentEl = document.createElement('div');
     contentEl.style.cssText = 'flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:8px;align-content:start;';
     contentArea.appendChild(contentEl);
 
-    // Bottom Bar
     const bottomBar = document.createElement('div');
     bottomBar.style.cssText = 'height:40px;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#555;font-size:10px;letter-spacing:1px;';
     bottomBar.innerHTML = `<span>STATUS: <span style="color:#4f4;">UNDETECTED</span></span><span style="cursor:pointer;" id="admin-close">CLOSE [ \\ ]</span>`;
@@ -466,7 +460,6 @@ const SKYBOXES = {
     function buildContent(){
         contentEl.innerHTML = '';
         
-        // CUSTOM UI: CROSSHAIR
         if(activeTab === 'crosshair') {
             const wrap = document.createElement('div');
             wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px;';
@@ -495,7 +488,6 @@ const SKYBOXES = {
             wrap.appendChild(makeSlider('Length', 'length', 1, 30));
             wrap.appendChild(makeSlider('Gap', 'gap', 0, 30));
             
-            // Color Picker
             const colorRow = document.createElement('div');
             colorRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#111;padding:16px;border-radius:8px;border:1px solid #222;';
             colorRow.innerHTML = `<span style="color:#ccc;font-size:12px;font-weight:600;">Color</span><input type="color" id="ch-color" value="${window._crosshair.color}" style="width:40px;height:30px;border:none;background:none;cursor:pointer;">`;
@@ -507,7 +499,6 @@ const SKYBOXES = {
             }, 0);
             wrap.appendChild(colorRow);
 
-            // Toggles
             const mkToggle = (label, key) => {
                 const on = window._crosshair[key];
                 const row = document.createElement('div');
@@ -532,7 +523,6 @@ const SKYBOXES = {
             return;
         }
 
-        // CUSTOM UI: SKYBOXES
         if(activeTab === 'skybox') {
             const grid = document.createElement('div');
             grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;';
@@ -549,7 +539,6 @@ const SKYBOXES = {
             return;
         }
 
-        // Standard toggles grid
         const grid = document.createElement('div');
         grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
         const feats = FEATURES[activeTab] || [];
@@ -726,7 +715,6 @@ let jumpCount=0;
 let bannedState=false;
 let rainbowHue=0;
 
-// Local player rig
 let localPlayerMesh = null;
 let playerContactShadow = null;
 
@@ -749,7 +737,6 @@ let mpRemote = {
     healthBarBg:null, healthBarFill:null
 };
 
-// Bans (Session Only)
 let BANNED_PEERS = new Set();
 
 // ============================================================
@@ -950,14 +937,12 @@ window._applyCrosshair = function() {
     root.style.setProperty('--gap', c.gap + 'px');
     root.style.setProperty('--c', c.color);
     
-    // Outline handling
     const lines = document.querySelectorAll('#crosshair .line');
     lines.forEach(l => {
         if(c.outline) l.style.boxShadow = `0 0 0 1px rgba(0,0,0,.92), 0 0 5px ${c.color}`;
         else l.style.boxShadow = `0 0 5px ${c.color}`;
     });
 
-    // Dot handling
     const dot = document.querySelector('#crosshair .line.center');
     if(dot) dot.style.display = c.dot ? 'block' : 'none';
 };
@@ -966,21 +951,17 @@ window._applySkybox = function(name) {
     const sb = SKYBOXES[name];
     if(!sb) return;
     
-    // Update Shader Uniforms
     skyDome.material.uniforms.topColor.value.set(sb.top);
     skyDome.material.uniforms.midColor.value.set(sb.mid);
     skyDome.material.uniforms.bottomColor.value.set(sb.bot);
     skyDome.material.uniforms.horizonColor.value.set(sb.hor);
     
-    // Update Fog & Background
     scene.fog.color.set(sb.fog);
     scene.background.set(sb.bg);
     
-    // Update Lighting
     sunLight.intensity = sb.light;
     sunSprite.visible = sb.sun;
     
-    // Adjust floor color slightly for dark modes
     if(name === 'night' || name === 'matrix' || name === 'cyberpunk') {
         floor.material.color.setHex(0x111111);
         floor.material.emissive.setHex(0x000000);
@@ -1764,7 +1745,7 @@ function applyMouseLook(dt){
     if(_as.invertc){ yaw += smoothMouseX*eff; pitch += smoothMouseY*eff; }
     else { yaw -= smoothMouseX*eff; pitch -= smoothMouseY*eff; }
     
-    if(_as.spinbot) yaw += dt * 15.0; // Rage spinbot
+    if(_as.spinbot) yaw += dt * 15.0;
 
     if(pitch > PITCH_LIMIT) pitch = PITCH_LIMIT;
     if(pitch < -PITCH_LIMIT) pitch = -PITCH_LIMIT;
@@ -1942,7 +1923,7 @@ function ensureLocalPlayerMesh(){
     if(localPlayerMesh) return;
     localPlayerMesh = createPlayerMesh(0x3366cc);
     localPlayerMesh.userData.headMesh.userData.isHead = true;
-    localPlayerMesh.userData.headMesh.visible = false; // hide own head
+    localPlayerMesh.userData.headMesh.visible = false;
     localPlayerMesh.visible = false;
     cameraRig.add(localPlayerMesh);
 
@@ -2220,7 +2201,7 @@ window._teleportToEnemy = function(){
 };
 
 // ============================================================
-//  MULTIPLAYER
+//  MULTIPLAYER (Fixed Connection Race Condition)
 // ============================================================
 function mpSendPos(){
     if(!mpConn || !mpConn.open) return;
@@ -2383,7 +2364,10 @@ function mpStartJoin(){
             }
         }, 5000);
         
-        conn.on('open', () => { clearTimeout(connTimeout); setupConn(conn); });
+        // THE FIX: We pass setupConn immediately. It handles checking if the connection is already open.
+        setupConn(conn);
+        
+        conn.on('open', () => { clearTimeout(connTimeout); });
         conn.on('error', (err) => { clearTimeout(connTimeout); mpStatus.textContent = 'Error: ' + err; mpStatus.classList.add('error'); });
     });
     
@@ -2399,13 +2383,14 @@ function mpStartJoin(){
 }
 
 function setupConn(conn){
-    conn.on('open', () => {
+    const handleOpen = () => {
         mpActive = true;
         try { conn.send({ t:'hello' }); } catch(e){}
         pingIdCounter++;
         const id = pingIdCounter;
         pingPending.set(id, performance.now());
         try { conn.send({ t:'p', id }); } catch(e){}
+        
         if(!gameActive){
             setTimeout(() => {
                 if(gameActive) return;
@@ -2414,7 +2399,15 @@ function setupConn(conn){
                 startMode('multiplayer');
             }, 400);
         }
-    });
+    };
+
+    // THE FIX: Check if connection is already open (race condition), otherwise attach listener
+    if (conn.open) {
+        handleOpen();
+    } else {
+        conn.on('open', handleOpen);
+    }
+
     conn.on('data', data => handleMPMessage(data));
     conn.on('close', () => {
         mpActive = false;
@@ -2426,6 +2419,7 @@ function setupConn(conn){
         }
     });
 }
+
 function mpCancel(){
     try { if(mpConn) mpConn.close(); } catch(e){}
     try { if(mpPeer) mpPeer.destroy(); } catch(e){}
